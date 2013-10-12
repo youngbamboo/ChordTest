@@ -18,6 +18,7 @@ class ChordService {
 		ChordService();
 		~ChordService();
 		inline int getPort() {return myPort;};
+		string buildHashID();
 	private:
 		string myHostName;
 		string myIP;
