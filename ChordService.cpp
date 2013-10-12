@@ -69,7 +69,7 @@ string ChordService::buildHashID()
 int main(int argc, char* argv[])
 {
 	ChordService* myService = new ChordService();
-	myService.buildHashID();
+	myService->buildHashID();
 	//1. Send the broadcast first.
 	int n, fd;
     socklen_t cli_addr_len;
