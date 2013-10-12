@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 #include <openssl/evp.h>
 
+#include "Node.h"
 #include "ChordService.h"
 
 using namespace std;
