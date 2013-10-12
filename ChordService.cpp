@@ -13,7 +13,7 @@
 
 using namespace std;
 
-ChordService::ChordService():myHostName(""),myIP(""),myPort(2345)
+ChordService::ChordService():myHostName(""),myIP(""),myBroadcastPort(2345)
 {
 	struct hostent* he;
     char aName[100];
@@ -26,7 +26,7 @@ ChordService::ChordService():myHostName(""),myIP(""),myPort(2345)
     }
 	struct in_addr **ipAddr = (struct in_addr**)he->h_addr_list;
 	myIP = inet_ntoa(*ipAddr[0]);
-	myID = this.buildHashID();
+	myID = buildHashID();
 }
 
 ChordService::~ChordService()
@@ -35,7 +35,7 @@ ChordService::~ChordService()
 
 string ChordService::buildHashID()
 {
-	string nodeIP=this.getIP();
+	string nodeIP=getIP();
 	
     string digest;
     EVP_MD_CTX mdctx;
@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
     }
 
     their_addr.sin_family = AF_INET; // host byte order
-    their_addr.sin_port = htons(CLIENT_PORT); // short, network byte order
+    their_addr.sin_port = htons(myService->getBroadcastPort()); // short, network byte order
 	their_addr.sin_addr = *((struct in_addr *)he->h_addr);
     memset(their_addr.sin_zero, '\0', sizeof their_addr.sin_zero);
     if ((numbytes=sendto(sockfd, myService->getHashID().c_str(), myService->getHashID().length(), 0,
