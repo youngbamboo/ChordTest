@@ -26,6 +26,7 @@ ChordService::ChordService():myHostName(""),myIP(""),myPort(2345)
     }
 	struct in_addr **ipAddr = (struct in_addr**)he->h_addr_list;
 	myIP = inet_ntoa(*ipAddr[0]);
+	myID = this.buildHashID();
 }
 
 ChordService::~ChordService()
@@ -34,7 +35,7 @@ ChordService::~ChordService()
 
 string ChordService::buildHashID()
 {
-	string nodeIP="9.1.1.1";
+	string nodeIP=this.getIP();
 	
     string digest;
     EVP_MD_CTX mdctx;
@@ -59,7 +60,7 @@ string ChordService::buildHashID()
     EVP_MD_CTX_cleanup(&mdctx);
 
     digest = reinterpret_cast<const char*>(md_value);
-	cout<<"hash value is: "<<strtol(digest.c_str(),NULL,10)<<endl;
+	cout<<"hash value length is: "<<digest.length()<<endl;
 
     return digest;
 }
@@ -69,9 +70,47 @@ string ChordService::buildHashID()
 int main(int argc, char* argv[])
 {
 	ChordService* myService = new ChordService();
-	myService->buildHashID();
-	//1. Send the broadcast first.
-	int n, fd;
+	
+	//1. Send the broadcast first with my HashID
+    
+    string broadcastName="255.255.255.255";
+    int sockfd;
+    struct sockaddr_in their_addr; // connector's address information
+    struct hostent *he;
+    int numbytes;
+    int broadcast = 1;
+    if ((he=gethostbyname(broadcastName.c_str())) == NULL)
+    {
+        cerr<<"gethostbyname"<<endl;
+        exit(-1);
+    }
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+    {
+        cerr<<"socket error"<<endl;
+        exit(-1);
+    }
+    if (setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &broadcast,sizeof broadcast) == -1) 
+	{
+        cerr<<"setsockopt (SO_BROADCAST)"<<endl;
+        exit(-1);
+    }
+
+    their_addr.sin_family = AF_INET; // host byte order
+    their_addr.sin_port = htons(CLIENT_PORT); // short, network byte order
+	their_addr.sin_addr = *((struct in_addr *)he->h_addr);
+    memset(their_addr.sin_zero, '\0', sizeof their_addr.sin_zero);
+    if ((numbytes=sendto(sockfd, myService->getHashID().c_str(), myService->getHashID().length(), 0,
+                    (struct sockaddr *)&their_addr, sizeof their_addr)) == -1) 
+    {
+        perror("sendto");
+        exit(1);
+    }
+    printf("sent %d bytes to %s\n", numbytes, inet_ntoa(their_addr.sin_addr));
+    close(sockfd);
+
+	//2.  Wait for the response.
+
+	/*int n, fd;
     socklen_t cli_addr_len;
     char buf[1024] = {0};
     struct sockaddr_in servaddr, cliaddr;
@@ -98,7 +137,7 @@ int main(int argc, char* argv[])
        cout<<buf<<endl;
     }
 
-
+*/
 
     return 0;
 }
