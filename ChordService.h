@@ -17,13 +17,13 @@ class ChordService {
 	public:
 		ChordService();
 		~ChordService();
-		inline Node* getLocalNode() {return localNode;};
-		inline Node* getPreNode() {return preNode;};
+		inline Node* getLocalNode() {return this->localNode;};
+		inline Node* getPreNode() {return this->preNode;};
 		inline void setPreNode(Node* theNode) {this->preNode=theNode;};
 	private:
 		Node* localNode;
 		Node* preNode;
-		list<Node*> successorList;
+		//list <Node*> successorList;
 	
 			
 			
