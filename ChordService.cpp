@@ -1,3 +1,5 @@
+#include: <unistd>
+
 #include "ChordService.h"
 
 ChordService::ChordService():myHostName(""),myIP("")
