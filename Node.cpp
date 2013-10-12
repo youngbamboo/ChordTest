@@ -45,13 +45,19 @@ uint32_t Node::buildHashID()
     for ( i = 0; i < nodeIP.length(); i++ ) 
 	{
 		h += nodeIP[i];
+		cout<<h<<" ";
         h += ( h << 10 );
+		cout<<h<<" ";
         h ^= ( h >> 6 );
+		cout<<h<<endl;
 	}
 
     h += ( h << 3 );
+	cout<<h<<" ";
     h ^= ( h >> 11 );
+	cout<<h<<" ";
     h += ( h << 15 );
+	cout<<h<<endl;
 	return h;
 		
 	/*
