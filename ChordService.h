@@ -17,15 +17,13 @@ class ChordService {
 	public:
 		ChordService();
 		~ChordService();
-		inline int getBroadcastPort() {return myBroadcastPort;};
-		inline string getIP() {return myIP;};
-		string buildHashID();
-		inline string getHashID() {return myID;};
+		inline Node* getLocalNode() {return localNode;};
+		inline Node* getPreNode() {return preNode;};
+		inline void setPreNode(Node* theNode) {this->preNode=theNode;};
 	private:
-		string myHostName;
-		string myIP;
-		string myID;
-		const int myBroadcastPort;
+		Node* localNode;
+		Node* preNode;
+		list<Node*> successorList;
 	
 			
 			
