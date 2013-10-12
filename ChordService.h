@@ -17,10 +17,10 @@ class ChordService {
 	public:
 		ChordService();
 		~ChordService();
-		inline int getPort() {return this.myPort;};
-		inline string getIP() {return this.myIP;};
+		inline int getPort() {return myPort;};
+		inline string getIP() {return myIP;};
 		string buildHashID();
-		inline string getHashID() {return this.myID};
+		inline string getHashID() {return myID};
 	private:
 		string myHostName;
 		string myIP;
