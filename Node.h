@@ -19,12 +19,12 @@ class Node {
 		~Node();
 		inline int getBroadcastPort() {return myBroadcastPort;};
 		inline string getIP() {return myIP;};
-		string buildHashID();
-		inline string getHashID() {return myID;};
+		uint32_t buildHashID();
+		inline uint32_t getHashID() {return myID;};
 	private:
 		string myHostName;
 		string myIP;
-		string myID;
+		uint32_t myID;
 		const int myBroadcastPort;
 	
 			

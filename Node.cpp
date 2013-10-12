@@ -13,7 +13,7 @@
 
 using namespace std;
 
-Node::Node():myHostName(""),myIP(""),myBroadcastPort(2345)
+Node::Node():myHostName(""),myIP(""),myBroadcastPort(2345),myID(0)
 {
 	struct hostent* he;
     char aName[100];
