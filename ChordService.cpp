@@ -35,12 +35,7 @@ ChordService::~ChordService()
 string ChordService::buildHashID()
 {
 	string nodeIP="9.1.1.1";
-	functionEntryLog("getLocalHashID");
-
-    if(infoDebug){
-        printf("Computing the local hash id for node %s\n", nodeIP.c_str());
-    }
-
+	
     string digest;
     EVP_MD_CTX mdctx;
     const EVP_MD *md;
@@ -53,7 +48,8 @@ string ChordService::buildHashID()
     md = EVP_get_digestbyname("SHA1");
 
     if(!md){
-        generalInfoLog("Unknown message digest");
+        cerr<<"Unknown message digest"<<endl;
+		exit(-1);
     }
 
     EVP_MD_CTX_init(&mdctx);
