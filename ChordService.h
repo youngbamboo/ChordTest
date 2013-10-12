@@ -13,10 +13,14 @@
 using namespace std;
 
 class ChordService {
+	public:
+		ChordService();
+		~ChordService();
 	private:
 		string myHostName;
 		string myIP;
 		int myID;
+	
 			
 			
 };
