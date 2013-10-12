@@ -17,7 +17,7 @@ class ChordService {
 	public:
 		ChordService();
 		~ChordService();
-		inline int getBroadcastPort() {return myPort;};
+		inline int getBroadcastPort() {return myBroadcastPort;};
 		inline string getIP() {return myIP;};
 		string buildHashID();
 		inline string getHashID() {return myID;};
