@@ -12,7 +12,7 @@
 
 using namespace std;
 
-ChordService::ChordService():myHostName(""),myIP("")
+ChordService::ChordService():myHostName(""),myIP(""),myPort(2345)
 {
 	struct hostent* he;
     char aName[100];

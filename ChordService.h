@@ -22,7 +22,7 @@ class ChordService {
 		string myHostName;
 		string myIP;
 		int myID;
-		const int myPort = 2345;
+		const int myPort;
 	
 			
 			
