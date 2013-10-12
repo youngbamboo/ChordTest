@@ -8,6 +8,8 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <openssl/evp.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "Node.h"
 #include "ChordService.h"
