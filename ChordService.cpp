@@ -34,6 +34,7 @@ ChordService::~ChordService()
 
 int main(int argc, char* argv[])
 {
+	ChordService myService = new ChordService();
 	int n, fd;
     socklen_t cli_addr_len;
     char buf[1024] = {0};
@@ -47,7 +48,7 @@ int main(int argc, char* argv[])
  
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port = htons(2345);
+    servaddr.sin_port = htons(myService.getPort());
  
     if (bind(fd, (struct sockaddr *)&servaddr, sizeof(servaddr))<0)
     {
