@@ -59,7 +59,7 @@ string ChordService::buildHashID()
     EVP_MD_CTX_cleanup(&mdctx);
 
     digest = reinterpret_cast<const char*>(md_value);
-	cout<<"hash value is: "<<atoi(digest)<<endl;
+	cout<<"hash value is: "<<atoi(digest.c_str())<<endl;
 
     return digest;
 }
