@@ -42,7 +42,7 @@ uint32_t Node::buildHashID()
 	//const char* p = nodeIP.c_str();
 	uint32_t h = 0;
 	int i;
-    for ( i = 0; i < len; i++ ) 
+    for ( i = 0; i < nodeIP.length(); i++ ) 
 	{
 		h += nodeIP[i];
         h += ( h << 10 );
