@@ -2,7 +2,6 @@
 
 ChordService::ChordService():myHostName(""),myIP("")
 {
-	myHostName=NULL;
 	struct hostent* he;
 	gethostname(myHostName.c_str(), 100);
 	cout<<"My host name is: "<<myHostName<<endl;
