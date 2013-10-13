@@ -37,8 +37,11 @@ ChordService::~ChordService()
 
 int ChordService::receiveReply(std::map<uint32_t,string>* themap)
 {
+    /*
 	cout<<"receiveReply: Waiting for reply..."<<endl;
 	int n, fd;
+    socklen_t cli_addr_len;
+    char buf[1024] = {0};
 	
 	if((fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {
@@ -82,11 +85,6 @@ int ChordService::receiveReply(std::map<uint32_t,string>* themap)
 				if(i == fd)
 				{
 					cli_addr_len = sizeof(cliaddr);
-       				
-    			    if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) 
-    			    {
-    			       perror("Error");
-    			    }
     			    n =recvfrom(fd, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);
     			    if (n>0)
     			    {
@@ -103,21 +101,20 @@ int ChordService::receiveReply(std::map<uint32_t,string>* themap)
     			    {
     			        //cout<<"Nothing received"<<endl;
     			    }
-    				time_t currentTime;
-    				time(&currentTime);
-    				if (difftime(currentTime,startTime)>5)
-    				{
-    				    cout<<"sleep 5s is over"<<endl;
-    			        close(fd);
-    				    break;
-    				}											
-					
 				}
 				
 			}
+            time_t currentTime;
+            time(&currentTime);
+            if (difftime(currentTime,startTime)>5)
+            {
+                cout<<"sleep 5s is over"<<endl;
+                close(fd);
+                break;
+            }
 		}
-	}
-    /*
+	}*/
+    
 	cout<<"receiveReply: Waiting for reply..."<<endl;
 	int n, fd;
     socklen_t cli_addr_len;
@@ -177,7 +174,7 @@ int ChordService::receiveReply(std::map<uint32_t,string>* themap)
 	   }
 	   
     }
-    */
+   
 }
 
 void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
@@ -448,11 +445,32 @@ int main(int argc, char* argv[])
 					{ // this is the child process
 						//close(sockfd); // child doesn't need the listener
 						string myID = std::to_string(myService->getLocalNode()->getHashID());
+                        int numbytes;
+                        int sendfd;
+                        if ((sendfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+                        {
+                            cerr<<"socket error"<<endl;
+                            exit(1);
+                        }
+                        cliaddr.sin_port = htons(10000);
+                        if ((numbytes=sendto(sendfd, myID.c_str(), myID.length(), 0,
+                                                (struct sockaddr *)&cliaddr, sizeof cliaddr)) == -1) 
+                        {
+                            cerr<<"send error"<<endl;
+                            exit(1);
+                        }
+                        else
+                        {
+                            cout<<"send back with my id: "<<myID<<endl;
+
+                        }
+                        /*
 						if (send(newfd, myID.c_str(), myID.length(), 0) == -1)
 						{
 								cout<<"send back with my id: "<<myID<<endl;
 						}
-						close(newfd);
+                        */
+						close(sendfd);
 					}
 					close(newfd);
 					
