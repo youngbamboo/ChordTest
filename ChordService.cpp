@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <map>
+#include <math.h>
 
 #include "Node.h"
 #include "ChordService.h"
@@ -63,10 +64,10 @@ int ChordService::receiveReply(map<uint32_t,string>* mymap)
        n =recvfrom(fd, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);
        printf("%d\n", n);
        cout<<buf<<endl;
-	   uint32_t aID = aoti(buf);
+	   uint32_t aID = atoi(buf);
 	   cout<<"Recieve the id: "<< aID <<endl;
 	   char ipstr[INET6_ADDRSTRLEN];
-	   string aIP = inet_ntop(addr.ss_family,addr.ss_family == AF_INET?
+	   string aIP = inet_ntop(cliaddr.ss_family,addr.ss_family == AF_INET?
 								((struct sockadd_in *)&cliaddr)->sin_addr:
 								((struct sockadd_in6 *)&cliaddr)->sin6_addr,
 								ipstr, sizeof ipstr);
@@ -96,7 +97,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 		fingerSuccessorList.push_back(aID);
 		successorIPList.push_back(aIP);
 	}
-	if (themap==NULL || themap.size()==0)
+	if (themap==NULL || themap->size()==0)
 	{
 		//It's the first node
 		cout<<"It looks like I'm the first node"<<endl;
@@ -109,35 +110,62 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 	{
 		cout<<"There are nodes in the ring"<<endl;
 		//Something in the ring.
-		
+
+		std::list<uint32_t>::iterator fingerNodeit = fingerNodeList.begin();
+		std::list<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
+		std::list<uint32_t>::iterator successorIPList = successorIPList.begin();
+			
 		std::map<uint32_t,string>::iterator it = themap->begin();
 	
-		for (it=themap.begin(); it!=themap.end(); ++it)
+		for (it=themap->begin(); it!=themap->end(); ++it)
 		{
 			uint32_t tmpID = it->first;
 			string tmpIP = it->second;
     		cout << tmpID << " => " << tmpID << '\n';
+			fingerNodeit = fingerNodeList.begin();
+			fingerSuccessorit = fingerSuccessorList.begin();
+			successorIPList = successorIPList.begin();
 			int i=0;
-			while (i<16)
+			for(;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerNodeList.end()&&successorIPListit!=successorIPList.end();
+			fingerNodeit++,fingerSuccessorit++,successorIPList++)
 			{
-				if (tmpID>fingerNodeList[i])
+				if (tmpID>(*fingerNodeit))
 				{
 					if (i==15)
 					{
-						//Last colunme
-						fingerSuccessorList[i]=tmpID;
-						successorIPList[i]=tmpIP;
+						//Update Last column.
+						//Needs to make sure the original one bigger than tmpID. Then replace it...
+						if(*fingerSuccessorit>tmpID)
+						{
+							*fingerSuccessorList=tmpID;
+							*successorIPList=tmpIP;
+						}
 					}
-					i++;
-					continue;
 				}
 				else
 				{
-					//update (i-1) colume
-					fingerSuccessorList[i-1]=tmpID;
-					successorIPList[i-1]=tmpIP;
+					//It is bigger than the (i-1) column
+					//But if it's the first node...
+					if (i!=0)
+					{
+						//Needs to make sure the original one bigger than tmpID. Then replace it...
+						if (*(--fingerSuccessorit)==0 || *(--fingerSuccessorit)>tmpID))
+						{
+							fingerSuccessorit=tmpID;
+							successorIPList=tmpIP;
+							fingerSuccessorit++;
+							successorIPList++;
+						}
+						else
+						{
+							//No else...
+						}
+					}
+					
 				}
+				i++;
 			}
+			
 			printFingerTable();
 			
 		}
@@ -156,7 +184,7 @@ void ChordService::printFingerTable()
 	std::list<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
 	std::list<string>::iterator successorIPListit = successorIPList.begin();
 	for (;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerNodeList.end()&&successorIPListit!=successorIPList.end();
-			fingerNodeit++,fingerSuccessorit,successorIPListit)
+			fingerNodeit++,fingerSuccessorit++,successorIPListit++)
 	{
 		cout<<*fingerNodeit<<" "<<*fingerSuccessorit<<" "<<*successorIPListit<<endl;
 	}
