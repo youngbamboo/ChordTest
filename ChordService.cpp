@@ -39,8 +39,7 @@ int ChordService::receiveReply(map<uint32_t,string>* mymap)
 	int n, fd;
     socklen_t cli_addr_len;
     char buf[1024] = {0};
-    struct sockaddr_in servaddr;
-	struct cliaddr;
+    struct sockaddr_in servaddr, cliaddr;
 
     if((fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {
@@ -62,14 +61,14 @@ int ChordService::receiveReply(map<uint32_t,string>* mymap)
     while(1)
     {
        cli_addr_len = sizeof(cliaddr);
-       n =recvfrom(fd, buf, 1024, 0, &cliaddr, &cli_addr_len);
+       n =recvfrom(fd, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);
        printf("%d\n", n);
        cout<<buf<<endl;
 	   uint32_t aID = atoi(buf);
 	   cout<<"Recieve the id: "<< aID <<endl;
 	   char ipstr[INET6_ADDRSTRLEN];
-	   string aIP = inet_ntop(cliaddr.ai_family,get_in_addr(cliaddr.ai_family,
-								ipstr, sizeof ipstr);
+	  // string aIP = inet_ntop(cliaddr.ai_family,get_in_addr(cliaddr.ai_family,ipstr, sizeof ipstr);
+       string aIP=inet_ntoa(cliaddr.sin_addr);
 	   cout<<"From IP: "<<aIP<<endl;
 
 	   mymap->insert(std::pair<uint32_t,string>(aID,aIP));
@@ -112,7 +111,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 
 		std::list<uint32_t>::iterator fingerNodeit;
 		std::list<uint32_t>::iterator fingerSuccessorit;
-		std::list<uint32_t>::iterator successorIPListit;
+		std::list<string>::iterator successorIPListit;
 			
 		std::map<uint32_t,string>::iterator it = themap->begin();
 	
@@ -136,7 +135,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 						//Needs to make sure the original successor bigger than tmpID. Then replace it...
 						if(*fingerSuccessorit>tmpID)
 						{
-							*fingerSuccessorList=tmpID;
+							*fingerSuccessorit=tmpID;
 							*successorIPListit=tmpIP;
 						}
 					}
@@ -148,19 +147,21 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 					if (i!=0)
 					{
 						//Needs to make sure the original successor bigger than tmpID. Then replace it...
-						if (*(--fingerSuccessorit)==0 || *(--fingerSuccessorit)>tmpID))
+                        fingerSuccessorit--;
+                        successorIPListit--;
+						if (*fingerSuccessorit==0 || *fingerSuccessorit>tmpID)
 						{
-							fingerSuccessorit=tmpID;
-							successorIPListit=tmpIP;
-							fingerSuccessorit++;
+							*fingerSuccessorit=tmpID;
+							*successorIPListit=tmpIP;
 							successorIPListit++;
 						}
 						else
 						{
 							//No else...
 						}
+                        fingerSuccessorit++;
+                        successorIPListit++;
 					}
-					
 				}
 				i++;
 			}
@@ -265,21 +266,23 @@ int main(int argc, char* argv[])
 
     memset((char*)&clientUDP, 0, sizeof(clientUDP));
     clientUDP.sin_family = AF_INET;
-    clientUDP.sin_port = htons(this->getLocalNode()->getClientPort());
+    clientUDP.sin_port = htons(myService->getLocalNode()->getClientPort());
     clientUDP.sin_addr.s_addr = htonl(INADDR_ANY);
 
     memset((char*)&chordUDP, 0, sizeof(chordUDP));
     chordUDP.sin_family = AF_INET;
-    chordUDP.sin_port = htons(this->getLocalNode()->getBroadcastPort());
+    chordUDP.sin_port = htons(myService->getLocalNode()->getBroadcastPort());
     chordUDP.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	if(bind(clientSocket, (struct sockaddr*) &clientUDP, sizeof(clientUDP)) == -1){
-        generalInfoLog("Bind failed for server socket \n");
+	if(bind(clientSocket, (struct sockaddr*) &clientUDP, sizeof(clientUDP)) == -1)
+    {
+        cerr<<"Bind failed for client socket"<<endl;
         exit(1);
     }
     
-    if(bind(chordSocket, (struct sockaddr*) &chordUDP, sizeof(chordUDP)) == -1){
-        generalInfoLog("Bind failed for client socket\n");
+    if(bind(chordSocket, (struct sockaddr*) &chordUDP, sizeof(chordUDP)) == -1)
+    {
+        cerr<<"Bind failed for chord socket"<<endl;
         exit(1);
     }
 
@@ -318,16 +321,15 @@ int main(int argc, char* argv[])
 					struct sockaddr_in cliaddr;
 					socklen_t cli_addr_len;
 					cli_addr_len = sizeof(cliaddr);
-                    int newfd =recvfrom(fd, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);              
+                    char buf[1024] = {0};
+                    int newfd =recvfrom(chordSocket, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);              
                     cout<<buf<<endl;
-               	   	uint32_t aID = aoti(buf);
+               	   	uint32_t aID = atoi(buf);
                	    cout<<"Recieve the broadcast from id: "<< aID <<endl;
                	    char ipstr[INET6_ADDRSTRLEN];
-               	    string aIP = inet_ntop(addr.ss_family,addr.ss_family == AF_INET?
-               								((struct sockadd_in *)&cliaddr)->sin_addr:
-               								((struct sockadd_in6 *)&cliaddr)->sin6_addr,
-               								ipstr, sizeof ipstr);
-               	    cout<<"From IP: "<<aIP<<endl;
+
+               	    string aIP=inet_ntoa(cliaddr.sin_addr);
+                    cout<<"From IP: "<<aIP<<endl;
 
 					std::map<uint32_t,string>* mymap=NULL;
 					mymap->insert(std::pair<uint32_t,string>(aID,aIP));
@@ -341,7 +343,7 @@ int main(int argc, char* argv[])
 					{ // this is the child process
 						close(sockfd); // child doesn't need the listener
 						string myID = std::to_string(myService->getLocalNode()->getHashID());
-						if (send(newfd, myID.c_str(), myID.legnth(), 0) == -1)
+						if (send(newfd, myID.c_str(), myID.length(), 0) == -1)
 						{
 								cout<<"send back with my id: "<<myID<<endl;
 						}

@@ -1,11 +1,11 @@
-all:	chordservice
+all:	chordservice node
 	g++ chordservice node -o all -lcrypto
 
 chordservice:	ChordService.cpp ChordService.h Node.h
-	g++ -c -g -o chordservice ChordService.cpp 
+	g++ -std=c++11 -c -g -o chordservice ChordService.cpp 
 	
 node:	Node.cpp Node.h 
-	g++ -c -g -o node Node.cpp
+	g++ -std=c++11 -c -g -o node Node.cpp
 	
 clean:
-	rm -rf all chordservice 
+	rm -rf all chordservice node
