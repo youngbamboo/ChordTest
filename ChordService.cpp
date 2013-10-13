@@ -43,8 +43,8 @@ int ChordService::receiveReply(map<uint32_t,string>* mymap)
 
     if((fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {
-        printf("socket error!\n");
-        exit(0);
+        cerr<<"socket error!"<<endl;
+        exit(1);
     }
 
     servaddr.sin_family = AF_INET;
@@ -53,13 +53,14 @@ int ChordService::receiveReply(map<uint32_t,string>* mymap)
 
     if (bind(fd, (struct sockaddr *)&servaddr, sizeof(servaddr))<0)
     {
-        perror("bind");
-        exit(-1);
+        cerr<<"bind"<<endl;
+        exit(1);
     }
 	time_t startTime;
 	time(&startTime);
     while(1)
     {
+		cout<<"wait..."<<endl;
        cli_addr_len = sizeof(cliaddr);
        n =recvfrom(fd, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);
        printf("%d\n", n);
