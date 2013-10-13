@@ -223,7 +223,12 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 			{
 				if (tmpID<(*fingerNodeit))
 				{
-            
+					if (tmpID<(*fingerSuccessorit))
+					{
+						*fingerSuccessorit=tmpID;
+						*successorIPListit=tmpIP;
+					}
+            		/*
 					if (i==15)
 					{
                       //  cerr<"3"<<endl;
@@ -234,14 +239,23 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 							*fingerSuccessorit=tmpID;
 							*successorIPListit=tmpIP;
 						}
-					}
+					}*/
 				}
 				else
 				{
-                    //cerr<"4"<<endl;
+                    if ((*fingerNodeit)>(*fingerSuccessorit))
+                    {
+						*fingerSuccessorit=tmpID;
+						*successorIPListit=tmpIP;
+                    }
+					else if (tmpID<(*fingerSuccessorit))
+					{
+						*fingerSuccessorit=tmpID;
+						*successorIPListit=tmpIP;
+					}
 					//It is bigger than the (i-1) column
 					//But if it's the first node...
-					if (i!=0)
+					/*if (i!=0)
 					{
                       //  cerr<"5"<<endl;
 						//Needs to make sure the original successor bigger than tmpID. Then replace it...
@@ -258,7 +272,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 						}
                         fingerSuccessorit++;
                         successorIPListit++;
-					}
+					}*/
 				}
 				i++;
 			}
