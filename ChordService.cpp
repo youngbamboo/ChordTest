@@ -63,7 +63,6 @@ int ChordService::receiveReply(std::map<uint32_t,string>* themap)
 	time(&startTime);
     while(1)
     {
-       cout<<"wait..."<<endl;
        cli_addr_len = sizeof(cliaddr);
        struct timeval tv;
        tv.tv_sec = 0;
@@ -93,6 +92,7 @@ int ChordService::receiveReply(std::map<uint32_t,string>* themap)
 	   if (difftime(currentTime,startTime)>5)
 	   {
 	       cout<<"sleep 5s is over"<<endl;
+           close(fd);
 		   break;
 	   }
 	   
@@ -104,14 +104,6 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
     cout<<"Enter build finger table"<<endl;
 	uint32_t aID = this->getLocalNode()->getHashID();
 	string aIP = this->getLocalNode()->getIP();
-	for (int i=1;i<=16;i++)
-	{
-		fingerNodeList.push_back(aID+pow(2,i-1));
-		fingerSuccessorList.push_back(aID);
-		successorIPList.push_back(aIP);
-	}
-    cout<<"Initialize"<<endl;
-    printFingerTable();
 	if (themap==NULL || themap->size()==0)
 	{
 		//It's the first node
@@ -119,6 +111,13 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 		setPreNode(NULL);	
 		//std::list<uint32_t>::iterator fingerNodeit = fingerNodeList.begin();
 		//std::list<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
+
+        for (int i=1;i<=16;i++)
+        {
+            fingerNodeList.push_back(aID+pow(2,i-1));
+            fingerSuccessorList.push_back(aID);
+            successorIPList.push_back(aIP);
+        }
 		printFingerTable();
 	}
 	else
@@ -136,18 +135,21 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 		{
 			uint32_t tmpID = it->first;
 			string tmpIP = it->second;
-    		cout << tmpID << " => " << tmpID << '\n';
+    		cout << tmpID << " => " << tmpIP << endl;
 			fingerNodeit = fingerNodeList.begin();
 			fingerSuccessorit = fingerSuccessorList.begin();
 			successorIPListit = successorIPList.begin();
 			int i=0;
-			for(;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerNodeList.end()&&successorIPListit!=successorIPList.end();
+			for(;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			fingerNodeit++,fingerSuccessorit++,successorIPListit++)
 			{
+                //cerr<"1"<<endl;
 				if (tmpID>(*fingerNodeit))
 				{
+                    //cerr<"2"<<endl;
 					if (i==15)
 					{
+                      //  cerr<"3"<<endl;
 						//Update Last column.
 						//Needs to make sure the original successor bigger than tmpID. Then replace it...
 						if(*fingerSuccessorit>tmpID)
@@ -159,10 +161,12 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 				}
 				else
 				{
+                    //cerr<"4"<<endl;
 					//It is bigger than the (i-1) column
 					//But if it's the first node...
 					if (i!=0)
 					{
+                      //  cerr<"5"<<endl;
 						//Needs to make sure the original successor bigger than tmpID. Then replace it...
                         fingerSuccessorit--;
                         successorIPListit--;
@@ -170,7 +174,6 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 						{
 							*fingerSuccessorit=tmpID;
 							*successorIPListit=tmpIP;
-							successorIPListit++;
 						}
 						else
 						{
@@ -252,7 +255,7 @@ int main(int argc, char* argv[])
     }
     printf("sent %d bytes to %s\n", numbytes, inet_ntoa(their_addr.sin_addr));
     close(sockfd);
-	std::map<uint32_t,string>* mymap = NULL;
+	std::map<uint32_t,string> mymap;
 	//pthread_t thread;
 	//int rc = pthread_create(&thread, NULL, receiveReply, mymap);
     //cout<<"Begin to sleep"<<endl;
@@ -261,12 +264,12 @@ int main(int argc, char* argv[])
 	//pthread_exit(NULL);
     //cout<<"Kill the thread"<<endl;
 
-	myService->receiveReply(mymap);
+	myService->receiveReply(&mymap);
 	
-	myService->buildFingerTable(mymap);
+	myService->buildFingerTable(&mymap);
 
-	delete mymap;
-	mymap=NULL;
+    mymap.clear();
+
 
 	//Initialization is finished.
 
@@ -355,17 +358,14 @@ int main(int argc, char* argv[])
                	    string aIP=inet_ntoa(cliaddr.sin_addr);
                     cout<<"From IP: "<<aIP<<endl;
 
-					std::map<uint32_t,string>* mymap=NULL;
-					mymap->insert(std::pair<uint32_t,string>(aID,aIP));
-	
-					myService->buildFingerTable(mymap);
+					std::map<uint32_t,string> tmpMap;
+					tmpMap.insert(std::pair<uint32_t,string>(aID,aIP));
 
-					delete mymap;
-					mymap=NULL;
+					myService->buildFingerTable(&tmpMap);
 
 					if (!fork()) 
 					{ // this is the child process
-						close(sockfd); // child doesn't need the listener
+						//close(sockfd); // child doesn't need the listener
 						string myID = std::to_string(myService->getLocalNode()->getHashID());
 						if (send(newfd, myID.c_str(), myID.length(), 0) == -1)
 						{
