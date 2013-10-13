@@ -67,7 +67,7 @@ int ChordService::receiveReply(std::map<uint32_t,string>* themap)
        cli_addr_len = sizeof(cliaddr);
        struct timeval tv;
        tv.tv_sec = 0;
-       tv.tv_usec = 1000000;
+       tv.tv_usec = 500000;//500ms
        if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) 
        {
           perror("Error");
@@ -86,7 +86,7 @@ int ChordService::receiveReply(std::map<uint32_t,string>* themap)
        }
        else
        {
-           cout<<"Nothing received"<<endl;
+           //cout<<"Nothing received"<<endl;
        }
 	   time_t currentTime;
 	   time(&currentTime);
@@ -101,14 +101,17 @@ int ChordService::receiveReply(std::map<uint32_t,string>* themap)
 
 void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 {
+    cout<<"Enter build finger table"<<endl;
 	uint32_t aID = this->getLocalNode()->getHashID();
 	string aIP = this->getLocalNode()->getIP();
-	for (int i=1;i++;i<=16)
+	for (int i=1;i<=16;i++)
 	{
 		fingerNodeList.push_back(aID+pow(2,i-1));
 		fingerSuccessorList.push_back(aID);
 		successorIPList.push_back(aIP);
 	}
+    cout<<"Initialize"<<endl;
+    printFingerTable();
 	if (themap==NULL || themap->size()==0)
 	{
 		//It's the first node

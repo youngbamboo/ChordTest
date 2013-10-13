@@ -37,9 +37,19 @@ Node::~Node()
 {
 }
 
+unsigned char xPear16(unsigned char *x, int len) 
+{
+    int h, i, j;
+    unsigned char *x, ch, hex[20]="";
+           
+    struct { // to store h values
+            int a;
+                                   } hh[8];
+}
 //One-at-a-Time hash
 uint32_t Node::buildHashID()
 {
+    /*
 	string nodeIP=getIP();
 	//const char* p = nodeIP.c_str();
 	uint32_t h = 0;
@@ -58,7 +68,7 @@ uint32_t Node::buildHashID()
 	h=h>>16;
 	
 	return h;
-		
+	*/	
 	/*
 	string nodeIP=getIP();
 	
