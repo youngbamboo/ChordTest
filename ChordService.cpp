@@ -29,7 +29,7 @@ ChordService::ChordService():localNode(NULL),preNode(NULL)
 	string aIP = this->getLocalNode()->getIP();
 	for (int i=1;i<=16;i++)
     {
-		uint32_t key = (uint32_t)fmod(aID+pow(2,i-1));
+		uint32_t key = (uint32_t)fmod(aID+pow(2,i-1),65535);
         fingerNodeList.push_back(key);
         fingerSuccessorList.push_back(aID);
         successorIPList.push_back(aIP);
