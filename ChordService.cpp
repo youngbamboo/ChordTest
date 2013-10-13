@@ -239,7 +239,7 @@ int main(int argc, char* argv[])
     close(sockfd);
 	std::map<uint32_t,string>* mymap = NULL;
 	pthread_t thread;
-	rc = pthread_create(&thread, NULL, receiveReply, (void *)mymap);
+	int rc = pthread_create(&thread, NULL, receiveReply, (void *)mymap);
 	sleep(50);
 
 	pthread_exit(NULL);
