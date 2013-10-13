@@ -215,11 +215,83 @@ int main(int argc, char* argv[])
 
 	//Initialization is finished.
 
+	//Define the socket
+	//ChordSocket: Listen the 10000 port for broadcast. Send the reply (to 10001) and update its own finger table.
+	//ClientSocket: Listen the 9999 to receive the key-value data. 
+
+	int clientSocket, chordSocket;
+	if((clientSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){
+        cerr<<"Error when initializing client socket"<<endl;
+        exit(1);
+    }
+
+    if((chordSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){
+        cerr<<"Error when initializing chord socket"<<endl;
+        exit(1);
+    }
+
+	struct sockaddr_in clientUDP,chordUDP;
+
+	if(bind(clientSocket, (struct sockaddr*) &clientUDP, sizeof(clientUDP)) == -1){
+        generalInfoLog("Bind failed for server socket \n");
+        exit(1);
+    }
+    
+    if(bind(chordSocket, (struct sockaddr*) &chordUDP, sizeof(chordUDP)) == -1){
+        generalInfoLog("Bind failed for client socket\n");
+        exit(1);
+    }
+
+	fd_set read_fds, master; // set of read fds.
+
+    FD_ZERO(&read_fds); // clear the read fd set
+    FD_ZERO(&master); // clear the read fd set
+
+	FD_SET(chordSocket, &read_fds);
+    FD_SET(clientSocket, &read_fds);
+
+	int fdmax = (chordSocket > clientSocket ? chordSocket : clientSocket);
+
+	master = read_fds;
+
+	int activity;
+
 	while (1)
 	{
-		//This machine only listens the port 10000, where broadcast of the new node will be received.
+		//This machine listens the port 10000, where broadcast of the new node will be received.
 		//Then send its id and update its own fingertable.
 		//It's based on the asumption that each node is added one by one.
+		read_fds = master;
+		activity = select( max_sd + 1 , &readfds , NULL , NULL , NULL);
+		if ((activity < 0) && (errno!=EINTR)) 
+        {
+            cerr<<"select error"<<endl;
+        }
+		for(int i = 0; i<=fdmax; i++)
+		{
+			if(FD_ISSET(i, &read_fds))
+			{
+				if(i == chordSocket)
+				{
+					socklen_t cli_addr_len;
+					cli_addr_len = sizeof(cliaddr);
+                    int newfd =recvfrom(fd, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);              
+                    cout<<buf<<endl;
+               	   	uint32_t aID = aoti(buf);
+               	    cout<<"Recieve the broadcast from id: "<< aID <<endl;
+               	    char ipstr[INET6_ADDRSTRLEN];
+               	    string aIP = inet_ntop(addr.ss_family,addr.ss_family == AF_INET?
+               								((struct sockadd_in *)&cliaddr)->sin_addr:
+               								((struct sockadd_in6 *)&cliaddr)->sin6_addr,
+               								ipstr, sizeof ipstr);
+               	    cout<<"From IP: "<<aIP<<endl;;
+					
+				}
+				else if (i == clientSocket)
+				{
+				}
+			}
+		}
 	}
 
 	
