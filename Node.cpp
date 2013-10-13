@@ -58,7 +58,9 @@ uint32_t Node::buildHashID()
 	cout<<h<<" ";
     h += ( h << 15 );
 	cout<<h<<endl;
-	return h;
+	cout<<h/65536<<endl;
+	cout<<(h>>16)<<endl;
+	return h/65536;
 		
 	/*
 	string nodeIP=getIP();
