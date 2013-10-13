@@ -67,9 +67,7 @@ int ChordService::receiveReply(map<uint32_t,string>* mymap)
 	   uint32_t aID = atoi(buf);
 	   cout<<"Recieve the id: "<< aID <<endl;
 	   char ipstr[INET6_ADDRSTRLEN];
-	   string aIP = inet_ntop(cliaddr.ss_family,addr.ss_family == AF_INET?
-								((struct sockadd_in *)&cliaddr)->sin_addr:
-								((struct sockadd_in6 *)&cliaddr)->sin6_addr,
+	   string aIP = inet_ntop(cliaddr.ai_family,get_in_addr((struct sockaddr *)cliaddr.ai_family,
 								ipstr, sizeof ipstr);
 	   cout<<"From IP: "<<aIP<<endl;
 
@@ -111,9 +109,9 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 		cout<<"There are nodes in the ring"<<endl;
 		//Something in the ring.
 
-		std::list<uint32_t>::iterator fingerNodeit = fingerNodeList.begin();
-		std::list<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
-		std::list<uint32_t>::iterator successorIPList = successorIPList.begin();
+		std::list<uint32_t>::iterator fingerNodeit;
+		std::list<uint32_t>::iterator fingerSuccessorit;
+		std::list<uint32_t>::iterator successorIPListit;
 			
 		std::map<uint32_t,string>::iterator it = themap->begin();
 	
@@ -124,21 +122,21 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
     		cout << tmpID << " => " << tmpID << '\n';
 			fingerNodeit = fingerNodeList.begin();
 			fingerSuccessorit = fingerSuccessorList.begin();
-			successorIPList = successorIPList.begin();
+			successorIPListit = successorIPList.begin();
 			int i=0;
 			for(;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerNodeList.end()&&successorIPListit!=successorIPList.end();
-			fingerNodeit++,fingerSuccessorit++,successorIPList++)
+			fingerNodeit++,fingerSuccessorit++,successorIPListit++)
 			{
 				if (tmpID>(*fingerNodeit))
 				{
 					if (i==15)
 					{
 						//Update Last column.
-						//Needs to make sure the original one bigger than tmpID. Then replace it...
+						//Needs to make sure the original successor bigger than tmpID. Then replace it...
 						if(*fingerSuccessorit>tmpID)
 						{
 							*fingerSuccessorList=tmpID;
-							*successorIPList=tmpIP;
+							*successorIPListit=tmpIP;
 						}
 					}
 				}
@@ -148,13 +146,13 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 					//But if it's the first node...
 					if (i!=0)
 					{
-						//Needs to make sure the original one bigger than tmpID. Then replace it...
+						//Needs to make sure the original successor bigger than tmpID. Then replace it...
 						if (*(--fingerSuccessorit)==0 || *(--fingerSuccessorit)>tmpID))
 						{
 							fingerSuccessorit=tmpID;
-							successorIPList=tmpIP;
+							successorIPListit=tmpIP;
 							fingerSuccessorit++;
-							successorIPList++;
+							successorIPListit++;
 						}
 						else
 						{
