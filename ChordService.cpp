@@ -13,6 +13,7 @@
 #include <time.h>
 #include <map>
 #include <math.h>
+#include <sys/time.h>
 
 
 #include "Node.h"
@@ -34,8 +35,9 @@ ChordService::~ChordService()
 	preNode = NULL;
 }
 
-void* ChordService::receiveReply(map<uint32_t,string>* mymap)
+int ChordService::receiveReply(std::map<uint32_t,string>* themap)
 {
+    
 	cout<<"receiveReply: Waiting for reply..."<<endl;
 	int n, fd;
     socklen_t cli_addr_len;
@@ -50,7 +52,7 @@ void* ChordService::receiveReply(map<uint32_t,string>* mymap)
 
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port = htons(this->getLocalNode()->getBroadcastPort());
+    servaddr.sin_port = htons(10000);
 
     if (bind(fd, (struct sockaddr *)&servaddr, sizeof(servaddr))<0)
     {
@@ -61,19 +63,31 @@ void* ChordService::receiveReply(map<uint32_t,string>* mymap)
 	time(&startTime);
     while(1)
     {
-		cout<<"wait..."<<endl;
+       cout<<"wait..."<<endl;
        cli_addr_len = sizeof(cliaddr);
+       struct timeval tv;
+       tv.tv_sec = 0;
+       tv.tv_usec = 1000000;
+       if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) 
+       {
+          perror("Error");
+       }
        n =recvfrom(fd, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);
-       cout<<buf<<endl;
-	   uint32_t aID = atoi(buf);
-	   cout<<"Recieve the id: "<< aID <<endl;
-	   char ipstr[INET6_ADDRSTRLEN];
-	  // string aIP = inet_ntop(cliaddr.ai_family,get_in_addr(cliaddr.ai_family,ipstr, sizeof ipstr);
-       string aIP=inet_ntoa(cliaddr.sin_addr);
-	   cout<<"From IP: "<<aIP<<endl;
-
-	   mymap->insert(std::pair<uint32_t,string>(aID,aIP));
-	   /*
+       if (n>0)
+       {
+           cout<<buf<<endl;
+	       uint32_t aID = atoi(buf);
+	       cout<<"Recieve the id: "<< aID <<endl;
+	       char ipstr[INET6_ADDRSTRLEN];
+	      // string aIP = inet_ntop(cliaddr.ai_family,get_in_addr(cliaddr.ai_family,ipstr, sizeof ipstr);
+           string aIP=inet_ntoa(cliaddr.sin_addr);
+	       cout<<"From IP: "<<aIP<<endl;
+           ((std::map<uint32_t,string>*)themap)->insert(std::pair<uint32_t,string>(aID,aIP));
+       }
+       else
+       {
+           cout<<"Nothing received"<<endl;
+       }
 	   time_t currentTime;
 	   time(&currentTime);
 	   if (difftime(currentTime,startTime)>5)
@@ -81,10 +95,8 @@ void* ChordService::receiveReply(map<uint32_t,string>* mymap)
 	       cout<<"sleep 5s is over"<<endl;
 		   break;
 	   }
-	   */
+	   
     }
-	close(fd);
-	
 }
 
 void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
@@ -228,7 +240,7 @@ int main(int argc, char* argv[])
     memset(their_addr.sin_zero, '\0', sizeof their_addr.sin_zero);
 
 	string aBuf = std::to_string(myService->getLocalNode()->getHashID());
-	cout<<"braodcast will be: "<<aBuf<<endl;
+	cout<<"broadcast will be: "<<aBuf<<endl;
     if ((numbytes=sendto(sockfd, aBuf.c_str(), aBuf.length(), 0,
                     (struct sockaddr *)&their_addr, sizeof their_addr)) == -1) 
     {
@@ -238,13 +250,15 @@ int main(int argc, char* argv[])
     printf("sent %d bytes to %s\n", numbytes, inet_ntoa(their_addr.sin_addr));
     close(sockfd);
 	std::map<uint32_t,string>* mymap = NULL;
-	pthread_t thread;
-	int rc = pthread_create(&thread, NULL, myService->receiveReply, (void *)mymap);
-	sleep(50);
+	//pthread_t thread;
+	//int rc = pthread_create(&thread, NULL, receiveReply, mymap);
+    //cout<<"Begin to sleep"<<endl;
+	//sleep(5);
+    //cout<<"After sleep"<<endl;
+	//pthread_exit(NULL);
+    //cout<<"Kill the thread"<<endl;
 
-	pthread_exit(NULL);
-
-	//myService->receiveReply(mymap);
+	myService->receiveReply(mymap);
 	
 	myService->buildFingerTable(mymap);
 
