@@ -34,6 +34,7 @@ ChordService::~ChordService()
 
 int ChordService::receiveReply(map<uint32_t,string>* mymap)
 {
+	cout<<"receiveReply: Waiting for reply..."<<endl;
 	int n, fd;
     socklen_t cli_addr_len;
     char buf[1024] = {0};
@@ -69,7 +70,7 @@ int ChordService::receiveReply(map<uint32_t,string>* mymap)
 								((struct sockadd_in *)&cliaddr)->sin_addr:
 								((struct sockadd_in6 *)&cliaddr)->sin6_addr,
 								ipstr, sizeof ipstr);
-	   cout<<"From IP: "<<aIP<<endl;;
+	   cout<<"From IP: "<<aIP<<endl;
 
 	   mymap->insert(std::pair<uint32_t,string>(aID,aIP));
 	   
@@ -81,6 +82,8 @@ int ChordService::receiveReply(map<uint32_t,string>* mymap)
 		   break;
 	   }
     }
+	
+	
 }
 
 void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
