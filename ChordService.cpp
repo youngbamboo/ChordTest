@@ -81,7 +81,7 @@ int ChordService::receiveReply(map<uint32_t,string>* mymap)
 		   break;
 	   }
     }
-	
+	close(fd);
 	
 }
 
