@@ -10,6 +10,8 @@
 #include <openssl/evp.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <map>
 
 #include "Node.h"
 #include "ChordService.h"
@@ -30,15 +32,140 @@ ChordService::~ChordService()
 	preNode = NULL;
 }
 
+int ChordService::receiveReply(map<uint32_t,string>* mymap)
+{
+	int n, fd;
+    socklen_t cli_addr_len;
+    char buf[1024] = {0};
+    struct sockaddr_in servaddr, cliaddr;
 
+    if((fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+    {
+        printf("socket error!\n");
+        exit(0);
+    }
 
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    servaddr.sin_port = htons(this->getLocalNode()->getReceivePort());
 
+    if (bind(fd, (struct sockaddr *)&servaddr, sizeof(servaddr))<0)
+    {
+        perror("bind");
+        exit(-1);
+    }
+	time_t startTime;
+	time(&startTime);
+    while(1)
+    {
+       cli_addr_len = sizeof(cliaddr);
+       n =recvfrom(fd, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);
+       printf("%d\n", n);
+       cout<<buf<<endl;
+	   uint32_t aID = aoti(buf);
+	   cout<<"Recieve the id: "<< aID <<endl;
+	   char ipstr[INET6_ADDRSTRLEN];
+	   string aIP = inet_ntop(addr.ss_family,addr.ss_family == AF_INET?
+								((struct sockadd_in *)&cliaddr)->sin_addr:
+								((struct sockadd_in6 *)&cliaddr)->sin6_addr,
+								ipstr, sizeof ipstr);
+	   cout<<"From IP: "<<aIP<<endl;;
+
+	   mymap->insert(std::pair<uint32_t,string>(aID,aIP));
+	   
+	   time_t currentTime;
+	   time(&currentTime);
+	   if (difftime(currentTime,startTime)>5)
+	   {
+	       cout<<"sleep 5s is over"<<endl;
+		   break;
+	   }
+    }
+}
+
+void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
+{
+	uint32_t aID = this->getLocalNode()->getHashID();
+	string aIP = this->getLocalNode()->getIP();
+	for (int i=1;i++;i<=16)
+	{
+		fingerNodeList.push_back(aID+pow(2,i-1));
+		fingerSuccessorList.push_back(aID);
+		successorIPList.push_back(aIP);
+	}
+	if (themap==NULL || themap.size()==0)
+	{
+		//It's the first node
+		cout<<"It looks like I'm the first node"<<endl;
+		setPreNode(NULL);	
+		//std::list<uint32_t>::iterator fingerNodeit = fingerNodeList.begin();
+		//std::list<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
+		printFingerTable();
+	}
+	else
+	{
+		cout<<"There are nodes in the ring"<<endl;
+		//Something in the ring.
+		
+		std::map<uint32_t,string>::iterator it = themap->begin();
+	
+		for (it=themap.begin(); it!=themap.end(); ++it)
+		{
+			uint32_t tmpID = it->first;
+			string tmpIP = it->second;
+    		cout << tmpID << " => " << tmpID << '\n';
+			int i=0;
+			while (i<16)
+			{
+				if (tmpID>fingerNodeList[i])
+				{
+					if (i==15)
+					{
+						//Last colunme
+						fingerSuccessorList[i]=tmpID;
+						successorIPList[i]=tmpIP;
+					}
+					i++;
+					continue;
+				}
+				else
+				{
+					//update (i-1) colume
+					fingerSuccessorList[i-1]=tmpID;
+					successorIPList[i-1]=tmpIP;
+				}
+			}
+			printFingerTable();
+			
+		}
+	}
+	
+}
+
+void ChordService::printFingerTable()
+{
+	cout<<"Finger Size: "<<endl;
+	cout<<"Node: "<<fingerNodeList.size()<<endl;
+	cout<<"Successor: "<<fingerSuccessorList.size()<<endl;
+	cout<<"IP: "<<successorIPList.size()<<endl;
+	
+	std::list<uint32_t>::iterator fingerNodeit = fingerNodeList.begin();
+	std::list<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
+	std::list<string>::iterator successorIPListit = successorIPList.begin();
+	for (;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerNodeList.end()&&successorIPListit!=successorIPList.end();
+			fingerNodeit++,fingerSuccessorit,successorIPListit)
+	{
+		cout<<*fingerNodeit<<" "<<*fingerSuccessorit<<" "<<*successorIPListit<<endl;
+	}
+}
 
 int main(int argc, char* argv[])
 {
 	ChordService* myService = new ChordService();
 	
 	//1. Send the broadcast first with my HashID
+	//pthread_t listen_reply_thread;
+	//int rc= pthread_create(&listen_reply_thread, NULL, receiveReply, NULL);
     
     string broadcastName="255.255.255.255";
     int sockfd;
@@ -77,11 +204,25 @@ int main(int argc, char* argv[])
     }
     printf("sent %d bytes to %s\n", numbytes, inet_ntoa(their_addr.sin_addr));
     close(sockfd);
+	std::map<uint32_t,string>* mymap = NULL;
 
-	//2.  Wait for the response.
-	//3.  First Node in the ring. There is no preNode. 
-	//myService->setPreNode(NULL);
-	//3.1 Build the finger table.
+	myService->receiveReply(mymap);
+	
+	myService->buildFingerTable(mymap);
+
+	delete mymap;
+	mymap=NULL;
+
+	//Initialization is finished.
+
+	while (1)
+	{
+		//This machine only listens the port 10000, where broadcast of the new node will be received.
+		//Then send its id and update its own fingertable.
+		//It's based on the asumption that each node is added one by one.
+	}
+
+	
 	
 	/*int n, fd;
     socklen_t cli_addr_len;

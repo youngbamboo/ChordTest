@@ -10,6 +10,8 @@
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <list>
+
 
 using namespace std;
 
@@ -18,14 +20,21 @@ class Node {
 		Node();
 		~Node();
 		inline int getBroadcastPort() {return myBroadcastPort;};
+		inline int getReceivePort() {return myReceivePort;};
 		inline string getIP() {return myIP;};
+		inline string getHostName() {return myHostName;};
 		uint32_t buildHashID();
 		inline uint32_t getHashID() {return myID;};
+		void setReplyList(list<uint32_t>* theList);
 	private:
 		string myHostName;
 		string myIP;
 		uint32_t myID;
 		const int myBroadcastPort;
+		const int myReceivePort;
+
+		
+		
 	
 			
 			
