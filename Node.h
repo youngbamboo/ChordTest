@@ -21,6 +21,7 @@ class Node {
 		~Node();
 		inline int getBroadcastPort() {return myBroadcastPort;};
 		inline int getReceivePort() {return myReceivePort;};
+		inline int getClientPort() {return myClientPort;};
 		inline string getIP() {return myIP;};
 		inline string getHostName() {return myHostName;};
 		uint32_t buildHashID();
@@ -32,6 +33,7 @@ class Node {
 		uint32_t myID;
 		const int myBroadcastPort;
 		const int myReceivePort;
+		const int myClientPort;
 
 		
 		

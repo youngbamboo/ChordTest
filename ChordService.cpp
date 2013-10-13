@@ -47,7 +47,7 @@ int ChordService::receiveReply(map<uint32_t,string>* mymap)
 
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port = htons(this->getLocalNode()->getReceivePort());
+    servaddr.sin_port = htons(this->getLocalNode()->getBroadcastPort());
 
     if (bind(fd, (struct sockaddr *)&servaddr, sizeof(servaddr))<0)
     {
@@ -220,6 +220,7 @@ int main(int argc, char* argv[])
 	//ClientSocket: Listen the 9999 to receive the key-value data. 
 
 	int clientSocket, chordSocket;
+	
 	if((clientSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){
         cerr<<"Error when initializing client socket"<<endl;
         exit(1);
@@ -231,6 +232,16 @@ int main(int argc, char* argv[])
     }
 
 	struct sockaddr_in clientUDP,chordUDP;
+
+    memset((char*)&clientUDP, 0, sizeof(clientUDP));
+    clientUDP.sin_family = AF_INET;
+    clientUDP.sin_port = htons(this->getLocalNode()->getClientPort());
+    clientUDP.sin_addr.s_addr = htonl(INADDR_ANY);
+
+    memset((char*)&chordUDP, 0, sizeof(chordUDP));
+    chordUDP.sin_family = AF_INET;
+    chordUDP.sin_port = htons(this->getLocalNode()->getBroadcastPort());
+    chordUDP.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	if(bind(clientSocket, (struct sockaddr*) &clientUDP, sizeof(clientUDP)) == -1){
         generalInfoLog("Bind failed for server socket \n");
@@ -262,7 +273,7 @@ int main(int argc, char* argv[])
 		//Then send its id and update its own fingertable.
 		//It's based on the asumption that each node is added one by one.
 		read_fds = master;
-		activity = select( max_sd + 1 , &readfds , NULL , NULL , NULL);
+		activity = select( fdmax + 1 , &read_fds , NULL , NULL , NULL);
 		if ((activity < 0) && (errno!=EINTR)) 
         {
             cerr<<"select error"<<endl;
@@ -273,6 +284,8 @@ int main(int argc, char* argv[])
 			{
 				if(i == chordSocket)
 				{
+					cout<<"Received broadcast message"<<endl;
+					struct sockaddr_in cliaddr;
 					socklen_t cli_addr_len;
 					cli_addr_len = sizeof(cliaddr);
                     int newfd =recvfrom(fd, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);              
@@ -284,7 +297,27 @@ int main(int argc, char* argv[])
                								((struct sockadd_in *)&cliaddr)->sin_addr:
                								((struct sockadd_in6 *)&cliaddr)->sin6_addr,
                								ipstr, sizeof ipstr);
-               	    cout<<"From IP: "<<aIP<<endl;;
+               	    cout<<"From IP: "<<aIP<<endl;
+
+					std::map<uint32_t,string>* mymap=NULL;
+					mymap->insert(std::pair<uint32_t,string>(aID,aIP));
+	
+					myService->buildFingerTable(mymap);
+
+					delete mymap;
+					mymap=NULL;
+
+					if (!fork()) 
+					{ // this is the child process
+						close(sockfd); // child doesn't need the listener
+						string myID = std::to_string(myService->getLocalNode()->getHashID());
+						if (send(newfd, myID.c_str(), myID.legnth(), 0) == -1)
+						{
+								cout<<"send back with my id: "<<myID<<endl;
+						}
+						close(newfd);
+					}
+					close(newfd);
 					
 				}
 				else if (i == clientSocket)
