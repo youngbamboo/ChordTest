@@ -24,6 +24,16 @@ using namespace std;
 ChordService::ChordService():localNode(NULL),preNode(NULL)
 {
 	localNode = new Node();
+	cout<<"Initialize finger table"<<endl;
+	uint32_t aID = this->getLocalNode()->getHashID();
+	string aIP = this->getLocalNode()->getIP();
+	for (int i=1;i<=16;i++)
+    {
+        fingerNodeList.push_back(aID+pow(2,i-1));
+        fingerSuccessorList.push_back(aID);
+        successorIPList.push_back(aIP);
+    }
+	printFingerTable();
 }
 
 ChordService::~ChordService()
@@ -187,16 +197,6 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 		//It's the first node
 		cout<<"It looks like I'm the first node"<<endl;
 		setPreNode(NULL);	
-		//std::list<uint32_t>::iterator fingerNodeit = fingerNodeList.begin();
-		//std::list<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
-
-        for (int i=1;i<=16;i++)
-        {
-            fingerNodeList.push_back(aID+pow(2,i-1));
-            fingerSuccessorList.push_back(aID);
-            successorIPList.push_back(aIP);
-        }
-		printFingerTable();
 	}
 	else
 	{
