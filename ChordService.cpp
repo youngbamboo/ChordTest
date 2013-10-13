@@ -221,10 +221,9 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 			for(;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			fingerNodeit++,fingerSuccessorit++,successorIPListit++)
 			{
-                //cerr<"1"<<endl;
-				if (tmpID>(*fingerNodeit))
+				if (tmpID<(*fingerNodeit))
 				{
-                    //cerr<"2"<<endl;
+            
 					if (i==15)
 					{
                       //  cerr<"3"<<endl;
