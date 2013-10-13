@@ -67,7 +67,7 @@ int ChordService::receiveReply(map<uint32_t,string>* mymap)
 	   uint32_t aID = atoi(buf);
 	   cout<<"Recieve the id: "<< aID <<endl;
 	   char ipstr[INET6_ADDRSTRLEN];
-	   string aIP = inet_ntop(cliaddr.ai_family,get_in_addr((struct sockaddr *)cliaddr.ai_family,
+	   string aIP = inet_ntop((struct sockaddr)cliaddr.ai_family,get_in_addr((struct sockaddr)cliaddr.ai_family,
 								ipstr, sizeof ipstr);
 	   cout<<"From IP: "<<aIP<<endl;
 
