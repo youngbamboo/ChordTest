@@ -14,6 +14,7 @@
 #include <map>
 #include <math.h>
 
+
 #include "Node.h"
 #include "ChordService.h"
 
@@ -33,7 +34,7 @@ ChordService::~ChordService()
 	preNode = NULL;
 }
 
-int ChordService::receiveReply(map<uint32_t,string>* mymap)
+void* ChordService::receiveReply(map<uint32_t,string>* mymap)
 {
 	cout<<"receiveReply: Waiting for reply..."<<endl;
 	int n, fd;
@@ -63,7 +64,6 @@ int ChordService::receiveReply(map<uint32_t,string>* mymap)
 		cout<<"wait..."<<endl;
        cli_addr_len = sizeof(cliaddr);
        n =recvfrom(fd, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);
-       printf("%d\n", n);
        cout<<buf<<endl;
 	   uint32_t aID = atoi(buf);
 	   cout<<"Recieve the id: "<< aID <<endl;
@@ -73,7 +73,7 @@ int ChordService::receiveReply(map<uint32_t,string>* mymap)
 	   cout<<"From IP: "<<aIP<<endl;
 
 	   mymap->insert(std::pair<uint32_t,string>(aID,aIP));
-	   
+	   /*
 	   time_t currentTime;
 	   time(&currentTime);
 	   if (difftime(currentTime,startTime)>5)
@@ -81,6 +81,7 @@ int ChordService::receiveReply(map<uint32_t,string>* mymap)
 	       cout<<"sleep 5s is over"<<endl;
 		   break;
 	   }
+	   */
     }
 	close(fd);
 	
@@ -237,8 +238,13 @@ int main(int argc, char* argv[])
     printf("sent %d bytes to %s\n", numbytes, inet_ntoa(their_addr.sin_addr));
     close(sockfd);
 	std::map<uint32_t,string>* mymap = NULL;
+	pthread_t thread;
+	rc = pthread_create(&thread, NULL, receiveReply, (void *)mymap);
+	sleep(50);
 
-	myService->receiveReply(mymap);
+	pthread_exit(NULL);
+
+	//myService->receiveReply(mymap);
 	
 	myService->buildFingerTable(mymap);
 

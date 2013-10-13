@@ -24,14 +24,15 @@ class ChordService {
 		inline Node* getPreNode() {return this->preNode;};
 		inline void setPreNode(Node* theNode) {this->preNode=theNode;};
 		void buildFingerTable(std::map<uint32_t,string>* themap);
-		int receiveReply(std::map<uint32_t,string>* themap);
+		//int receiveReply(std::map<uint32_t,string>* themap);
 	private:
 		Node* localNode;
 		Node* preNode;
 		list<uint32_t> fingerNodeList;
 		list<uint32_t> fingerSuccessorList;
-		list<string> successorIPList;	
-
+		list<string> successorIPList;
+		void* receiveReply(std::map<uint32_t,string>* themap);
+ 
 		void printFingerTable();
 };
 
