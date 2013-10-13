@@ -37,7 +37,87 @@ ChordService::~ChordService()
 
 int ChordService::receiveReply(std::map<uint32_t,string>* themap)
 {
+	cout<<"receiveReply: Waiting for reply..."<<endl;
+	int n, fd;
+	
+	if((fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+    {
+        cerr<<"socket error!"<<endl;
+        exit(1);
+    } 
+
+	struct sockaddr_in servaddr, cliaddr;
+
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    servaddr.sin_port = htons(10000);
+
+	fd_set read_fds, master; // set of read fds.
+
+    FD_ZERO(&read_fds); // clear the read fd set
+    FD_ZERO(&master); // clear the read fd set
+
+	FD_SET(fd, &read_fds);
     
+
+	int fdmax = fd;
+
+	master = read_fds;
+
+	int activity;
+	time_t startTime;
+	time(&startTime);
+	while (1)
+	{
+		read_fds = master;
+		activity = select( fdmax + 1 , &read_fds , NULL , NULL , NULL);
+		if ((activity < 0) && (errno!=EINTR)) 
+        {
+            cerr<<"select error"<<endl;
+        }
+		for(int i = 0; i<=fdmax; i++)
+		{
+			if(FD_ISSET(i, &read_fds))
+			{
+				if(i == fd)
+				{
+					cli_addr_len = sizeof(cliaddr);
+       				
+    			    if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) 
+    			    {
+    			       perror("Error");
+    			    }
+    			    n =recvfrom(fd, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);
+    			    if (n>0)
+    			    {
+    			        cout<<buf<<endl;
+    				    uint32_t aID = atoi(buf);
+    				    cout<<"Recieve the id: "<< aID <<endl;
+    				    char ipstr[INET6_ADDRSTRLEN];
+    				   // string aIP = inet_ntop(cliaddr.ai_family,get_in_addr(cliaddr.ai_family,ipstr, sizeof ipstr);
+    			        string aIP=inet_ntoa(cliaddr.sin_addr);
+    				    cout<<"From IP: "<<aIP<<endl;
+    			        ((std::map<uint32_t,string>*)themap)->insert(std::pair<uint32_t,string>(aID,aIP));
+    			    }
+    			    else
+    			    {
+    			        //cout<<"Nothing received"<<endl;
+    			    }
+    				time_t currentTime;
+    				time(&currentTime);
+    				if (difftime(currentTime,startTime)>5)
+    				{
+    				    cout<<"sleep 5s is over"<<endl;
+    			        close(fd);
+    				    break;
+    				}											
+					
+				}
+				
+			}
+		}
+	}
+    /*
 	cout<<"receiveReply: Waiting for reply..."<<endl;
 	int n, fd;
     socklen_t cli_addr_len;
@@ -97,6 +177,7 @@ int ChordService::receiveReply(std::map<uint32_t,string>* themap)
 	   }
 	   
     }
+    */
 }
 
 void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
