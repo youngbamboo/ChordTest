@@ -143,23 +143,27 @@ void setSystemParam()
     }
 }
 
-// Format: "key//value" Simple only for test usage
-void sendRequestToServer(string receiverIP,string key, string value)
+
+void sendRequestToServer(string receiverIP,string key, string value, string clientIP)
 {
     ClientRequest* req = new ClientRequest;
+	string initialNode_fake="65536";
+	
 	req->key_length=key.length();
 	req->value_length=value.length();
-	req->initialNode_length=sizeof uint_32;
+	req->initialNode_length=initialNode_fake.length();
+	req->clientIP_length=clientIP.length();
 	
 	char* msgBuffer = NULL;
 	long messageLen = 0;
-	messageLen = key.length() + value.length()+ (sizeof uint_32);
+	messageLen = sizeof(ClientRequest) +  key.length() + value.length()+ (sizeof uint_32) + clientIP.length();
 	
 	msgBuffer = new char[messageLen];
-	uint32_t initialNode_fake=65536;
-	memcpy(msgBuffer,key.c_str(),key.length());
-	memcpy(msgBuffer+key.length(),value.c_str(),value.length());
-	memcpy(msgBuffer+key.length()+value.length(),initialNode_fake,(sizeof uint_32));
+	memcpy(msgBuffer,req,sizeof(ClientRequest));
+	memcpy(msgBuffer+sizeof(ClientRequest),initialNode_fake.c_str(),initialNode_fake.length());
+	memcpy(msgBuffer+sizeof(ClientRequest)+initialNode_fake.length(),key.c_str(),key.length());
+	memcpy(msgBuffer+sizeof(ClientRequest)+initialNode_fake.length()+key.length(),value,value.length());
+	memcpy(msgBuffer+sizeof(ClientRequest)+key.length()+value.length()+initialNode_fake.length(),clientIP,clientIP.length());
 	
 	struct sockaddr_in receiverAddr;
 
@@ -251,7 +255,7 @@ int main(int argc,char **argv)
                     cin>>serverIP;
 
                                     	
-                    sendRequestToServer(serverIP,key,value);
+                    sendRequestToServer(serverIP,key,value,selfIP);
                     int result = recieveMessageFromServer();
                     
                     if(result == 1)

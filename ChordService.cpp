@@ -286,11 +286,27 @@ void ChordService::printFingerTable()
 	}
 }
 
-// Format: "key//value" Simple only for test usage
-void sendRequestToServer(string receiverIP,string data)
+void ChordService::sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode)
 {
-   
-    struct sockaddr_in receiverAddr;
+    ClientRequest* req = new ClientRequest;
+	
+	req->key_length=key.length();
+	req->value_length=value.length();
+	req->initialNode_length=initNode.length();
+	req->clientIP_length=clientIP.length();
+	
+	char* msgBuffer = NULL;
+	long messageLen = 0;
+	messageLen = sizeof(ClientRequest) + key.length() + value.length()+ initNode.length() + clientIP.length();
+	
+	msgBuffer = new char[messageLen];
+	memcpy(msgBuffer,req,sizeof(ClientRequest));
+	memcpy(msgBuffer+sizeof(ClientRequest),initNode.c_str(),initNode.length());
+	memcpy(msgBuffer+sizeof(ClientRequest)+initNode.length(),key.c_str(),key.length());
+	memcpy(msgBuffer+sizeof(ClientRequest)+initNode.length()+key.length(),value,value.length());
+	memcpy(msgBuffer+sizeof(ClientRequest)+key.length()+value.length()+initNode.length(),clientIP,clientIP.length());
+	
+	struct sockaddr_in receiverAddr;
 
     memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
     receiverAddr.sin_family = AF_INET;
@@ -302,7 +318,7 @@ void sendRequestToServer(string receiverIP,string data)
         exit(1);
     }
 
-    if(sendto(client_sockfd, data.c_str(), data.length(), 0,
+    if(sendto(client_sockfd, msgBuffer, messageLen, 0,
                 (struct sockaddr*) &receiverAddr, sizeof(receiverAddr)) == -1)
     {
 
@@ -314,6 +330,7 @@ void sendRequestToServer(string receiverIP,string data)
     }
 
 }
+
 
 //request should be sent here
 //Return 0 failed, 1 success
@@ -334,14 +351,14 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 	}
 	else if (initNode!=65536)
 	{
-		if (initNode<thekey)
+		if (thekey>initNode)
 		{
 			if (localID>thekey)
 			{
 				return 1;
 			}
 		}
-		if (initNode>thekey)
+		if (thekey<initNode)
 		{
 			if (localID>thekey&&localID<initNode)
 			{
@@ -362,6 +379,20 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 			}
 			else if ((*fingerSuccessorit)>thekey)
 			{
+				if((*fingerSuccessorit)==successorIPList.front())
+				{
+					//My first successor is bigger than key, choose between local and successor
+					uint32_t firstSuccessor = *fingerSuccessorit;
+					if ((thekey-localID)<=(firstSuccessor-thekey))
+					{
+						return 1;
+					}
+					else
+					{
+						theIP=*successorIPListit;
+						return 0;
+					}
+				}
 				uint32_t thisNode = *fingerSuccessorit;
 				uint32_t lastNode = *(--fingerSuccessorit);
 				if ((thekey-lastnode)>(thisnode-thekey))
@@ -383,39 +414,104 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 		return 0;
 	}
 	if (theKey<initNode)
-	{
+	{		
 		for (;fingerSuccessorit!=fingerNodeList.end()&&successorIPListit!=successorIPList.end();
 			fingerSuccessorit++,successorIPListit++)
 		{
+			if((*fingerSuccessorit)==localNode)
+			{
+				//only myself in the ring
+				return 1;
+			}
 			if((*fingerSuccessorit)==thekey)
 			{
 				theIP=*successorIPListit;
 				return 0;
 			}
-			else if ((*fingerSuccessorit)<=initNode)
+			else if (localNode<=65535&&(*fingerSuccessorit)<localNode)
 			{
-				if ((*fingerSuccessorit)>=thekey)
+				else if ((*fingerSuccessorit)<=initNode)
 				{
-					uint32_t thisNode = *fingerSuccessorit;
-					
-					if ((thekey-localNode)>(thisNode-thekey))
+					if ((*fingerSuccessorit)>=thekey 
+						||(*fingerSuccessorit)>=initNode )
 					{
-						theIP = *successorIPListit;
-						return 0;
-					}
-					else
-					{
-						return 1;
+						if((*fingerSuccessorit)==successorIPList.front())
+						{
+							//My first successor is bigger than key, choose between local and successor
+							uint32_t firstSuccessor = *fingerSuccessorit;
+							if (localID>initNode)
+							{
+								if((65535-localID+thekey)<=(firstSuccessor-thekey))
+								{
+									return 1;
+								}
+								else
+								{
+									theIP=*successorIPListit;
+									return 0;
+								}
+							}
+							else
+							{
+								if((thekey-localID)<=(firstSuccessor-thekey))
+								{
+									return 1;
+								}
+								else
+								{
+									theIP=*successorIPListit;
+									return 0;
+								}
+							}
+							
+						}
+						uint32_t thisNode = *fingerSuccessorit;
+						uint32_t lastNode = *(--fingerSuccessorit);
+						if (lastNode>initNode)
+						{
+							if((65535-lastNode+thekey)<=(thisNode-thekey))
+							{
+								return 1;
+							}
+							else
+							{
+								theIP=*successorIPListit;
+								return 0;
+							}
+						}
+						else
+						{
+							if((thekey-lastNode)<=(thisNode-thekey))
+							{
+								return 1;
+							}
+							else
+							{
+								theIP=*successorIPListit;
+								return 0;
+							}
+						}
+						
+						if ((thekey-localNode)>(thisNode-thekey))
+						{
+							theIP = *successorIPListit;
+							return 0;
+						}
+						else
+						{
+							return 1;
+						}
 					}
 				}
 			}
 			else
 			{
+				// one loop now. Needs to stop now...  
 				theIP=*successorIPListit;
 			}
-			
-			
+
 		}
+		return 0;
 	}
 	
 	//Not find correct node here. "compare" should be the most nearest one now. do something......
@@ -614,16 +710,14 @@ int main(int argc, char* argv[])
 						cout<<"Receive store request"<<endl;
 						
 	                    char* maxMessage = new char[1024];
-	                    struct sockaddr_in senderProcAddrUDP;
-
-	                    // To store the address of the process from whom a message is received
-	                    memset((char*)&senderProcAddrUDP, 0, sizeof(senderProcAddrUDP));
-	                    socklen_t senderLenUDP = sizeof(senderProcAddrUDP);
+	                    struct sockaddr_in cliaddr;
+						socklen_t cli_addr_len;
+						cli_addr_len = sizeof(cliaddr);
 	                        
 	                    int recvRet = 0;
 
 	                    recvRet = recvfrom(clientSocket, maxMessage, 1024,
-	                                0, (struct sockaddr*) &senderProcAddrUDP, &senderLenUDP);
+	                                0, (struct sockaddr*) &cliaddr, &cli_addr_len);
 
 	                    if(recvRet > 0)
 						{
@@ -631,60 +725,87 @@ int main(int argc, char* argv[])
 	                         //Format: "key//value"
 	                         ClientRequest* clientMsg = new ClientRequest;
 							 memcpy(clientMsg, maxMessage, sizeof(ClientRequest));
-							 char* aKey=new char[clientMsg->key_length+ 1];
-							 char* aValue=new char[clientMsg->value_length+1];
-							 char* a_init_node=new char[clientMsg->value_length+1];
-
-							 long len;
-							 memcpy(aKey, maxMessage, clientMsg->key_length); 
-							 aKey[clientMsg->key_length] = '\0';
-
+							 
+							 string data = maxMessage;
+						 
+							 long len=sizeof(ClientRequest);
+							 string initNode = data.substr(0+len,clientMsg->initialNode_length);
+							 
+							 len += clientMsg->initialNode_length;
+							 string key = data.substr(len,clientMsg->key_length);
+							 
 							 len += clientMsg->key_length;
-							 memcpy(aValue, maxMessage + len, clientMsg->value_length);
-							 aValue[clientMsg->value_length] = '\0';
+							 string value = data.substr(len,clientMsg->value_length);
 
-							 len += clientMsg->value_length;
-							 memcpy(a_init_node, maxMessage + len, clientMsg->initialNode_length);
-							 a_init_node[clientMsg->initialNode_length] = '\0';
+							 len +=clientMsg->value_length;
+							 string clientIP = data.substr(len,clientMsg->clientIP_length);
 
-							 string key = aKey;
-							 string value = aValue;
-							 string init_node = a_init_node;
+							 
 							 uint32_t theHash = myService->getLocalNode()->buildHashID(key);
+							
 							 
 							 cout<<"Message from client:"<<endl;
 							 cout<<"Key: "<<key<<endl;
 							 cout<<"Key hash: "<<theHash<<endl;
-							 cout<<"Value: "<<value<<endl;
-							 string theIP;
-							 uint32_t initNode= (uint32_t)atoi(init_node);
-							 if (initNode==65536)
-							 {
-							 	initNode=myService->getLocalNode()->getHashID();
-							 }
-							 int result = lookupFingerTable(theHash,theIP,initNode);
-	                         
+							 cout<<"Value: "<<value<<endl;							 
+							 cout<<"Client IP: "<<aClientip<<endl;
 
-							
-							 if (found!=std::string::npos)
+							 string theNextNodeIP;
+							 
+							 if (initNode=="65536")
 							 {
-							 	
-								//Then find the right node to store...
-								string theIP;
-								int result = lookupFingerTable(theHash,theIP);
-								if (result==1)
-								{
-									//store the data here
+								string initNode = std::to_string(theHash);
+							 }
+							 int result = myService->lookupFingerTable(theHash,theNextNodeIP,atoi(initNode));
+							 if(result==1)
+							 {
+							 	//store data
+							 	//send back to client
+									 	
+								cout<<"Send successful response message"<<endl;
+								
+								              
+
+								
+
+								if (!fork()) 
+								{ // this is the child process
+									//close(sockfd); // child doesn't need the listener
+									string result="1";
+			                        int numbytes;
+			                        int sendfd;
+			                        if ((sendfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+			                        {
+			                            cerr<<"socket error"<<endl;
+			                            exit(1);
+			                        }
+			                        cliaddr.sin_port = htons(9999);
+			                        if ((numbytes=sendto(sendfd, result.c_str(), result.length(), 0,
+			                                                (struct sockaddr *)&cliaddr, sizeof cliaddr)) == -1) 
+			                        {
+			                            cerr<<"send error"<<endl;
+			                            exit(1);
+			                        }
+			                        else
+			                        {
+			                            cout<<"send back with my id: "<<myID<<endl;
+
+			                        }
+									close(sendfd);
 								}
-								else
-								{
-									
-								}
+								close(recvRet);
 							 }
 							 else
 							 {
-							 	cerr<<"Put message from client is not right"<<endl;
+							 	//send to the next node.
+							 	sendRequestToServer(theNextNodeIP,key, value, clientIP, initNode);
 							 }
+	                         
+
+							
+							 
+							 
+							
 
 	                     }
 	                     else{
