@@ -334,9 +334,38 @@ void sendRequestToServer(string receiverIP,string data)
 }
 
 //request should be sent here
-int lookupFingerTable()
+//Return 0 failed, 1 success
+int lookupFingerTable(uint32_t thekey, string& theIP)
 {
+	//First check my node...
+	std::list<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
+	std::list<string>::iterator successorIPListit = successorIPList.begin();
+	uint32_t compare = 65535;
+	uint32_t tmpNode;
+	string tmpIP;
+	for (;fingerSuccessorit!=fingerNodeList.end()&&successorIPListit!=successorIPList.end();
+			fingerSuccessorit++,successorIPListit++)
+	{
+		uint32_t tmp=abs(thekey-(*fingerSuccessorit));
+		if(tmp>0 && tmp<compare)
+		{
+			compare=tmp;
+			tmpNode=*fingerSuccessorit;
+			tmpIP=*successorIPListit;
+		}
+		else if (tmp==0)
+		{
+			//Find it... return or do something...
+			return 1;
+		}
 		
+	}
+	//Not find correct successor node here. "compare" should be the most nearest one now. do something......
+
+	//We need to send this request with key and value to tmpIP.
+	theIP=tmpIP;
+	return 0;
+	
 }
 
 int main(int argc, char* argv[])
@@ -556,6 +585,8 @@ int main(int argc, char* argv[])
 								cout<<"Key: "<<key<<endl;
 								cout<<"Key hash: "<<theHash<<endl;
 								cout<<"Value: "<<value<<endl;
+								//Then find the right node to store...
+								lookupFingerTable(theHash);
 							 }
 							 else
 							 {
