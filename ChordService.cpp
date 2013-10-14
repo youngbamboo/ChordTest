@@ -152,14 +152,16 @@ int ChordService::receiveReply(std::map<uint32_t,string>* themap)
     while(1)
     {
        cli_addr_len = sizeof(cliaddr);
-       struct timeval tv;
+		/*
+	   struct timeval tv;
        tv.tv_sec = 0;
        tv.tv_usec = 500000;//500ms
        if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) 
        {
           perror("Error");
        }
-       n =recvfrom(fd, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);
+	   */
+       n =recvfrom(fd, buf, 1024, MSG_DONTWAIT, (struct sockaddr *)&cliaddr, &cli_addr_len);
        if (n>0)
        {
            cout<<buf<<endl;

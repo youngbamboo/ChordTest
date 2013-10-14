@@ -39,6 +39,7 @@
 using namespace std;
 
 const int CLIENT_PORT = 9999;
+const int MAX_MSG_SIZE = 1024;
 
 /* Get current time. */
 struct timeval* get_now( struct timeval *time) {
@@ -97,7 +98,7 @@ void helperLS(char* maxMessage, int numParam)
 
 
 
-int recieveOutputFromServer(string commandName)
+int recieveOutputFromServer()
 {
     struct timeval time_start,time_curr;
     get_now(&time_start);							
@@ -114,9 +115,7 @@ int recieveOutputFromServer(string commandName)
         memset((char*)&senderProcAddrUDP, 0, sizeof(senderProcAddrUDP));
         socklen_t senderLenUDP = sizeof(senderProcAddrUDP);
 
-
-        int recvRet = 0;
-        
+        int recvRet = 0;      
 
         recvRet = recvfrom(client_sockfd, maxMessage, MAX_MSG_SIZE,
                 MSG_DONTWAIT, (struct sockaddr*) &senderProcAddrUDP, &senderLenUDP);
@@ -253,50 +252,31 @@ void setSystemParam()
     }
 }
 
-
-void sendRequestToServer(string commandName,string receiverIP,string filename,string data,string myIP)
+// Format: "key//value" Simple only for test usage
+void sendRequestToServer(string receiverIP,string data)
 {
-    //Create a client request
-    ClientRequest* req = new ClientRequest;
-    req->type = CLIENT_REQ;
-    req->lengthFileName = filename.length();
-    req->lengthCommandName = commandName.length();
-    req->lengthFileData = data.length();
-    req->lengthClientIP= myIP.length();
-
-    char* msgBuffer = NULL;
-    long messageLen = 0;
-    messageLen = sizeof(ClientRequest) + filename.length() + commandName.length() + data.length() + myIP.length();
-
-    msgBuffer = new char[messageLen];
-    memcpy(msgBuffer,req,sizeof(ClientRequest));
-    memcpy(msgBuffer+sizeof(ClientRequest),filename.c_str(),filename.length());
-    memcpy(msgBuffer+sizeof(ClientRequest)+filename.length(),commandName.c_str(),commandName.length());
-    memcpy(msgBuffer+sizeof(ClientRequest)+filename.length()+commandName.length(),data.c_str(),data.length());
-    memcpy(msgBuffer+sizeof(ClientRequest)+filename.length()+commandName.length()+data.length(),myIP.c_str(),myIP.length());
-
+    
     struct sockaddr_in receiverAddr;
 
     memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
     receiverAddr.sin_family = AF_INET;
     receiverAddr.sin_port = htons(CLIENT_PORT);
 
-    if(inet_aton(receiverIP.c_str(), &receiverAddr.sin_addr) == 0){
-        printf("INET_ATON Failed\n");
+    if(inet_aton(receiverIP.c_str(), &receiverAddr.sin_addr) == 0)
+	{
+        cerr<<"INET_ATON Failed\n"<<endl;
         exit(1);
     }
 
-    if(sendto(client_sockfd, msgBuffer, messageLen, 0,
-                (struct sockaddr*) &receiverAddr, sizeof(receiverAddr)) == -1){
+    if(sendto(client_sockfd, data.c_str(), data.length(), 0,
+                (struct sockaddr*) &receiverAddr, sizeof(receiverAddr)) == -1)
+    {
 
-        fprintf(stderr, "Failed to send the message type %s to server: %s",
-                commandName.c_str(), receiverIP.c_str());
-        fflush(stderr);
+        cerr<<"Failed to send to "<<receiverIP<<" with data "<<data<<endl;
     }
-    else{
-        fprintf(stderr, "Successfully sent the message type %s to %s\n",
-                commandName.c_str(), receiverIP.c_str());
-        fflush(stderr);
+    else
+	{
+        cerr<<"Successfully send to "<<receiverIP<<" with data "<<data<<endl;
     }
 
 }
@@ -338,7 +318,7 @@ int main(int argc,char **argv)
     while(1)
     {
         cout<<"Please input: "<<endl;
-        cout<<"0 - put by key-value"<<endl;
+        cout<<"0 - put key-value one by one"<<endl;
         cout<<"1 - put by file"<<endl;
         cout<<"2 - get by key"<<endl;
         cout<<"3 - delete by key"<<endl;
@@ -349,25 +329,30 @@ int main(int argc,char **argv)
         {
             case 0:
                 {
-                    cout<< "You selected put"<<endl;
-                    cout<< "Please enter the file name"<<endl;
+                    cout<< "You selected put key-value one by one"<<endl;
+                    cout<< "Please enter the key"<<endl;
 
-                    string filename;
-                    cin>>filename;
+                    string key;
+                    cin>>key;
 
-                    cout<< "Please enter the IP address of the server"<<endl;
+					cout<< "Please enter the value"<<endl;
+
+                    string value;
+                    cin>>value;
+
+                    cout<< "Please enter the server ip"<<endl;
 
                     string serverIP;
                     cin>>serverIP;
 
-                    string data = DATA;				
-                    string commandName = PUT;		
+                    string data = key+"//"+value;				
+                	
                     
                     struct timeval time_start,time_curr;
                     get_now(&time_start);							
 
-                    sendRequestToServer(commandName,serverIP,filename,data,selfIP);
-                    int result = recieveOutputFromServer(commandName);
+                    sendRequestToServer(serverIP,data);
+                    int result = recieveOutputFromServer();
 
                     get_now(&time_curr);
                     
