@@ -18,6 +18,8 @@
 
 #include "Node.h"
 #include "ChordService.h"
+#include "ClientMessage.h"
+
 
 using namespace std;
 
@@ -211,12 +213,19 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 		std::list<string>::iterator successorIPListit;
 			
 		std::map<uint32_t,string>::iterator it = themap->begin();
-	
+		uint32_t preID =it->first;
 		for (it=themap->begin(); it!=themap->end(); ++it)
 		{
 			uint32_t tmpID = it->first;
 			string tmpIP = it->second;
     		cout << tmpID << " => " << tmpIP << endl;
+			if (tmpID<aID)
+			{
+				if (tmpID>preID)
+				{
+					preID=tmpID;
+				}
+			}
 			fingerNodeit = fingerNodeList.begin();
 			fingerSuccessorit = fingerSuccessorList.begin();
 			successorIPListit = successorIPList.begin();
@@ -231,18 +240,6 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 						*fingerSuccessorit=tmpID;
 						*successorIPListit=tmpIP;
 					}
-            		/*
-					if (i==15)
-					{
-                      //  cerr<"3"<<endl;
-						//Update Last column.
-						//Needs to make sure the original successor bigger than tmpID. Then replace it...
-						if(*fingerSuccessorit>tmpID)
-						{
-							*fingerSuccessorit=tmpID;
-							*successorIPListit=tmpIP;
-						}
-					}*/
 				}
 				else
 				{
@@ -258,28 +255,13 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 					}
 					//It is bigger than the (i-1) column
 					//But if it's the first node...
-					/*if (i!=0)
-					{
-                      //  cerr<"5"<<endl;
-						//Needs to make sure the original successor bigger than tmpID. Then replace it...
-                        fingerSuccessorit--;
-                        successorIPListit--;
-						if (*fingerSuccessorit==0 || *fingerSuccessorit>tmpID)
-						{
-							*fingerSuccessorit=tmpID;
-							*successorIPListit=tmpIP;
-						}
-						else
-						{
-							//No else...
-						}
-                        fingerSuccessorit++;
-                        successorIPListit++;
-					}*/
 				}
 				i++;
 			}
-			
+			if (preID<aID)
+			{
+				//Find the PreNode.
+			}
 			printFingerTable();
 			
 		}
@@ -307,7 +289,7 @@ void ChordService::printFingerTable()
 // Format: "key//value" Simple only for test usage
 void sendRequestToServer(string receiverIP,string data)
 {
-   /* 
+   
     struct sockaddr_in receiverAddr;
 
     memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
@@ -330,12 +312,12 @@ void sendRequestToServer(string receiverIP,string data)
 	{
         cerr<<"Successfully send to "<<receiverIP<<" with data "<<data<<endl;
     }
-*/
+
 }
 
 //request should be sent here
 //Return 0 failed, 1 success
-int lookupFingerTable(uint32_t thekey, string& theIP)
+int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t initNode)
 {
 	//First check my node...
 	std::list<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
@@ -343,24 +325,100 @@ int lookupFingerTable(uint32_t thekey, string& theIP)
 	uint32_t compare = 65535;
 	uint32_t tmpNode;
 	string tmpIP;
-	for (;fingerSuccessorit!=fingerNodeList.end()&&successorIPListit!=successorIPList.end();
-			fingerSuccessorit++,successorIPListit++)
+	uint32_t localID = myService->getLocalNode()->getHashID();
+	
+
+	if (thekey==localID)
+	{ 
+		return 1;
+	}
+	else if (initNode!=65536)
 	{
-		uint32_t tmp=abs(thekey-(*fingerSuccessorit));
-		if(tmp>0 && tmp<compare)
+		if (initNode<thekey)
 		{
-			compare=tmp;
-			tmpNode=*fingerSuccessorit;
-			tmpIP=*successorIPListit;
+			if (localID>thekey)
+			{
+				return 1;
+			}
 		}
-		else if (tmp==0)
+		if (initNode>thekey)
 		{
-			//Find it... return or do something...
-			return 1;
+			if (localID>thekey&&localID<initNode)
+			{
+				return 1;
+			}
 		}
 		
 	}
-	//Not find correct successor node here. "compare" should be the most nearest one now. do something......
+	if (theKey>initNode)
+	{
+		for (;fingerSuccessorit!=fingerNodeList.end()&&successorIPListit!=successorIPList.end();
+			fingerSuccessorit++,successorIPListit++)
+		{
+			if((*fingerSuccessorit)==thekey)
+			{
+				theIP=*successorIPListit;
+				return 0;
+			}
+			else if ((*fingerSuccessorit)>thekey)
+			{
+				uint32_t thisNode = *fingerSuccessorit;
+				uint32_t lastNode = *(--fingerSuccessorit);
+				if ((thekey-lastnode)>(thisnode-thekey))
+				{
+					theIP = *successorIPListit;
+					return 0;
+				}
+				else
+				{
+					theIP = *(--successorIPListit);
+					return 0;
+				}
+			}
+			else 
+			{
+				theIP=*successorIPListit;
+			}
+		}
+		return 0;
+	}
+	if (theKey<initNode)
+	{
+		for (;fingerSuccessorit!=fingerNodeList.end()&&successorIPListit!=successorIPList.end();
+			fingerSuccessorit++,successorIPListit++)
+		{
+			if((*fingerSuccessorit)==thekey)
+			{
+				theIP=*successorIPListit;
+				return 0;
+			}
+			else if ((*fingerSuccessorit)<=initNode)
+			{
+				if ((*fingerSuccessorit)>=thekey)
+				{
+					uint32_t thisNode = *fingerSuccessorit;
+					
+					if ((thekey-localNode)>(thisNode-thekey))
+					{
+						theIP = *successorIPListit;
+						return 0;
+					}
+					else
+					{
+						return 1;
+					}
+				}
+			}
+			else
+			{
+				theIP=*successorIPListit;
+			}
+			
+			
+		}
+	}
+	
+	//Not find correct node here. "compare" should be the most nearest one now. do something......
 
 	//We need to send this request with key and value to tmpIP.
 	theIP=tmpIP;
@@ -571,31 +629,63 @@ int main(int argc, char* argv[])
 						{
 	                         // It's a put key-value message
 	                         //Format: "key//value"
-	                         string key;
-							 string value;
-							 string tmpResult = maxMessage;
+	                         ClientRequest* clientMsg = new ClientRequest;
+							 memcpy(clientMsg, maxMessage, sizeof(ClientRequest));
+							 char* aKey=new char[clientMsg->key_length+ 1];
+							 char* aValue=new char[clientMsg->value_length+1];
+							 char* a_init_node=new char[clientMsg->value_length+1];
 
-							 int found = tmpResult.find("//");
+							 long len;
+							 memcpy(aKey, maxMessage, clientMsg->key_length); 
+							 aKey[clientMsg->key_length] = '\0';
+
+							 len += clientMsg->key_length;
+							 memcpy(aValue, maxMessage + len, clientMsg->value_length);
+							 aValue[clientMsg->value_length] = '\0';
+
+							 len += clientMsg->value_length;
+							 memcpy(a_init_node, maxMessage + len, clientMsg->initialNode_length);
+							 a_init_node[clientMsg->initialNode_length] = '\0';
+
+							 string key = aKey;
+							 string value = aValue;
+							 string init_node = a_init_node;
+							 uint32_t theHash = myService->getLocalNode()->buildHashID(key);
+							 
+							 cout<<"Message from client:"<<endl;
+							 cout<<"Key: "<<key<<endl;
+							 cout<<"Key hash: "<<theHash<<endl;
+							 cout<<"Value: "<<value<<endl;
+							 string theIP;
+							 uint32_t initNode= (uint32_t)atoi(init_node);
+							 if (initNode==65536)
+							 {
+							 	initNode=myService->getLocalNode()->getHashID();
+							 }
+							 int result = lookupFingerTable(theHash,theIP,initNode);
+	                         
+
+							
 							 if (found!=std::string::npos)
 							 {
-							 	key = tmpResult.substr(0,found);
-								value = tmpResult.substr(found+2,tmpResult.length()-found-2);
-								uint32_t theHash = myService->getLocalNode()->buildHashID(key);
-								cout<<"Message from client:"<<endl;
-								cout<<"Key: "<<key<<endl;
-								cout<<"Key hash: "<<theHash<<endl;
-								cout<<"Value: "<<value<<endl;
+							 	
 								//Then find the right node to store...
-								lookupFingerTable(theHash);
+								string theIP;
+								int result = lookupFingerTable(theHash,theIP);
+								if (result==1)
+								{
+									//store the data here
+								}
+								else
+								{
+									
+								}
 							 }
 							 else
 							 {
 							 	cerr<<"Put message from client is not right"<<endl;
 							 }
-<<<<<<< HEAD
-=======
-					            
->>>>>>> cecd98aac3901fa1ace77b7e9a141c8cd609ded7
+
 	                     }
 	                     else{
 	                          cout << "Error " << errno << " while receiving message at clientsocket\n" << endl;

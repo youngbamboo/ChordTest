@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "ClientMessage.h"
 
 #define XINU 0
 #define VM 1
@@ -143,10 +144,24 @@ void setSystemParam()
 }
 
 // Format: "key//value" Simple only for test usage
-void sendRequestToServer(string receiverIP,string data)
+void sendRequestToServer(string receiverIP,string key, string value)
 {
-    
-    struct sockaddr_in receiverAddr;
+    ClientRequest* req = new ClientRequest;
+	req->key_length=key.length();
+	req->value_length=value.length();
+	req->initialNode_length=sizeof uint_32;
+	
+	char* msgBuffer = NULL;
+	long messageLen = 0;
+	messageLen = key.length() + value.length()+ (sizeof uint_32);
+	
+	msgBuffer = new char[messageLen];
+	uint32_t initialNode_fake=65536;
+	memcpy(msgBuffer,key.c_str(),key.length());
+	memcpy(msgBuffer+key.length(),value.c_str(),value.length());
+	memcpy(msgBuffer+key.length()+value.length(),initialNode_fake,(sizeof uint_32));
+	
+	struct sockaddr_in receiverAddr;
 
     memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
     receiverAddr.sin_family = AF_INET;
@@ -158,7 +173,7 @@ void sendRequestToServer(string receiverIP,string data)
         exit(1);
     }
 
-    if(sendto(client_sockfd, data.c_str(), data.length(), 0,
+    if(sendto(client_sockfd, msgBuffer, messageLen, 0,
                 (struct sockaddr*) &receiverAddr, sizeof(receiverAddr)) == -1)
     {
 
@@ -235,9 +250,8 @@ int main(int argc,char **argv)
                     string serverIP;
                     cin>>serverIP;
 
-                    string data = key+"//"+value;				
-                	
-                    sendRequestToServer(serverIP,data);
+                                    	
+                    sendRequestToServer(serverIP,key,value);
                     int result = recieveMessageFromServer();
                     
                     if(result == 1)
