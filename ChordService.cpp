@@ -592,6 +592,10 @@ int main(int argc, char* argv[])
 							 {
 							 	cerr<<"Put message from client is not right"<<endl;
 							 }
+<<<<<<< HEAD
+=======
+					            
+>>>>>>> cecd98aac3901fa1ace77b7e9a141c8cd609ded7
 	                     }
 	                     else{
 	                          cout << "Error " << errno << " while receiving message at clientsocket\n" << endl;
