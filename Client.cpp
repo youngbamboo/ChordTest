@@ -10,12 +10,15 @@
 #include <iostream>
 #include <stdio.h>
 #include <cstdlib>
-#include "Defs.h"
-#include "myUtils.h"
-#include "message.h"
-#include <set>
 #include <cmath>
 #include <sys/time.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #define XINU 0
 #define VM 1
@@ -54,23 +57,16 @@ int client_sockfd;
 //0: key-value pair is existed
 //>2 means the numbers inserted form the file...
 //Data:xxx means get the resone by get operation
-int recieveMessageFromServer(string& result)
+int recieveMessageFromServer()
 {
-    struct timeval time_start,time_curr;
-    get_now(&time_start);							
-
-    bool gotResult = 0;
-
 	time_t startTime;
 	time(&startTime);
 	
-    // wait for response message to come
-    while(time_to_seconds(&time_start,get_now(&time_curr)) <= CLIENT_WAIT_TIMER && gotResult == 0)
+    while(1)
     {
         char* maxMessage = new char[MAX_MSG_SIZE];
         struct sockaddr_in senderProcAddrUDP;
 
-        // To store the address of the process from whom a message is received
         memset((char*)&senderProcAddrUDP, 0, sizeof(senderProcAddrUDP));
         socklen_t senderLenUDP = sizeof(senderProcAddrUDP);
 
@@ -81,7 +77,6 @@ int recieveMessageFromServer(string& result)
 
         if(recvRet > 0)
         {
-            gotResult = 1;
             string tmp = maxMessage;
 			if (tmp.length()==1)
 			{
@@ -98,7 +93,7 @@ int recieveMessageFromServer(string& result)
 			{
 				if (tmp.substr(0,5)=="Data:")
 				{
-					result=tmp;
+                    //Needs to be taken care...
 					return SUCCESS;
 				}
 				else
@@ -116,11 +111,6 @@ int recieveMessageFromServer(string& result)
 		   return FAILED;
 	    }
     }
-
-    if(!gotResult)
-        cout<<"Timer expired. Please Retry " << endl;
-
-    return gotResult;
 }
 
 void setSystemParam()
@@ -228,6 +218,7 @@ int main(int argc,char **argv)
         switch(command)
         {
             case 0:
+                {
                     cout<< "You selected put key-value one by one"<<endl;
                     cout<< "Please enter the key"<<endl;
 
@@ -246,12 +237,8 @@ int main(int argc,char **argv)
 
                     string data = key+"//"+value;				
                 	
-                    
-                    struct timeval time_start,time_curr;
-                    get_now(&time_start);							
-
                     sendRequestToServer(serverIP,data);
-                    int result = recieveMessageFromServer("");
+                    int result = recieveMessageFromServer();
                     
                     if(result == 1)
                     {
@@ -261,131 +248,8 @@ int main(int argc,char **argv)
 					{
 						cout<<"Failed" << endl;
 					}
-                    break;             
-            case 1:
-                {
-                    cout<< "You selected get"<<endl;
-                    cout<< "Please enter the file name"<<endl;
-
-                    string filename;
-                    cin>>filename;
-
-                    cout<< "Please enter the IP address of the server"<<endl;
-
-                    string serverIP;
-                    cin>>serverIP;
-
-                    string data = "";				
-                    string commandName = GET;		
-                    
-                    struct timeval time_start,time_curr;
-                    get_now(&time_start);							
-
-                    sendRequestToServer(commandName,serverIP,filename,data,selfIP);
-                    int result = recieveOutputFromServer(commandName);
-
-                    get_now(&time_curr);
-                    
-                    if(result == 1)
-                    {
-                        double elapsed_time = time_to_seconds(&time_start,&time_curr);
-                        cout<<"The operation " << commandName << " took " << elapsed_time << "micro seconds" << endl;
-                    }
-
                     break;
-                }
-            case 2:
-                {
-                    cout<< "You selected exists"<<endl;
-                    cout<< "Please enter the file name"<<endl;
-
-                    string filename;
-                    cin>>filename;
-
-                    cout<< "Please enter the IP address of the server"<<endl;
-
-                    string serverIP;
-                    cin>>serverIP;
-
-                    string data = "";				
-                    string commandName = EXISTS;		
-                    
-                    struct timeval time_start,time_curr;
-                    get_now(&time_start);							
-
-                    sendRequestToServer(commandName,serverIP,filename,data,selfIP);
-                    int result = recieveOutputFromServer(commandName);
-
-                    get_now(&time_curr);
-                    
-                    if(result == 1)
-                    {
-                        double elapsed_time = time_to_seconds(&time_start,&time_curr);
-                        cout<<"The operation " << commandName << " took " << elapsed_time << "micro seconds" << endl;
-                    }
-                    break;
-                }
-            case 3:
-                {
-                    cout<< "You selected ls"<<endl;
-
-                    cout<< "Please enter the IP address of the server"<<endl;
-
-                    string serverIP;
-                    cin>>serverIP;
-
-                    string filename = "";
-                    string data = "";				
-                    string commandName = LS;		
-                    
-                    struct timeval time_start,time_curr;
-                    get_now(&time_start);							
-
-                    sendRequestToServer(commandName,serverIP,filename,data,selfIP);
-                    int result  = recieveOutputFromServer(commandName);
-
-                    get_now(&time_curr);
-                    
-                    if(result == 1)
-                    {
-                        double elapsed_time = time_to_seconds(&time_start,&time_curr);
-                        cout<<"The operation " << commandName << " took " << elapsed_time << "micro seconds" << endl;
-                    }
-
-
-                    break;
-                }
-            case 4:
-                {
-                    cout<< "You selected delete"<<endl;
-                    cout<< "Please enter the file name"<<endl;
-
-                    string filename;
-                    cin>>filename;
-
-                    cout<< "Please enter the IP address of the server"<<endl;
-
-                    string serverIP;
-                    cin>>serverIP;
-
-                    string data = "";				
-                    string commandName = DELETE;		
-                    
-                    struct timeval time_start,time_curr;
-                    get_now(&time_start);							
-
-                    sendRequestToServer(commandName,serverIP,filename,data,selfIP);
-                    int result = recieveOutputFromServer(commandName);
-
-                    get_now(&time_curr);
-                    
-                    if(result == 1)
-                    {
-                        double elapsed_time = time_to_seconds(&time_start,&time_curr);
-                        cout<<"The operation " << commandName << " took " << elapsed_time << "micro seconds" << endl;
-                    }
-                    break;
-                }
+                }             
             default:
                 {
                     cout<<"Please select an option from the available choices"<<endl;
