@@ -360,7 +360,6 @@ int main(int argc, char* argv[])
 	
 	myService->buildFingerTable(&mymap);
 
-    mymap.clear();
 
 
 	//Initialization is finished.
@@ -491,6 +490,7 @@ int main(int argc, char* argv[])
 				}
 				else if (i == clientSocket)
 				{
+                    /*
 					cout<<"Receive store request"<<endl;
 					
                     char* maxMessage = new char[1024];
@@ -522,6 +522,7 @@ int main(int argc, char* argv[])
                      }
 
                      delete[] maxMessage;
+                     */
 				}
 			}
 		}

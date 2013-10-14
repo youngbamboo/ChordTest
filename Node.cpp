@@ -42,10 +42,10 @@ Node::~Node()
 uint32_t Node::buildHashID(const string theStr)
 {
 	int len = theStr.length();
-	int hash = (int)(localIp.charAt(len/2));
+	int hash = (int)(theStr[len/2]);
 	for(int i = 0; i < len; i ++)
 	{
-		hash = (hash << 5) - hash + localIp.charAt(i);
+		hash = (hash << 5) - hash + theStr[i];
 	}
 	hash = hash % (65536);
 	if(hash < 0)
