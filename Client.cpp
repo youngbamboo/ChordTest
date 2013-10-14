@@ -40,71 +40,30 @@ using namespace std;
 
 const int CLIENT_PORT = 9999;
 const int MAX_MSG_SIZE = 1024;
-
-/* Get current time. */
-struct timeval* get_now( struct timeval *time) {
-	if ( gettimeofday( time, NULL ) != 0 ) {
-		fprintf(stderr,"Can't get current time.\n");
-	}
-	
-	//printf("Second %ld Micro %ld\n",time->tv_sec,time->tv_usec);
-
-	return time;
-}
-
-/* Convert "struct timeval" to fractional seconds. */
-double time_to_seconds ( struct timeval *tstart, struct timeval *tfinish ) {
-	double t;
-
-	t = ((tfinish->tv_sec - tstart->tv_sec) + (tfinish->tv_usec - tstart->tv_usec)/pow(10,6))*pow(10,3) ;
-	return t;
-}
+const int SUCCESS = 1;
+const int FAILED_DUPLICATED = 2;
+const int FAILED = 0;
 
 int client_sockfd;
 
-void printSet(set<string> fileSet)
-{
-    
-    cout<<LIST<<endl;    
-    for (set<string>::iterator it=fileSet.begin(); it!=fileSet.end(); ++it)
-        cout << *it << endl;
-
-    cout<<endl;
-}
-
-
-void helperLS(char* maxMessage, int numParam)
-{
-
-    set<string> fileSet;          
-    int numParameters = numParam;
-    int skipLenInt = sizeof(ClientResponse);
-    int skipLenEntry = sizeof(ClientResponse) + sizeof(int)*numParameters;
-
-    for(int i=0; i < numParameters; i++)
-    {
-        cout << "Getting the fileNames " << endl;
-        int* length = new int[1];
-        memcpy(length,maxMessage + skipLenInt, sizeof(int));
-        skipLenInt += sizeof(int);
-        char* entry = new char[*length];
-        memcpy(entry,maxMessage+skipLenEntry,(*length)*sizeof(char));
-        skipLenEntry += (*length)*sizeof(char);
-        fileSet.insert(entry);
-
-    }        
-    printSet(fileSet);
-}
 
 
 
-int recieveOutputFromServer()
+//Simple resone format
+//1: put successful
+//0: key-value pair is existed
+//>2 means the numbers inserted form the file...
+//Data:xxx means get the resone by get operation
+int recieveMessageFromServer(string& result)
 {
     struct timeval time_start,time_curr;
     get_now(&time_start);							
 
     bool gotResult = 0;
 
+	time_t startTime;
+	time(&startTime);
+	
     // wait for response message to come
     while(time_to_seconds(&time_start,get_now(&time_curr)) <= CLIENT_WAIT_TIMER && gotResult == 0)
     {
@@ -123,98 +82,39 @@ int recieveOutputFromServer()
         if(recvRet > 0)
         {
             gotResult = 1;
-            ClientResponse* clientResponse = new ClientResponse;
-            clientResponse = (ClientResponse *)maxMessage;
-
-            if(commandName == EXISTS)
-            {
-                if(clientResponse->result == 1)
-                {
-                    cout<< FILE_EXISTS <<endl;
-                }
-                else if(clientResponse->result == 0)
-                {
-                    cout<< FILE_DNOT_EXIST <<endl;
-                }
-                else
-                {
-                    cout<< ERROR <<endl;    
-                }
-
-            }
-            else if(commandName == PUT)
-            {
-                if(clientResponse->result == 1)
-                    cout<< FILE_STORED <<endl;
-                else if(clientResponse->result == 0)
-                    cout<< FILE_NOT_STORED <<endl;
-                else
-                    cout<< ERROR <<endl;
-
-            }
-            else if(commandName == GET)
-            {
-                if(clientResponse->result == 0)
-                    cout<< FILE_DNOT_EXIST <<endl;
-                else if(clientResponse->result == 1)
-                {
-                    long buffSize = recvRet - (sizeof(ClientResponse)+sizeof(int));
-                    char* responseString = new char[buffSize + 1];
-                    memcpy(responseString,maxMessage + sizeof(ClientResponse)+sizeof(int), buffSize);
-                    responseString[buffSize] = '\0';
-
-                    cout<< DATA_START <<endl;
-                    cout<< responseString <<endl;
-
-                }
-                else
-                {
-                    cout<< ERROR <<endl;
-                }
-            }
-            else if(commandName == LS)
-            {
-                if(clientResponse->result == 1 && clientResponse->numParameters ==0)
-                {
-                    cout << NO_FILES << endl;
-                }
-                else if(clientResponse->result == 1 && clientResponse->numParameters > 0)
-                {
-                    helperLS(maxMessage,clientResponse->numParameters);        
-                }
-                else if(clientResponse->result == 0 && clientResponse->numParameters > 0)
-                {
-                    cout<< ERROR_SOME_FILES << endl;
-                    helperLS(maxMessage,clientResponse->numParameters);
-                }
-                else if(clientResponse->result == 0 && clientResponse->numParameters == 0)
-                {
-                    cout << ERROR_NO_FILES <<endl;
-                }
-                else
-                {
-                    cout<< ERROR <<endl;   
-                }       
-            }
-            else if(commandName == DELETE)
-            {
-                if(clientResponse->result == 1)
-                    cout<< FILE_DELETED <<endl;
-                else if(clientResponse->result == 0)
-                    cout<< FILE_NOT_DELETED <<endl;
-                else
-                    cout<< ERROR <<endl;
-            }
-            else
-            {
-                cout<< ERROR <<endl;
-            }
-
+            string tmp = maxMessage;
+			if (tmp.length()==1)
+			{
+				if (tmp[0]=='1')
+				{
+					return SUCCESS;
+				}
+				else if (tmp[0]=='2')
+				{
+					return FAILED_DUPLICATED;
+				}
+			}
+			else
+			{
+				if (tmp.substr(0,5)=="Data:")
+				{
+					result=tmp;
+					return SUCCESS;
+				}
+				else
+				{
+					return atoi(tmp.c_str());
+				}
+			}
         }
-        else
-        {
-            //cout<< " Connection Closed or other error " <<endl;
-        }
+		
+		time_t currentTime;
+	    time(&currentTime);
+		if (difftime(currentTime,startTime)>5)
+	    {
+	       cout<<"Timer expired. Please Retry " << endl;
+		   return FAILED;
+	    }
     }
 
     if(!gotResult)
@@ -328,7 +228,6 @@ int main(int argc,char **argv)
         switch(command)
         {
             case 0:
-                {
                     cout<< "You selected put key-value one by one"<<endl;
                     cout<< "Please enter the key"<<endl;
 
@@ -352,18 +251,17 @@ int main(int argc,char **argv)
                     get_now(&time_start);							
 
                     sendRequestToServer(serverIP,data);
-                    int result = recieveOutputFromServer();
-
-                    get_now(&time_curr);
+                    int result = recieveMessageFromServer("");
                     
                     if(result == 1)
                     {
-                        double elapsed_time = time_to_seconds(&time_start,&time_curr);
-                        cout<<"The operation " << commandName << " took " << elapsed_time << "micro seconds" << endl;
+                        cout<<"Successfully put" << endl;
                     }
-
-                    break;
-                }
+					else
+					{
+						cout<<"Failed" << endl;
+					}
+                    break;             
             case 1:
                 {
                     cout<< "You selected get"<<endl;
