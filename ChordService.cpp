@@ -307,7 +307,7 @@ void ChordService::printFingerTable()
 // Format: "key//value" Simple only for test usage
 void sendRequestToServer(string receiverIP,string data)
 {
-    
+   /* 
     struct sockaddr_in receiverAddr;
 
     memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
@@ -330,7 +330,7 @@ void sendRequestToServer(string receiverIP,string data)
 	{
         cerr<<"Successfully send to "<<receiverIP<<" with data "<<data<<endl;
     }
-
+*/
 }
 
 //request should be sent here
@@ -561,14 +561,6 @@ int main(int argc, char* argv[])
 							 {
 							 	cerr<<"Put message from client is not right"<<endl;
 							 }
-							 
-
-	                         if(type == CLIENT_REQ){		
-	                              myChordInstance->handleRequestFromClient(maxMessage, recvRet);
-	                         }
-	                         else{
-	                              cout << "SERVICE: Invalid message received: " << type << endl;
-	                         }
 	                     }
 	                     else{
 	                          cout << "Error " << errno << " while receiving message at clientsocket\n" << endl;
