@@ -592,14 +592,7 @@ int main(int argc, char* argv[])
 							 {
 							 	cerr<<"Put message from client is not right"<<endl;
 							 }
-							 
-
-	                         if(type == CLIENT_REQ){		
-	                              myChordInstance->handleRequestFromClient(maxMessage, recvRet);
-	                         }
-	                         else{
-	                              cout << "SERVICE: Invalid message received: " << type << endl;
-	                         }
+					            
 	                     }
 	                     else{
 	                          cout << "Error " << errno << " while receiving message at clientsocket\n" << endl;
