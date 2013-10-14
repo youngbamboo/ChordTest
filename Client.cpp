@@ -343,7 +343,6 @@ int main(int argc,char **argv)
         cout<<"2 - get by key"<<endl;
         cout<<"3 - delete by key"<<endl;
         
-        cout<<"Please enter the operation (0-4) you intend to do: "<<endl;
         cin >> command;
 
         switch(command)

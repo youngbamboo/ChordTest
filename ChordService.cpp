@@ -429,100 +429,97 @@ int main(int argc, char* argv[])
         {
             cerr<<"select error"<<endl;
         }
-		for(int i = 0; i<=fdmax; i++)
+		else
 		{
-			if(FD_ISSET(i, &read_fds))
+			for(int i = 0; i<=fdmax; i++)
 			{
-				if(i == chordSocket)
+				if(FD_ISSET(i, &read_fds))
 				{
-					cout<<"Received broadcast message"<<endl;
-					struct sockaddr_in cliaddr;
-					socklen_t cli_addr_len;
-					cli_addr_len = sizeof(cliaddr);
-                    char buf[1024] = {0};
-                    int newfd =recvfrom(chordSocket, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);              
-                    cout<<buf<<endl;
-               	   	uint32_t aID = atoi(buf);
-               	    cout<<"Recieve the broadcast from id: "<< aID <<endl;
-               	    char ipstr[INET6_ADDRSTRLEN];
+					if(i == chordSocket)
+					{
+						cout<<"Received broadcast message"<<endl;
+						struct sockaddr_in cliaddr;
+						socklen_t cli_addr_len;
+						cli_addr_len = sizeof(cliaddr);
+	                    char buf[1024] = {0};
+	                    int newfd =recvfrom(chordSocket, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);              
+	                    cout<<buf<<endl;
+	               	   	uint32_t aID = atoi(buf);
+	               	    cout<<"Recieve the broadcast from id: "<< aID <<endl;
+	               	    char ipstr[INET6_ADDRSTRLEN];
 
-               	    string aIP=inet_ntoa(cliaddr.sin_addr);
-                    cout<<"From IP: "<<aIP<<endl;
+	               	    string aIP=inet_ntoa(cliaddr.sin_addr);
+	                    cout<<"From IP: "<<aIP<<endl;
 
-					std::map<uint32_t,string> tmpMap;
-					tmpMap.insert(std::pair<uint32_t,string>(aID,aIP));
+						std::map<uint32_t,string> tmpMap;
+						tmpMap.insert(std::pair<uint32_t,string>(aID,aIP));
 
-					myService->buildFingerTable(&tmpMap);
+						myService->buildFingerTable(&tmpMap);
 
-					if (!fork()) 
-					{ // this is the child process
-						//close(sockfd); // child doesn't need the listener
-						string myID = std::to_string(myService->getLocalNode()->getHashID());
-                        int numbytes;
-                        int sendfd;
-                        if ((sendfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
-                        {
-                            cerr<<"socket error"<<endl;
-                            exit(1);
-                        }
-                        cliaddr.sin_port = htons(10000);
-                        if ((numbytes=sendto(sendfd, myID.c_str(), myID.length(), 0,
-                                                (struct sockaddr *)&cliaddr, sizeof cliaddr)) == -1) 
-                        {
-                            cerr<<"send error"<<endl;
-                            exit(1);
-                        }
-                        else
-                        {
-                            cout<<"send back with my id: "<<myID<<endl;
+						if (!fork()) 
+						{ // this is the child process
+							//close(sockfd); // child doesn't need the listener
+							string myID = std::to_string(myService->getLocalNode()->getHashID());
+	                        int numbytes;
+	                        int sendfd;
+	                        if ((sendfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+	                        {
+	                            cerr<<"socket error"<<endl;
+	                            exit(1);
+	                        }
+	                        cliaddr.sin_port = htons(10000);
+	                        if ((numbytes=sendto(sendfd, myID.c_str(), myID.length(), 0,
+	                                                (struct sockaddr *)&cliaddr, sizeof cliaddr)) == -1) 
+	                        {
+	                            cerr<<"send error"<<endl;
+	                            exit(1);
+	                        }
+	                        else
+	                        {
+	                            cout<<"send back with my id: "<<myID<<endl;
 
-                        }
-                        /*
-						if (send(newfd, myID.c_str(), myID.length(), 0) == -1)
-						{
-								cout<<"send back with my id: "<<myID<<endl;
+	                        }
+							close(sendfd);
 						}
-                        */
-						close(sendfd);
+						close(newfd);
+						
 					}
-					close(newfd);
-					
-				}
-				else if (i == clientSocket)
-				{
-                    /*
-					cout<<"Receive store request"<<endl;
-					
-                    char* maxMessage = new char[1024];
-                    struct sockaddr_in senderProcAddrUDP;
+					else if (i == clientSocket)
+					{
+	                    /*
+						cout<<"Receive store request"<<endl;
+						
+	                    char* maxMessage = new char[1024];
+	                    struct sockaddr_in senderProcAddrUDP;
 
-                    // To store the address of the process from whom a message is received
-                    memset((char*)&senderProcAddrUDP, 0, sizeof(senderProcAddrUDP));
-                    socklen_t senderLenUDP = sizeof(senderProcAddrUDP);
-                        
-                    int recvRet = 0;
+	                    // To store the address of the process from whom a message is received
+	                    memset((char*)&senderProcAddrUDP, 0, sizeof(senderProcAddrUDP));
+	                    socklen_t senderLenUDP = sizeof(senderProcAddrUDP);
+	                        
+	                    int recvRet = 0;
 
-                    recvRet = recvfrom(clientSocket, maxMessage, 1024,
-                                0, (struct sockaddr*) &senderProcAddrUDP, &senderLenUDP);
+	                    recvRet = recvfrom(clientSocket, maxMessage, 1024,
+	                                0, (struct sockaddr*) &senderProcAddrUDP, &senderLenUDP);
 
-                    if(recvRet > 0){
-                         // Get the type of the message
-                         uint32_t* msgType = (uint32_t*)(maxMessage);
-                         uint32_t type = *msgType;
+	                    if(recvRet > 0){
+	                         // Get the type of the message
+	                         uint32_t* msgType = (uint32_t*)(maxMessage);
+	                         uint32_t type = *msgType;
 
-                         if(type == CLIENT_REQ){		
-                              myChordInstance->handleRequestFromClient(maxMessage, recvRet);
-                         }
-                         else{
-                              cout << "SERVICE: Invalid message received: " << type << endl;
-                         }
-                     }
-                     else{
-                          cout << "Error " << errno << " while receiving message at clientsocket\n" << endl;
-                     }
+	                         if(type == CLIENT_REQ){		
+	                              myChordInstance->handleRequestFromClient(maxMessage, recvRet);
+	                         }
+	                         else{
+	                              cout << "SERVICE: Invalid message received: " << type << endl;
+	                         }
+	                     }
+	                     else{
+	                          cout << "Error " << errno << " while receiving message at clientsocket\n" << endl;
+	                     }
 
-                     delete[] maxMessage;
-                     */
+	                     delete[] maxMessage;
+	                     */
+					}
 				}
 			}
 		}
