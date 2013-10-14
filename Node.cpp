@@ -29,7 +29,7 @@ Node::Node()
 	struct in_addr **ipAddr = (struct in_addr**)he->h_addr_list;
 	myIP = inet_ntoa(*ipAddr[0]);
 	cout<<"My IP is: "<<myIP<<endl;
-	myID = buildHashID();
+	myID = buildHashID(myIP);
 	cout<<"My Hash ID is: "<<myID<<endl;
 }
 
@@ -39,7 +39,7 @@ Node::~Node()
 
 
 //One-at-a-Time hash
-uint32_t Node::buildHashID()
+uint32_t Node::buildHashID(const string theStr)
 {
 /*
 	int len = theStr.length();
@@ -56,13 +56,13 @@ uint32_t Node::buildHashID()
 	return hash;
 	*/
 	
-	string nodeIP=getIP();
+	//string nodeIP=getIP();
 	//const char* p = nodeIP.c_str();
 	uint32_t h = 0;
 	int i;
-    for ( i = 0; i < nodeIP.length(); i++ ) 
+    for ( i = 0; i < theStr.length(); i++ ) 
 	{
-		h += nodeIP[i];
+		h += theStr[i];
         h += ( h << 10 );
         h ^= ( h >> 6 );
 	}

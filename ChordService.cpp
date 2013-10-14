@@ -304,6 +304,41 @@ void ChordService::printFingerTable()
 	}
 }
 
+// Format: "key//value" Simple only for test usage
+void sendRequestToServer(string receiverIP,string data)
+{
+    
+    struct sockaddr_in receiverAddr;
+
+    memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
+    receiverAddr.sin_family = AF_INET;
+    receiverAddr.sin_port = htons(CLIENT_PORT);
+
+    if(inet_aton(receiverIP.c_str(), &receiverAddr.sin_addr) == 0)
+	{
+        cerr<<"INET_ATON Failed\n"<<endl;
+        exit(1);
+    }
+
+    if(sendto(client_sockfd, data.c_str(), data.length(), 0,
+                (struct sockaddr*) &receiverAddr, sizeof(receiverAddr)) == -1)
+    {
+
+        cerr<<"Failed to send to "<<receiverIP<<" with data "<<data<<endl;
+    }
+    else
+	{
+        cerr<<"Successfully send to "<<receiverIP<<" with data "<<data<<endl;
+    }
+
+}
+
+//request should be sent here
+int lookupFingerTable()
+{
+		
+}
+
 int main(int argc, char* argv[])
 {
 	ChordService* myService = new ChordService();
@@ -488,7 +523,7 @@ int main(int argc, char* argv[])
 					}
 					else if (i == clientSocket)
 					{
-	                    /*
+	                    
 						cout<<"Receive store request"<<endl;
 						
 	                    char* maxMessage = new char[1024];
@@ -503,10 +538,30 @@ int main(int argc, char* argv[])
 	                    recvRet = recvfrom(clientSocket, maxMessage, 1024,
 	                                0, (struct sockaddr*) &senderProcAddrUDP, &senderLenUDP);
 
-	                    if(recvRet > 0){
-	                         // Get the type of the message
-	                         uint32_t* msgType = (uint32_t*)(maxMessage);
-	                         uint32_t type = *msgType;
+	                    if(recvRet > 0)
+						{
+	                         // It's a put key-value message
+	                         //Format: "key//value"
+	                         string key;
+							 string value;
+							 string tmpResult = maxMessage;
+
+							 int found = tmpResult.find("//");
+							 if (found!=std::string::npos)
+							 {
+							 	key = tmpResult.substr(0,found);
+								value = tmpResult.substr(found+2,tmpResult.length()-found-2);
+								uint32_t theHash = myService->getLocalNode()->buildHashID(key);
+								cout<<"Message from client:"<<endl;
+								cout<<"Key: "<<key<<endl;
+								cout<<"Key hash: "<<theHash<<endl;
+								cout<<"Value: "<<value<<endl;
+							 }
+							 else
+							 {
+							 	cerr<<"Put message from client is not right"<<endl;
+							 }
+							 
 
 	                         if(type == CLIENT_REQ){		
 	                              myChordInstance->handleRequestFromClient(maxMessage, recvRet);
@@ -520,7 +575,7 @@ int main(int argc, char* argv[])
 	                     }
 
 	                     delete[] maxMessage;
-	                     */
+	                     
 					}
 				}
 			}
