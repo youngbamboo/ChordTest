@@ -38,6 +38,8 @@
 
 using namespace std;
 
+const int CLIENT_PORT = 9999;
+
 /* Get current time. */
 struct timeval* get_now( struct timeval *time) {
 	if ( gettimeofday( time, NULL ) != 0 ) {
@@ -325,30 +327,22 @@ int main(int argc,char **argv)
 
     //Store the ip address
     ipAddr = (struct in_addr**)he->h_addr_list;
-    selfIP = inet_ntoa(*ipAddr[XINU]);
-
-    if(selfIP.find("127") == 0){
-        selfIP = inet_ntoa(*ipAddr[VM]);
-    }
-    else{
-        selfIP = inet_ntoa(*ipAddr[XINU]);
-    }
+    selfIP = inet_ntoa(*ipAddr[0]);
 
     cout<<"Self IP is: "<<selfIP<<endl;
 
     int command;
 
-        setSystemParam();
+    setSystemParam();
     
     while(1)
     {
-        cout<<"List of operations available are: "<<endl;
-        cout<<"0 - put"<<endl;
-        cout<<"1 - get"<<endl;
-        cout<<"2 - exists"<<endl;
-        cout<<"3 - ls"<<endl;
-        cout<<"4 - delete"<<endl;
-
+        cout<<"Please input: "<<endl;
+        cout<<"0 - put by key-value"<<endl;
+        cout<<"1 - put by file"<<endl;
+        cout<<"2 - get by key"<<endl;
+        cout<<"3 - delete by key"<<endl;
+        
         cout<<"Please enter the operation (0-4) you intend to do: "<<endl;
         cin >> command;
 

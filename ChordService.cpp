@@ -369,7 +369,7 @@ int main(int argc, char* argv[])
 	//ChordSocket: Listen the 10000 port for broadcast. Send the reply (to 10001) and update its own finger table.
 	//ClientSocket: Listen the 9999 to receive the key-value data. 
 
-	int clientSocket, chordSocket;
+	int clientSocket, chordSocket, clientGetSocket;
 	
 	if((clientSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){
         cerr<<"Error when initializing client socket"<<endl;
@@ -381,7 +381,7 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-	struct sockaddr_in clientUDP,chordUDP;
+	struct sockaddr_in clientUDP,chordUDP, clietGetUDP;
 
     memset((char*)&clientUDP, 0, sizeof(clientUDP));
     clientUDP.sin_family = AF_INET;
@@ -491,6 +491,37 @@ int main(int argc, char* argv[])
 				}
 				else if (i == clientSocket)
 				{
+					cout<<"Receive store request"<<endl;
+					
+                    char* maxMessage = new char[1024];
+                    struct sockaddr_in senderProcAddrUDP;
+
+                    // To store the address of the process from whom a message is received
+                    memset((char*)&senderProcAddrUDP, 0, sizeof(senderProcAddrUDP));
+                    socklen_t senderLenUDP = sizeof(senderProcAddrUDP);
+                        
+                    int recvRet = 0;
+
+                    recvRet = recvfrom(clientSocket, maxMessage, 1024,
+                                0, (struct sockaddr*) &senderProcAddrUDP, &senderLenUDP);
+
+                    if(recvRet > 0){
+                         // Get the type of the message
+                         uint32_t* msgType = (uint32_t*)(maxMessage);
+                         uint32_t type = *msgType;
+
+                         if(type == CLIENT_REQ){		
+                              myChordInstance->handleRequestFromClient(maxMessage, recvRet);
+                         }
+                         else{
+                              cout << "SERVICE: Invalid message received: " << type << endl;
+                         }
+                     }
+                     else{
+                          cout << "Error " << errno << " while receiving message at clientsocket\n" << endl;
+                     }
+
+                     delete[] maxMessage;
 				}
 			}
 		}
