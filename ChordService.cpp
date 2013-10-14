@@ -206,6 +206,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 	else
 	{
 		cout<<"There are nodes in the ring"<<endl;
+		printFingerTable()
 		//Something in the ring.
 
 		std::list<uint32_t>::iterator fingerNodeit;
@@ -223,7 +224,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 			fingerNodeit = fingerNodeList.begin();
 			fingerSuccessorit = fingerSuccessorList.begin();
 			successorIPListit = successorIPList.begin();
-			int i=0;
+			//int i=0;
 			for(;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			fingerNodeit++,fingerSuccessorit++,successorIPListit++)
 			{
@@ -258,7 +259,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 					//It is bigger than the (i-1) column
 					//But if it's the first node...
 				}
-				i++;
+				//i++;
 			}
 			
 			printFingerTable();
