@@ -28,7 +28,7 @@ class ChordService {
         void sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode);
         int lookupFingerTable(uint32_t thekey, string& theIP, uint32_t initNode);
 		//use for send to other nodes param
-		void ChordService::setSystemParam();
+		void setSystemParam();
 	private:
 		Node* localNode;
 		Node* preNode;

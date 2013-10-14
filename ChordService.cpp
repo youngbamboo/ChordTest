@@ -304,7 +304,7 @@ void ChordService::setSystemParam()
     bzero(&servaddr,sizeof(servaddr));
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
-    servaddr.sin_port=htons(CLIENT_PORT);
+    servaddr.sin_port=htons(9999);
 
     int bval = bind(client_sockfd,(struct sockaddr *)&servaddr,sizeof(servaddr));
 
@@ -351,11 +351,11 @@ void ChordService::sendRequestToServer(string receiverIP,string key, string valu
                 (struct sockaddr*) &receiverAddr, sizeof(receiverAddr)) == -1)
     {
 
-        cerr<<"Failed to send to "<<receiverIP<<" with data "<<data<<endl;
+        cerr<<"Failed to send to "<<receiverIP<<" with data "<<msgBuffer<<endl;
     }
     else
 	{
-        cerr<<"Successfully send to "<<receiverIP<<" with data "<<data<<endl;
+        cerr<<"Successfully send to "<<receiverIP<<" with data "<<msgBuffer<<endl;
     }
 
 }
@@ -371,7 +371,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 	uint32_t compare = 65535;
 	uint32_t tmpNode;
 	string tmpIP;
-	uint32_t localID = myService->getLocalNode()->getHashID();
+	uint32_t localID = getLocalNode()->getHashID();
 	
 
 	if (thekey==localID)
@@ -396,9 +396,9 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 		}
 		
 	}
-	if (theKey>initNode)
+	if (thekey>initNode)
 	{
-		for (;fingerSuccessorit!=fingerNodeList.end()&&successorIPListit!=successorIPList.end();
+		for (;fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			fingerSuccessorit++,successorIPListit++)
 		{
 			if((*fingerSuccessorit)==thekey)
@@ -408,7 +408,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 			}
 			else if ((*fingerSuccessorit)>thekey)
 			{
-				if((*fingerSuccessorit)==successorIPList.front())
+				if((*fingerSuccessorit)==fingerSuccessorList.front())
 				{
 					//My first successor is bigger than key, choose between local and successor
 					uint32_t firstSuccessor = *fingerSuccessorit;
@@ -424,7 +424,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 				}
 				uint32_t thisNode = *fingerSuccessorit;
 				uint32_t lastNode = *(--fingerSuccessorit);
-				if ((thekey-lastnode)>(thisnode-thekey))
+				if ((thekey-lastNode)>(thisNode-thekey))
 				{
 					theIP = *successorIPListit;
 					return 0;
@@ -442,12 +442,12 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 		}
 		return 0;
 	}
-	if (theKey<initNode)
+	if (thekey<initNode)
 	{		
-		for (;fingerSuccessorit!=fingerNodeList.end()&&successorIPListit!=successorIPList.end();
+		for (;fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			fingerSuccessorit++,successorIPListit++)
 		{
-			if((*fingerSuccessorit)==localNode)
+			if((*fingerSuccessorit)==localID)
 			{
 				//only myself in the ring
 				return 1;
@@ -457,14 +457,14 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 				theIP=*successorIPListit;
 				return 0;
 			}
-			else if (localNode<=65535&&(*fingerSuccessorit)<localNode)
+			else if (localID<=65535&&(*fingerSuccessorit)<localID)
 			{
-				else if ((*fingerSuccessorit)<=initNode)
+				if ((*fingerSuccessorit)<=initNode)
 				{
 					if ((*fingerSuccessorit)>=thekey 
 						||(*fingerSuccessorit)>=initNode )
 					{
-						if((*fingerSuccessorit)==successorIPList.front())
+						if((*fingerSuccessorit)==fingerSuccessorList.front())
 						{
 							//My first successor is bigger than key, choose between local and successor
 							uint32_t firstSuccessor = *fingerSuccessorit;
@@ -521,7 +521,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 							}
 						}
 						
-						if ((thekey-localNode)>(thisNode-thekey))
+						if ((thekey-localID)>(thisNode-thekey))
 						{
 							theIP = *successorIPListit;
 							return 0;
@@ -777,7 +777,7 @@ int main(int argc, char* argv[])
 							 cout<<"Key: "<<key<<endl;
 							 cout<<"Key hash: "<<theHash<<endl;
 							 cout<<"Value: "<<value<<endl;							 
-							 cout<<"Client IP: "<<aClientip<<endl;
+							 cout<<"Client IP: "<<clientIP<<endl;
 
 							 string theNextNodeIP;
 							 
@@ -785,7 +785,7 @@ int main(int argc, char* argv[])
 							 {
 								string initNode = std::to_string(theHash);
 							 }
-							 int result = myService->lookupFingerTable(theHash,theNextNodeIP,atoi(initNode));
+							 int result = myService->lookupFingerTable(theHash,theNextNodeIP,atoi(initNode.c_str()));
 							 if(result==1)
 							 {
 							 	//store data
@@ -817,7 +817,6 @@ int main(int argc, char* argv[])
 			                        }
 			                        else
 			                        {
-			                            cout<<"send back with my id: "<<myID<<endl;
 
 			                        }
 									close(sendfd);
@@ -827,7 +826,7 @@ int main(int argc, char* argv[])
 							 else
 							 {
 							 	//send to the next node.
-							 	sendRequestToServer(theNextNodeIP,key, value, clientIP, initNode);
+							 	myService->sendRequestToServer(theNextNodeIP,key, value, clientIP, initNode);
 							 }
 	                         
 

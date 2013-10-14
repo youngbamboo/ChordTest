@@ -156,14 +156,14 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	
 	char* msgBuffer = NULL;
 	long messageLen = 0;
-	messageLen = sizeof(ClientRequest) +  key.length() + value.length()+ (sizeof uint_32) + clientIP.length();
+	messageLen = sizeof(ClientRequest) +  key.length() + value.length()+ initialNode_fake.length() + clientIP.length();
 	
 	msgBuffer = new char[messageLen];
 	memcpy(msgBuffer,req,sizeof(ClientRequest));
 	memcpy(msgBuffer+sizeof(ClientRequest),initialNode_fake.c_str(),initialNode_fake.length());
 	memcpy(msgBuffer+sizeof(ClientRequest)+initialNode_fake.length(),key.c_str(),key.length());
-	memcpy(msgBuffer+sizeof(ClientRequest)+initialNode_fake.length()+key.length(),value,value.length());
-	memcpy(msgBuffer+sizeof(ClientRequest)+key.length()+value.length()+initialNode_fake.length(),clientIP,clientIP.length());
+	memcpy(msgBuffer+sizeof(ClientRequest)+initialNode_fake.length()+key.length(),value.c_str(),value.length());
+	memcpy(msgBuffer+sizeof(ClientRequest)+key.length()+value.length()+initialNode_fake.length(),clientIP.c_str(),clientIP.length());
 	
 	struct sockaddr_in receiverAddr;
 
@@ -181,11 +181,11 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
                 (struct sockaddr*) &receiverAddr, sizeof(receiverAddr)) == -1)
     {
 
-        cerr<<"Failed to send to "<<receiverIP<<" with data "<<data<<endl;
+        cerr<<"Failed to send to "<<receiverIP<<" with data "<<msgBuffer<<endl;
     }
     else
 	{
-        cerr<<"Successfully send to "<<receiverIP<<" with data "<<data<<endl;
+        cerr<<"Successfully send to "<<receiverIP<<" with data "<<msgBuffer<<endl;
     }
 
 }
