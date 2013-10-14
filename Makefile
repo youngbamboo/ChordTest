@@ -2,7 +2,7 @@ ChordServer:	chordservice node
 	g++ chordservice node -o ChordServer 
 	g++ -o Client Client.cpp
 
-chordservice:	ChordService.cpp ChordService.h Node.h
+chordservice:	ChordService.cpp ChordService.h Node.h ClientMessage.h
 	g++ -std=c++11 -c -g -o chordservice ChordService.cpp  
 	
 node:	Node.cpp Node.h 

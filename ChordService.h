@@ -25,6 +25,8 @@ class ChordService {
 		inline void setPreNode(Node* theNode) {this->preNode=theNode;};
 		void buildFingerTable(std::map<uint32_t,string>* themap);
 		int receiveReply(std::map<uint32_t,string>* themap);
+        void sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode);
+        int lookupFingerTable(uint32_t thekey, string& theIP, uint32_t initNode);
 	private:
 		Node* localNode;
 		Node* preNode;

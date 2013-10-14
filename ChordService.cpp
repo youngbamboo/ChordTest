@@ -303,20 +303,27 @@ void ChordService::sendRequestToServer(string receiverIP,string key, string valu
 	memcpy(msgBuffer,req,sizeof(ClientRequest));
 	memcpy(msgBuffer+sizeof(ClientRequest),initNode.c_str(),initNode.length());
 	memcpy(msgBuffer+sizeof(ClientRequest)+initNode.length(),key.c_str(),key.length());
-	memcpy(msgBuffer+sizeof(ClientRequest)+initNode.length()+key.length(),value,value.length());
-	memcpy(msgBuffer+sizeof(ClientRequest)+key.length()+value.length()+initNode.length(),clientIP,clientIP.length());
+	memcpy(msgBuffer+sizeof(ClientRequest)+initNode.length()+key.length(),value.c_str(),value.length());
+	memcpy(msgBuffer+sizeof(ClientRequest)+key.length()+value.length()+initNode.length(),clientIP.c_str(),clientIP.length());
 	
 	struct sockaddr_in receiverAddr;
 
     memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
     receiverAddr.sin_family = AF_INET;
-    receiverAddr.sin_port = htons(CLIENT_PORT);
+    receiverAddr.sin_port = htons(9999);
 
     if(inet_aton(receiverIP.c_str(), &receiverAddr.sin_addr) == 0)
 	{
         cerr<<"INET_ATON Failed\n"<<endl;
         exit(1);
     }
+    int client_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if(client_sockfd == -1)
+    {
+        cerr<<"Send: Could not create socket "<<endl;;
+        exit(1);
+    }
+
 
     if(sendto(client_sockfd, msgBuffer, messageLen, 0,
                 (struct sockaddr*) &receiverAddr, sizeof(receiverAddr)) == -1)
