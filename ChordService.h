@@ -27,12 +27,16 @@ class ChordService {
 		int receiveReply(std::map<uint32_t,string>* themap);
         void sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode);
         int lookupFingerTable(uint32_t thekey, string& theIP, uint32_t initNode);
+		//use for send to other nodes param
+		void ChordService::setSystemParam();
 	private:
 		Node* localNode;
 		Node* preNode;
 		list<uint32_t> fingerNodeList;
 		list<uint32_t> fingerSuccessorList;
 		list<string> successorIPList;
+		//used for when this node is taken as a client
+		int client_sockfd;
 		//void* receiveReply(std::map<uint32_t,string>* themap);
  
 		void printFingerTable();

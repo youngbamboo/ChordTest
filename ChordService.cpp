@@ -286,6 +286,35 @@ void ChordService::printFingerTable()
 	}
 }
 
+void ChordService::setSystemParam()
+{
+     //Socket variables for client
+    int n;
+    struct sockaddr_in servaddr;
+    socklen_t lensock;
+
+    client_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+    if(client_sockfd == -1)
+    {
+        printf("Could not create socket \n");
+        exit(EXIT_FAILURE);
+    }
+
+    bzero(&servaddr,sizeof(servaddr));
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
+    servaddr.sin_port=htons(CLIENT_PORT);
+
+    int bval = bind(client_sockfd,(struct sockaddr *)&servaddr,sizeof(servaddr));
+
+    if(bval==-1)
+    {
+        printf("Bind failed\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
 void ChordService::sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode)
 {
     ClientRequest* req = new ClientRequest;
@@ -317,14 +346,7 @@ void ChordService::sendRequestToServer(string receiverIP,string key, string valu
         cerr<<"INET_ATON Failed\n"<<endl;
         exit(1);
     }
-    int client_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if(client_sockfd == -1)
-    {
-        cerr<<"Send: Could not create socket "<<endl;;
-        exit(1);
-    }
-
-
+    
     if(sendto(client_sockfd, msgBuffer, messageLen, 0,
                 (struct sockaddr*) &receiverAddr, sizeof(receiverAddr)) == -1)
     {
