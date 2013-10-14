@@ -213,19 +213,13 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 		std::list<string>::iterator successorIPListit;
 			
 		std::map<uint32_t,string>::iterator it = themap->begin();
-		uint32_t preID =it->first;
+		
 		for (it=themap->begin(); it!=themap->end(); ++it)
 		{
 			uint32_t tmpID = it->first;
 			string tmpIP = it->second;
     		cout << tmpID << " => " << tmpIP << endl;
-			if (tmpID<aID)
-			{
-				if (tmpID>preID)
-				{
-					preID=tmpID;
-				}
-			}
+			
 			fingerNodeit = fingerNodeList.begin();
 			fingerSuccessorit = fingerSuccessorList.begin();
 			successorIPListit = successorIPList.begin();
@@ -243,15 +237,20 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 				}
 				else
 				{
+					cout<<tmpID<<","<<(*fingerNodeit)<<","<<(*fingerSuccessorit)<<endl;
                     if ((*fingerNodeit)>(*fingerSuccessorit))
                     {
+						cout<<"fingerNodeit)>(*fingerSuccessorit"<<endl;
 						*fingerSuccessorit=tmpID;
 						*successorIPListit=tmpIP;
                     }
 					else 
 					{
+						cout<<"else~~~"<<endl;
 						if(tmpID<(*fingerSuccessorit))
 						{
+							cout<<tmpID<<","<<(*fingerSuccessorit)<<endl;
+							cout<<"final change here??"<<endl;
 							*fingerSuccessorit=tmpID;
 							*successorIPListit=tmpIP;
 						}
