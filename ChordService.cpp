@@ -235,7 +235,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 			{
 				if (tmpID<(*fingerNodeit))
 				{
-					if (tmpID<(*fingerSuccessorit))
+					if ((tmpID<(*fingerSuccessorit))&&(*fingerNodeit)>(*fingerSuccessorit))
 					{
 						*fingerSuccessorit=tmpID;
 						*successorIPListit=tmpIP;
@@ -258,10 +258,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 				}
 				i++;
 			}
-			if (preID<aID)
-			{
-				//Find the PreNode.
-			}
+			
 			printFingerTable();
 			
 		}
