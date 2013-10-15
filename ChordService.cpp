@@ -14,6 +14,10 @@
 #include <map>
 #include <math.h>
 #include <sys/time.h>
+#include <fstream> 
+#include <dirent.h>
+#include <vector>
+#include <sys/stat.h>
 
 
 #include "Node.h"
@@ -23,7 +27,7 @@
 
 using namespace std;
 
-ChordService::ChordService():localNode(NULL),preNode(NULL)
+ChordService::ChordService():localNode(NULL),preNode(NULL),myDirectory("/tmp/zyang/")
 {
 	localNode = new Node();
 	cout<<"Initialize finger table"<<endl;
@@ -37,6 +41,9 @@ ChordService::ChordService():localNode(NULL),preNode(NULL)
         successorIPList.push_back(aIP);
     }
 	printFingerTable();
+	mkDirectory(myDirectory);
+	//Remove all files.
+	system("exec rm -r /tmp/zyang");
 }
 
 ChordService::~ChordService()
@@ -46,6 +53,28 @@ ChordService::~ChordService()
 
 	delete preNode;
 	preNode = NULL;
+}
+
+int ChordService::mkDirectory(const string s)
+{
+    size_t pre=0,pos;
+    std::string dir;
+    int mdret;
+
+    if(s[s.size()-1]!='/'){
+        // force trailing / so we can handle everything in loop
+        s+='/';
+    }
+
+    while((pos=s.find_first_of('/',pre))!=std::string::npos){
+        dir=s.substr(0,pos++);
+        pre=pos;
+        if(dir.size()==0) continue; // if leading / first time is 0 length
+        if((mdret=mkdir(dir.c_str(),mode)) && errno!=EEXIST){
+            return mdret;
+        }
+    }
+    return mdret;
 }
 
 int ChordService::receiveReply(std::map<uint32_t,string>* themap)
@@ -550,7 +579,77 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 	return 0;
 	
 }
+void ChordService::getFileList(std::vector<string> &out)
+{
+	DIR *dir;
+    class dirent *ent;
+    class stat st;
 
+    dir = opendir(myDirectory);
+    while ((ent = readdir(dir)) != NULL) {
+    	const string file_name = ent->d_name;
+    	const string full_file_name = directory + "/" + file_name;
+
+    	if (file_name[0] == '.')
+    		continue;
+
+    	if (stat(full_file_name.c_str(), &st) == -1)
+    		continue;
+
+    	const bool is_directory = (st.st_mode & S_IFDIR) != 0;
+
+    	if (!is_directory)
+    		continue;
+
+    	out.push_back(full_file_name);
+    }
+    closedir(dir);
+}
+void ChordService::setupCache()
+{
+	/*
+	vector<string> aFileList;
+	getFileList(aFileList);
+	for (std::vector<int>::iterator it = myvector.begin() ; it != myvector.end(); ++it)
+	{
+		readFile((*it).c_str());
+	}
+	*/
+	
+}
+
+void ChordService::readFile(cont char* fileName)
+{
+	/*
+	cout<<"Begin to read file: "<<readFile<<endl;
+	ofstream o_file;  
+	ifstream i_file;  
+	string out_text;  
+	
+	o_file.open(fileName);  
+	for (int i = 1; i < = 10; i++)  
+	{  
+	
+	}  
+	o_file.close();  
+	//read
+	i_file.open(filename);  
+	if (i_file.is_open())  
+	{  
+	while (i_file.good())  
+	{  
+	i_file >> out_text; //  
+	cout < <  out_text < <  endl;
+	 
+	}  
+	}  
+	else  
+	
+	i_file.close();  
+	system("PAUSE");  
+	return 0;
+	*/
+}
 int main(int argc, char* argv[])
 {
 	ChordService* myService = new ChordService();
@@ -789,14 +888,8 @@ int main(int argc, char* argv[])
 							 if(result==1)
 							 {
 							 	//store data
-							 	//send back to client
-									 	
+							 	//send back to client 	
 								cout<<"Send successful response message"<<endl;
-								
-								              
-
-								
-
 								if (!fork()) 
 								{ // this is the child process
 									//close(sockfd); // child doesn't need the listener
