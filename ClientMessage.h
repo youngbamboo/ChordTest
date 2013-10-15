@@ -41,7 +41,6 @@ typedef struct{
 	char* key;
 	char* value;
 	char* client_IP;
-
 }ClientRequest;
 
 typedef struct{

@@ -57,6 +57,7 @@ ChordService::~ChordService()
 
 int ChordService::mkDirectory(const string s)
 {
+    /*
     size_t pre=0,pos;
     std::string dir;
     int mdret;
@@ -75,6 +76,8 @@ int ChordService::mkDirectory(const string s)
         }
     }
     return mdret;
+    */
+    return 1;
 }
 
 int ChordService::receiveReply(std::map<uint32_t,string>* themap)
@@ -235,7 +238,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 	else
 	{
 		cout<<"There are nodes in the ring"<<endl;
-		printFingerTable()
+		printFingerTable();
 		//Something in the ring.
 
 		std::list<uint32_t>::iterator fingerNodeit;
@@ -579,6 +582,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 	return 0;
 	
 }
+/*
 void ChordService::getFileList(std::vector<string> &out)
 {
 	DIR *dir;
@@ -605,6 +609,8 @@ void ChordService::getFileList(std::vector<string> &out)
     }
     closedir(dir);
 }
+*/
+
 void ChordService::setupCache()
 {
 	/*
@@ -618,7 +624,7 @@ void ChordService::setupCache()
 	
 }
 
-void ChordService::readFile(cont char* fileName)
+void ChordService::readFile(const char* fileName)
 {
 	/*
 	cout<<"Begin to read file: "<<readFile<<endl;
@@ -851,26 +857,43 @@ int main(int argc, char* argv[])
 						{
 	                         // It's a put key-value message
 	                         //Format: "key//value"
-	                         ClientRequest* clientMsg = new ClientRequest;
-							 memcpy(clientMsg, maxMessage, sizeof(ClientRequest));
+	                         //ClientRequest* clientMsg = new ClientRequest;
+							 //memcpy(clientMsg, maxMessage, sizeof(ClientRequest));
 							 
 							 string data = maxMessage;
+                             //Find the length report first
+                             int comma=data.find(',');
+                             int initNode_length = atoi(data.substr(0,comma).c_str());
+                             data.erase(0,comma+1);
+
+                             comma=data.find(',');
+                             int key_length=atoi(data.substr(0,comma).c_str());
+                             data.erase(0,comma+1);
+
+                             comma=data.find(',');
+                             int value_length=atoi(data.substr(0,comma).c_str());
+                             data.erase(0,comma+1);
+
+                             comma=data.find(',');
+                             int clientIP_length=atoi(data.substr(0,comma).c_str());
+                             data.erase(0,comma+1);
+
+                             cout<<"The pure buffer is: "<<data<<endl;
 						 
-							 long len=sizeof(ClientRequest);
-							 string initNode = data.substr(0+len,clientMsg->initialNode_length);
+							 //long len=sizeof(ClientRequest);
+                             int len=0;
+							 string initNode = data.substr(len,initNode_length);
 							 
-							 len += clientMsg->initialNode_length;
-							 string key = data.substr(len,clientMsg->key_length);
-							 
-							 len += clientMsg->key_length;
-							 string value = data.substr(len,clientMsg->value_length);
+							 len += initNode_length;
+							 string key = data.substr(len,key_length);
 
-							 len +=clientMsg->value_length;
-							 string clientIP = data.substr(len,clientMsg->clientIP_length);
+							 len += key_length;
+							 string value = data.substr(len,value_length);
 
+							 len +=value_length;
+							 string clientIP = data.substr(len,clientIP_length);
 							 
 							 uint32_t theHash = myService->getLocalNode()->buildHashID(key);
-							
 							 
 							 cout<<"Message from client:"<<endl;
 							 cout<<"Key: "<<key<<endl;

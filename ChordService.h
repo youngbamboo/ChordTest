@@ -32,7 +32,7 @@ class ChordService {
 
 		void getFileList();
 		void setupCache();
-		void readFile(cont char* fileName);
+		void readFile(const char* fileName);
 		int mkDirectory(const string s);
 	private:
 		Node* localNode;

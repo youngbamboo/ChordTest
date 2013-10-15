@@ -141,43 +141,51 @@ void setSystemParam()
         printf("Bind failed\n");
         exit(EXIT_FAILURE);
     }
+    
 }
 
 
 void sendRequestToServer(string receiverIP,string key, string value, string clientIP)
 {
-    ClientRequest* req = new ClientRequest;
+    cout<<"sendRequestToServer "<<receiverIP<<" "<<key<<" "<<value<<" "<<clientIP<<endl;
+    //ClientRequest req;
 	string initialNode_fake="65536";
 	
-	req->key_length=key.length();
-	req->value_length=value.length();
-	req->initialNode_length=initialNode_fake.length();
-	req->clientIP_length=clientIP.length();
+	//req.key_length=key.length();
+	//req.value_length=value.length();
+	//req.initialNode_length=initialNode_fake.length();
+	//req.clientIP_length=clientIP.length();
 	
-	char* msgBuffer = NULL;
-	long messageLen = 0;
-	messageLen = sizeof(ClientRequest) +  key.length() + value.length()+ initialNode_fake.length() + clientIP.length();
-	
-	msgBuffer = new char[messageLen];
-	memcpy(msgBuffer,req,sizeof(ClientRequest));
-	memcpy(msgBuffer+sizeof(ClientRequest),initialNode_fake.c_str(),initialNode_fake.length());
-	memcpy(msgBuffer+sizeof(ClientRequest)+initialNode_fake.length(),key.c_str(),key.length());
-	memcpy(msgBuffer+sizeof(ClientRequest)+initialNode_fake.length()+key.length(),value.c_str(),value.length());
-	memcpy(msgBuffer+sizeof(ClientRequest)+key.length()+value.length()+initialNode_fake.length(),clientIP.c_str(),clientIP.length());
-	
+	//char* msgBuffer = NULL;
+    string lengthReport = std::to_string(initialNode_fake.length())+","+to_string(key.length())+","
+        +to_string(value.length())+","+to_string(clientIP.length())+",";
+	//long messageLen = 0;
+	//messageLen = sizeof(req) +  key.length() + value.length()+ initialNode_fake.length() + clientIP.length();
+	//messageLen = key.length() + value.length()+ initialNode_fake.length() + clientIP.length();
+	//msgBuffer = new char[messageLen];
+    //char msgBuffer[messageLen];
+    //cout<<"size of req "<<sizeof(req)<<endl;
+    //cout<<"msg length is "<<messageLen<<endl;
+	//memcpy(msgBuffer,&req,sizeof(req));
+    //cout<<"msgBuffer 1 "<<msgBuffer<<endl;
+	//memcpy(msgBuffer+sizeof(ClientRequest),initialNode_fake.c_str(),initialNode_fake.length());
+	//memcpy(msgBuffer+sizeof(ClientRequest)+initialNode_fake.length(),key.c_str(),key.length());
+	//memcpy(msgBuffer+sizeof(ClientRequest)+initialNode_fake.length()+key.length(),value.c_str(),value.length());
+	//memcpy(msgBuffer+sizeof(ClientRequest)+key.length()+value.length()+initialNode_fake.length(),clientIP.c_str(),clientIP.length());
+	string msgBuffer=lengthReport+initialNode_fake+key+value+clientIP;
 	struct sockaddr_in receiverAddr;
 
     memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
     receiverAddr.sin_family = AF_INET;
     receiverAddr.sin_port = htons(CLIENT_PORT);
+    cout<<"msgBuffer "<<msgBuffer<<endl;
 
     if(inet_aton(receiverIP.c_str(), &receiverAddr.sin_addr) == 0)
 	{
         cerr<<"INET_ATON Failed\n"<<endl;
         exit(1);
     }
-
-    if(sendto(client_sockfd, msgBuffer, messageLen, 0,
+    if(sendto(client_sockfd, msgBuffer.c_str(), msgBuffer.length(), 0,
                 (struct sockaddr*) &receiverAddr, sizeof(receiverAddr)) == -1)
     {
 
@@ -187,7 +195,7 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	{
         cerr<<"Successfully send to "<<receiverIP<<" with data "<<msgBuffer<<endl;
     }
-
+    
 }
 
 
