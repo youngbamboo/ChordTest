@@ -13,9 +13,9 @@
 
 typedef struct{
 
-    uint32_t type; // 2/3 for server req/resp message
+    int type; // 2/3 for server req/resp message
     char senderID[20];
-    uint32_t numParameters; // Number of parameters for the command
+    int numParameters; // Number of parameters for the command
     int* paramLenArray; // Length of each parameter
     char* parameters; // First parameter is the command name(or function name), second
     // parameter is IP address and then any other function parameters.
@@ -25,9 +25,9 @@ typedef struct{
 }command;
 
 typedef struct{
-    uint32_t type; // Always 1
-    uint32_t numParameters; // Number of parameters
-    uint32_t result; // 0 for failure and 1 for success
+    int type; // Always 1
+    int numParameters; // Number of parameters
+    int result; // 0 for failure and 1 for success
     int* paramLenArray;
     char* parameters;
 }ClientResponse;
@@ -45,7 +45,7 @@ typedef struct{
 
 typedef struct{
 
-    uint32_t type;
+    int type;
 
     //number of entries to be stored at the successor before leaving
     int nEntries;
@@ -71,7 +71,7 @@ typedef struct{
 
 typedef struct{
 
-    uint32_t type;
+    int type;
 
     //successors IP length
     
@@ -85,7 +85,7 @@ typedef struct{
 }LeaveMsgForPredecessor;
 
 typedef struct{
-    uint32_t type; // PING TYPE
+    int type; // PING TYPE
 }pingMsg;
 
 

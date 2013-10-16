@@ -24,13 +24,13 @@ class Node {
 		inline int getClientPort() {return myClientPort;};
 		inline string getIP() {return myIP;};
 		inline string getHostName() {return myHostName;};
-		uint32_t buildHashID(const string theStr);
-		inline uint32_t getHashID() {return myID;};
-		void setReplyList(list<uint32_t>* theList);
+		int buildHashID(const string theStr);
+		inline int getHashID() {return myID;};
+		void setReplyList(list<int>* theList);
 	private:
 		string myHostName;
 		string myIP;
-		uint32_t myID;
+		int myID;
 		const int myBroadcastPort;
 		const int myReceivePort;
 		const int myClientPort;

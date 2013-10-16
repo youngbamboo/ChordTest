@@ -58,7 +58,7 @@ int Node::buildHashID(const string theStr)
 	
 	//string nodeIP=getIP();
 	//const char* p = nodeIP.c_str();
-	uint32_t h = 0;
+	int h = 0;
 	int i;
     for ( i = 0; i < theStr.length(); i++ ) 
 	{
