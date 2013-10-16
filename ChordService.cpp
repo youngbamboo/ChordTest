@@ -30,7 +30,7 @@ using namespace std;
 std::mutex mtx; 
 
 
-ChordService::ChordService():localNode(NULL),preNode(NULL),myDirectory("/tmp/zyang/"),
+ChordService::ChordService():localNode(NULL),preNode(NULL),myDirectory("/tmp/zyang/")
 {
 	localNode = new Node();
 	cout<<"Initialize finger table"<<endl;
