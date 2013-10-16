@@ -906,6 +906,11 @@ int main(int argc, char* argv[])
 			                            exit(1);
 			                        }
 			                        cliaddr.sin_port = htons(9999);
+									if(inet_aton(clientIP.c_str(), &cliaddr.sin_addr) == 0)
+									{
+								        cerr<<"INET_ATON Failed\n"<<endl;
+								        exit(1);
+								    }
 			                        if ((numbytes=sendto(sendfd, result.c_str(), result.length(), 0,
 			                                                (struct sockaddr *)&cliaddr, sizeof cliaddr)) == -1) 
 			                        {
