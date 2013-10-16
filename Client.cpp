@@ -247,20 +247,20 @@ int main(int argc,char **argv)
             case 0:
                 {
                     cout<< "You selected put key-value one by one"<<endl;
-                    cout<< "Please enter the key: ";
+                    cout<< "Please enter the key"<<endl;
 
-                    char key[128];
-                    std::cin.getline(key,128);
+                    string key;
+                    getline(cin,key);
 
-					cout<< "Please enter the value: ";
+					cout<< "Please enter the value"<<endl;
 
-                    char value[256];                    
-					std::cin.getline(value,256);
+                    string value;
+                    cin>>value;
 
-                    cout<< "Please enter the server ip: ";
+                    cout<< "Please enter the server ip"<<endl;
 
-                    char serverIP[32];
-                    std::cin.getline(serverIP,32);
+                    string serverIP;
+                    cin>>serverIP;
 
                                     	
                     sendRequestToServer(serverIP,key,value,selfIP);
