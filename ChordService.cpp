@@ -200,7 +200,7 @@ int ChordService::receiveReply(std::map<int,string>* themap)
        }
 	   */
 	   char buf[1024] = {0};
-       n =recvfrom(fd, buf.c_str(), 1024, MSG_DONTWAIT, (struct sockaddr *)&cliaddr, &cli_addr_len);
+       n =recvfrom(fd, buf, 1024, MSG_DONTWAIT, (struct sockaddr *)&cliaddr, &cli_addr_len);
        if (n>0)
        {
            cout<<buf<<endl;
