@@ -29,11 +29,6 @@
 using namespace std;
 std::mutex mtx; 
 
-list<uint32_t> fingerNodeList;
-list<uint32_t> fingerSuccessorList;
-list<string> successorIPList;
-
-
 
 ChordService::ChordService():localNode(NULL),preNode(NULL),myDirectory("/tmp/zyang/")
 {
@@ -268,7 +263,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 			successorIPListit = successorIPList.begin();
 			//int i=0;
 			for(;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
-			fingerNodeit++,fingerSuccessorit++,successorIPListit++)
+			++fingerNodeit,++fingerSuccessorit,++successorIPListit)
 			{
 				if (tmpID<(*fingerNodeit))
 				{
@@ -325,7 +320,7 @@ void ChordService::printFingerTable()
 	std::list<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
 	std::list<string>::iterator successorIPListit = successorIPList.begin();
 	for (;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
-			fingerNodeit++,fingerSuccessorit++,successorIPListit++)
+			++fingerNodeit,++fingerSuccessorit,++successorIPListit)
 	{
 		cout<<*fingerNodeit<<" "<<*fingerSuccessorit<<" "<<*successorIPListit<<endl;
 	}
