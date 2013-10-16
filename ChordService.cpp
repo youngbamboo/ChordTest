@@ -920,7 +920,7 @@ int main(int argc, char* argv[])
 	                        }
 							close(sendfd);
 						}
-						close(newfd);
+						//close(newfd);
 						
 					}
 					else if (i == clientSocket)
@@ -1022,7 +1022,7 @@ int main(int argc, char* argv[])
 			                        }
 									close(sendfd);
 								}
-								close(recvRet);
+								//close(recvRet);
 							 }
 							 else
 							 {
