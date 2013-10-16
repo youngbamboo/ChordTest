@@ -493,7 +493,6 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 	int myLength = calculateLength(localID,thekey,initNode);
 	cout<<"myLength:"<<myLength<<endl;
 	
-	string tmpIP;
 	int tmpID;
 	
 	int successorLength;
@@ -507,7 +506,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 		if(smallestLength>=successorLength)
 		{
 			smallestLength=successorLength;
-			tmpIP=*successorIPListit;
+			theIP=*successorIPListit;
 			tmpID=*fingerSuccessorit;
 		}
 		if((*fingerSuccessorit)>initNode)
@@ -524,11 +523,12 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 		cout<<"It's myself ~~~~~~"<<myLength<<" "<<smallestLength<<endl;
 		return 1;
 	}
+	
 	cout<<"For this node:"<<endl;
 	cout<<"FingerTable: "<<endl;
 	printFingerTable();
 	cout<<"Own ID: "<<localID<<endl;
-	cout<<"The shortest is "<<tmpID<<" "<<tmpIP<<endl;
+	cout<<"The shortest is "<<tmpID<<" "<<theIP<<endl;
 	
 	return 0;
 }
