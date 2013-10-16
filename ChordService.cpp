@@ -31,21 +31,17 @@ std::mutex mtx;
 
 
 ChordService::ChordService():localNode(NULL),preNode(NULL),myDirectory("/tmp/zyang/"),
-	fingerNodeList(NULL),fingerSuccessorList(NULL),successorIPList(NULL)
 {
 	localNode = new Node();
 	cout<<"Initialize finger table"<<endl;
 	int aID = this->getLocalNode()->getHashID();
 	string aIP = this->getLocalNode()->getIP();
-	fingerNodeList = new list<int> ;
-	fingerSuccessorList = new list<int>;
-	successorIPList = new list<string>;
 	for (int i=1;i<=16;i++)
     {
 		int key = (int)fmod(aID+pow(2,i-1),65535);
-        fingerNodeList->push_back(key);
-        fingerSuccessorList->push_back(aID);
-        successorIPList->push_back(aIP);
+        fingerNodeList.push_back(key);
+        fingerSuccessorList.push_back(aID);
+        successorIPList.push_back(aIP);
     }
 	//setSystemParam();
 	printFingerTable();
@@ -61,16 +57,6 @@ ChordService::~ChordService()
 
 	delete preNode;
 	preNode = NULL;
-
-	delete fingerNodeList;
-	fingerNodeList=NULL;
-	
-	delete fingerSuccessorList;
-	fingerSuccessorList=NULL;
-	
-	delete successorIPList;
-	successorIPList=NULL;
-	
 }
 
 int ChordService::mkDirectory(const string s)
@@ -273,11 +259,11 @@ void ChordService::buildFingerTable(std::map<int,string>* themap)
 			string tmpIP = it->second;
     		cout << tmpID << " => " << tmpIP << endl;
 			
-			fingerNodeit = fingerNodeList->begin();
-			fingerSuccessorit = fingerSuccessorList->begin();
-			successorIPListit = successorIPList->begin();
+			fingerNodeit = fingerNodeList.begin();
+			fingerSuccessorit = fingerSuccessorList.begin();
+			successorIPListit = successorIPList.begin();
 			//int i=0;
-			for(;fingerNodeit!=fingerNodeList->end()&&fingerSuccessorit!=fingerSuccessorList->end()&&successorIPListit!=successorIPList->end();
+			for(;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			++fingerNodeit,++fingerSuccessorit,++successorIPListit)
 			{
 				if (tmpID<(*fingerNodeit))
@@ -343,15 +329,15 @@ void ChordService::printFingerTable()
 {
 	mtx.lock();
 	cout<<"Finger Table: "<<endl;
-	cout<<"Node: "<<fingerNodeList->size()<<endl;
-	cout<<"Successor: "<<fingerSuccessorList->size()<<endl;
-	cout<<"IP: "<<successorIPList->size()<<endl;
+	cout<<"Node: "<<fingerNodeList.size()<<endl;
+	cout<<"Successor: "<<fingerSuccessorList.size()<<endl;
+	cout<<"IP: "<<successorIPList.size()<<endl;
 	
-	std::list<int>::iterator fingerNodeit = fingerNodeList->begin();
-	std::list<int>::iterator fingerSuccessorit = fingerSuccessorList->begin();
-	std::list<string>::iterator successorIPListit = successorIPList->begin();
+	std::list<int>::iterator fingerNodeit = fingerNodeList.begin();
+	std::list<int>::iterator fingerSuccessorit = fingerSuccessorList.begin();
+	std::list<string>::iterator successorIPListit = successorIPList.begin();
 
-	for (;fingerNodeit!=fingerNodeList->end()&&fingerSuccessorit!=fingerSuccessorList->end()&&successorIPListit!=successorIPList->end();
+	for (;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			++fingerNodeit,++fingerSuccessorit,++successorIPListit)
 	{
 		cout<<&(*fingerNodeit)<<":"<<*fingerNodeit<<" "
@@ -486,7 +472,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 	if (thekey>initNode)
 	{
         cout<<"~~~~~thekey>initNode"<<endl;
-		for (;fingerSuccessorit!=fingerSuccessorList->end()&&successorIPListit!=successorIPList->end();
+		for (;fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			fingerSuccessorit++,successorIPListit++)
 		{
 			if((*fingerSuccessorit)==thekey)
@@ -499,7 +485,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 			else if ((*fingerSuccessorit)>thekey)
 			{
                 cout<<"~2"<<endl;
-				if((*fingerSuccessorit)==fingerSuccessorList->front())
+				if((*fingerSuccessorit)==fingerSuccessorList.front())
 				{
                     cout<<"~3"<<endl;
 					//My first successor is bigger than key, choose between local and successor
@@ -544,7 +530,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 	if (thekey<initNode)
 	{		
         cout<<"~8"<<endl;
-		for (;fingerSuccessorit!=fingerSuccessorList->end()&&successorIPListit!=successorIPList->end();
+		for (;fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			fingerSuccessorit++,successorIPListit++)
 		{
 			if((*fingerSuccessorit)==localID)
@@ -570,7 +556,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 						||(*fingerSuccessorit)>=initNode )
 					{
                         cout<<"~13"<<endl;
-						if((*fingerSuccessorit)==fingerSuccessorList->front())
+						if((*fingerSuccessorit)==fingerSuccessorList.front())
 						{
                             cout<<"~14"<<endl;
 							//My first successor is bigger than key, choose between local and successor
@@ -896,13 +882,13 @@ int main(int argc, char* argv[])
 				{
 					if(i == chordSocket)
 					{
-						/*
+						
 						list<int> tmpList=myService->fingerSuccessorList;
 						cout<<"copy~~~~~~~~~~~~"<<endl;
 						for (std::list<int>::iterator it=tmpList.begin(); it != tmpList.end(); ++it)
     								cout << ' ' << *it<<" ";
 						cout<<endl;
-						*/
+						
 						cout<<"Received broadcast message"<<endl;
 						struct sockaddr_in cliaddr;
 						socklen_t cli_addr_len;

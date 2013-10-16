@@ -36,9 +36,9 @@ class ChordService {
 		int mkDirectory(const string s);
 		void printFingerTable();
 		
-		list<int>* fingerNodeList;
-		list<int>* fingerSuccessorList;
-		list<string>* successorIPList;
+		static list<int> fingerNodeList;
+		static list<int> fingerSuccessorList;
+		static list<string> successorIPList;
 		
 	private:
 		Node* localNode;
