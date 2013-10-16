@@ -856,6 +856,11 @@ int main(int argc, char* argv[])
 				{
 					if(i == chordSocket)
 					{
+						list<uint32_t> tmpList=myService->fingerSuccessorList;
+						cout<<"copy~~~~~~~~~~~~"<<endl;
+						for (std::list<int>::iterator it=tmpList.begin(); it != tmpList.end(); ++it)
+    								std::cout << ' ' << *it<<endl;
+						
 						cout<<"Received broadcast message"<<endl;
 						struct sockaddr_in cliaddr;
 						socklen_t cli_addr_len;
