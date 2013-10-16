@@ -39,9 +39,9 @@ ChordService::ChordService():localNode(NULL),preNode(NULL),myDirectory("/tmp/zya
 	for (int i=1;i<=16;i++)
     {
 		int key = (int)fmod(aID+pow(2,i-1),65535);
-        fingerNodeList.push_back(key);
-        fingerSuccessorList.push_back(aID);
-        successorIPList.push_back(aIP);
+        ChordService::fingerNodeList.push_back(key);
+        ChordService::fingerSuccessorList.push_back(aID);
+        ChordService::successorIPList.push_back(aIP);
     }
 	//setSystemParam();
 	printFingerTable();
@@ -259,11 +259,12 @@ void ChordService::buildFingerTable(std::map<int,string>* themap)
 			string tmpIP = it->second;
     		cout << tmpID << " => " << tmpIP << endl;
 			
-			fingerNodeit = fingerNodeList.begin();
-			fingerSuccessorit = fingerSuccessorList.begin();
-			successorIPListit = successorIPList.begin();
+			fingerNodeit = ChordService::fingerNodeList.begin();
+			fingerSuccessorit = ChordService::fingerSuccessorList.begin();
+			successorIPListit = ChordService::successorIPList.begin();
 			//int i=0;
-			for(;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
+			for(;fingerNodeit!=ChordService::fingerNodeList.end()&&fingerSuccessorit!=ChordService::fingerSuccessorList.end()
+				&&successorIPListit!=ChordService::successorIPList.end();
 			++fingerNodeit,++fingerSuccessorit,++successorIPListit)
 			{
 				if (tmpID<(*fingerNodeit))
@@ -329,15 +330,16 @@ void ChordService::printFingerTable()
 {
 	mtx.lock();
 	cout<<"Finger Table: "<<endl;
-	cout<<"Node: "<<fingerNodeList.size()<<endl;
-	cout<<"Successor: "<<fingerSuccessorList.size()<<endl;
-	cout<<"IP: "<<successorIPList.size()<<endl;
+	cout<<"Node: "<<ChordService::fingerNodeList.size()<<endl;
+	cout<<"Successor: "<<ChordService::fingerSuccessorList.size()<<endl;
+	cout<<"IP: "<<ChordService::successorIPList.size()<<endl;
 	
-	std::list<int>::iterator fingerNodeit = fingerNodeList.begin();
-	std::list<int>::iterator fingerSuccessorit = fingerSuccessorList.begin();
-	std::list<string>::iterator successorIPListit = successorIPList.begin();
+	std::list<int>::iterator fingerNodeit = ChordService::fingerNodeList.begin();
+	std::list<int>::iterator fingerSuccessorit = ChordService::fingerSuccessorList.begin();
+	std::list<string>::iterator successorIPListit = ChordService::successorIPList.begin();
 
-	for (;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
+	for (;fingerNodeit!=ChordService::fingerNodeList.end()&&fingerSuccessorit!=ChordService::fingerSuccessorList.end()
+		&&successorIPListit!=ChordService::successorIPList.end();
 			++fingerNodeit,++fingerSuccessorit,++successorIPListit)
 	{
 		cout<<&(*fingerNodeit)<<":"<<*fingerNodeit<<" "
@@ -472,7 +474,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 	if (thekey>initNode)
 	{
         cout<<"~~~~~thekey>initNode"<<endl;
-		for (;fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
+		for (;fingerSuccessorit!=ChordService::fingerSuccessorList.end()&&successorIPListit!=ChordService::successorIPList.end();
 			fingerSuccessorit++,successorIPListit++)
 		{
 			if((*fingerSuccessorit)==thekey)
@@ -485,7 +487,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 			else if ((*fingerSuccessorit)>thekey)
 			{
                 cout<<"~2"<<endl;
-				if((*fingerSuccessorit)==fingerSuccessorList.front())
+				if((*fingerSuccessorit)==ChordService::fingerSuccessorList.front())
 				{
                     cout<<"~3"<<endl;
 					//My first successor is bigger than key, choose between local and successor
@@ -530,7 +532,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 	if (thekey<initNode)
 	{		
         cout<<"~8"<<endl;
-		for (;fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
+		for (;fingerSuccessorit!=ChordService::fingerSuccessorList.end()&&successorIPListit!=ChordService::successorIPList.end();
 			fingerSuccessorit++,successorIPListit++)
 		{
 			if((*fingerSuccessorit)==localID)
@@ -556,7 +558,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 						||(*fingerSuccessorit)>=initNode )
 					{
                         cout<<"~13"<<endl;
-						if((*fingerSuccessorit)==fingerSuccessorList.front())
+						if((*fingerSuccessorit)==ChordService::fingerSuccessorList.front())
 						{
                             cout<<"~14"<<endl;
 							//My first successor is bigger than key, choose between local and successor
@@ -883,7 +885,7 @@ int main(int argc, char* argv[])
 					if(i == chordSocket)
 					{
 						
-						list<int> tmpList=myService->fingerSuccessorList;
+						list<int> tmpList=ChordService::fingerSuccessorList;
 						cout<<"copy~~~~~~~~~~~~"<<endl;
 						for (std::list<int>::iterator it=tmpList.begin(); it != tmpList.end(); ++it)
     								cout << ' ' << *it<<" ";
