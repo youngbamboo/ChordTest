@@ -28,6 +28,9 @@
 
 using namespace std;
 std::mutex mtx; 
+static list<int> ChordService::fingerNodeList;
+static list<int> ChordService::fingerSuccessorList;
+static list<string> ChordService::successorIPList;
 
 
 ChordService::ChordService():localNode(NULL),preNode(NULL),myDirectory("/tmp/zyang/")
