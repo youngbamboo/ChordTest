@@ -490,7 +490,8 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 	{
 		return 1;
 	}
-
+	
+	int myLength;
 	//First node should only go clockwise.
 	if(localID>thekey)
 	{
@@ -501,7 +502,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 		myLength=thekey-localID;
 	}
 	
-	int myLength = calculateLength(localID,thekey,initNode);
+	//int myLength = calculateLength(localID,thekey,initNode);
 	cout<<"myLength:"<<myLength<<endl;
 	
 	int tmpID;
