@@ -248,7 +248,7 @@ void ChordService::buildFingerTable(std::map<int,string>* themap)
 
 		std::list<int>::iterator fingerNodeit;
 		std::list<int>::iterator fingerSuccessorit;
-		std::list<int>::iterator successorIPListit;
+		std::list<string>::iterator successorIPListit;
 			
 		std::map<int,string>::iterator it = themap->begin();
 		
