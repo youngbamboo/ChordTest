@@ -776,7 +776,7 @@ int main(int argc, char* argv[])
 	cout<<"After ~~~~~"<<endl;
 	myService->printFingerTable();
 
-	delete mymap;
+	mymap.clear();
 
 
 	//Initialization is finished.
@@ -875,6 +875,7 @@ int main(int argc, char* argv[])
 						myService->printFingerTable();
 
 						myService->buildFingerTable(&tmpMap);
+						tmpMap.clear();
 
 						cout<<"After ~~~~~"<<endl;
 						myService->printFingerTable();
