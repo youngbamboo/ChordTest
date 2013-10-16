@@ -246,9 +246,9 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 		//printFingerTable();
 		//Something in the ring.
 
-		std::vector<uint32_t>::iterator fingerNodeit;
-		std::vector<uint32_t>::iterator fingerSuccessorit;
-		std::vector<string>::iterator successorIPListit;
+		std::list<uint32_t>::iterator fingerNodeit;
+		std::list<uint32_t>::iterator fingerSuccessorit;
+		std::list<string>::iterator successorIPListit;
 			
 		std::map<uint32_t,string>::iterator it = themap->begin();
 		
@@ -316,9 +316,9 @@ void ChordService::printFingerTable()
 	cout<<"Successor: "<<fingerSuccessorList.size()<<endl;
 	cout<<"IP: "<<successorIPList.size()<<endl;
 	
-	std::vector<uint32_t>::iterator fingerNodeit = fingerNodeList.begin();
-	std::vector<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
-	std::vector<string>::iterator successorIPListit = successorIPList.begin();
+	std::list<uint32_t>::iterator fingerNodeit = fingerNodeList.begin();
+	std::list<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
+	std::list<string>::iterator successorIPListit = successorIPList.begin();
 	for (;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			++fingerNodeit,++fingerSuccessorit,++successorIPListit)
 	{
@@ -414,8 +414,8 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 {
     cout<<"Begin to find finger table"<<endl;
 	//First check my node...
-	std::vector<uint32_t>::iterator fingerSuccessorit;
-	std::vector<string>::iterator successorIPListit;
+	std::list<uint32_t>::iterator fingerSuccessorit;
+	std::list<string>::iterator successorIPListit;
 	uint32_t compare = 65535;
 	uint32_t tmpNode;
 	string tmpIP;
@@ -639,7 +639,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 	
 }
 /*
-void ChordService::getFileList(std::vector<string> &out)
+void ChordService::getFileList(std::list<string> &out)
 {
 	DIR *dir;
     class dirent *ent;
@@ -670,9 +670,9 @@ void ChordService::getFileList(std::vector<string> &out)
 void ChordService::setupCache()
 {
 	/*
-	vector<string> aFileList;
+	list<string> aFileList;
 	getFileList(aFileList);
-	for (std::vector<int>::iterator it = myvector.begin() ; it != myvector.end(); ++it)
+	for (std::list<int>::iterator it = mylist.begin() ; it != mylist.end(); ++it)
 	{
 		readFile((*it).c_str());
 	}

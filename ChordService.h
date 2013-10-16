@@ -35,12 +35,13 @@ class ChordService {
 		void readFile(const char* fileName);
 		int mkDirectory(const string s);
 		void printFingerTable();
+		list<uint32_t> fingerNodeList;
+		list<uint32_t> fingerSuccessorList;
+		list<string> successorIPList;
 	private:
 		Node* localNode;
 		Node* preNode;
-		volatile  vector<uint32_t> fingerNodeList;
-		volatile vector<uint32_t> fingerSuccessorList;
-		volatile vector<string> successorIPList;
+		
 		//cache the data in this machine
 		//map<string,string>* themap;
 		//used for when this node is taken as a client
