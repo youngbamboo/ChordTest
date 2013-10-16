@@ -28,11 +28,6 @@
 
 using namespace std;
 std::mutex mtx; 
-list<uint32_t> fingerNodeList;
-list<uint32_t> fingerSuccessorList;
-list<string> successorIPList;
-
-
 ChordService::ChordService():localNode(NULL),preNode(NULL),myDirectory("/tmp/zyang/")
 {
 	localNode = new Node();
