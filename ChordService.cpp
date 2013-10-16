@@ -473,6 +473,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 	int localID = getLocalNode()->getHashID();
 
 	int myLength = calculateLength(localID,thekey);
+	cout<<"myLength:"<<myLength<<endl;
 	
 	string tmpIP;
 	int tmpID;
@@ -500,7 +501,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 
 	if(myLength<=smallestLength)
 	{
-		cout<<"It's myself ~~~~~~"<<endl;
+		cout<<"It's myself ~~~~~~"<<myLength<<" "<<smallestLength<<endl;
 		return 1;
 	}
 	cout<<"For this node:"<<endl;
