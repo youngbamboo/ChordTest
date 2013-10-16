@@ -321,6 +321,7 @@ void ChordService::printFingerTable()
 
 void ChordService::setSystemParam()
 {
+	/*
      //Socket variables for client
     int n;
     struct sockaddr_in servaddr;
@@ -346,6 +347,7 @@ void ChordService::setSystemParam()
         printf("Bind failed\n");
         exit(EXIT_FAILURE);
     }
+    */
 }
 
 void ChordService::sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode)
