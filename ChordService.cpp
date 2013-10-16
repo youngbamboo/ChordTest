@@ -273,13 +273,13 @@ void ChordService::buildFingerTable(std::map<int,string>* themap)
 					if ((tmpID<(*fingerSuccessorit))&&(*fingerNodeit)>(*fingerSuccessorit))
 					{
 						cout<<"tmpID<(*fingerSuccessorit))&&(*fingerNodeit)>(*fingerSuccessorit)"<<endl;
-						//*fingerSuccessorit=tmpID;
-						//*successorIPListit=tmpIP;
-						fingerSuccessorList.erase(fingerSuccessorit);
-						successorIPList.erase(successorIPListit);
+						*fingerSuccessorit=tmpID;
+						*successorIPListit=tmpIP;
+						//fingerSuccessorList.erase(fingerSuccessorit);
+						//successorIPList.erase(successorIPListit);
 						
-						fingerSuccessorList.insert(fingerSuccessorit,tmpID);
-						successorIPList.insert(successorIPListit,tmpIP);
+						//fingerSuccessorList.insert(fingerSuccessorit,tmpID);
+						//successorIPList.insert(successorIPListit,tmpIP);
 					}
 				}
 				else
@@ -288,13 +288,13 @@ void ChordService::buildFingerTable(std::map<int,string>* themap)
                     if ((*fingerNodeit)>(*fingerSuccessorit))
                     {
 						cout<<"fingerNodeit)>(*fingerSuccessorit"<<endl;
-						//*fingerSuccessorit=tmpID;
-						//*successorIPListit=tmpIP;
-						fingerSuccessorList.erase(fingerSuccessorit);
-						successorIPList.erase(successorIPListit);
+						*fingerSuccessorit=tmpID;
+						*successorIPListit=tmpIP;
+						//fingerSuccessorList.erase(fingerSuccessorit);
+						//successorIPList.erase(successorIPListit);
 						
-						fingerSuccessorList.insert(fingerSuccessorit,tmpID);
-						successorIPList.insert(successorIPListit,tmpIP);
+						//fingerSuccessorList.insert(fingerSuccessorit,tmpID);
+						//successorIPList.insert(successorIPListit,tmpIP);
                     }
 					else 
 					{
@@ -303,13 +303,13 @@ void ChordService::buildFingerTable(std::map<int,string>* themap)
 						{
 							cout<<tmpID<<","<<(*fingerSuccessorit)<<endl;
 							cout<<"final change here??"<<endl;
-							//*fingerSuccessorit=tmpID;
-							//*successorIPListit=tmpIP;
-							fingerSuccessorList.erase(fingerSuccessorit);
-							successorIPList.erase(successorIPListit);
+							*fingerSuccessorit=tmpID;
+							*successorIPListit=tmpIP;
+							//fingerSuccessorList.erase(fingerSuccessorit);
+							//successorIPList.erase(successorIPListit);
 							
-							fingerSuccessorList.insert(fingerSuccessorit,tmpID);
-							successorIPList.insert(successorIPListit,tmpIP);
+							//fingerSuccessorList.insert(fingerSuccessorit,tmpID);
+							//successorIPList.insert(successorIPListit,tmpIP);
 						}
 					}
 					//It is bigger than the (i-1) column
@@ -331,10 +331,11 @@ void ChordService::printFingerTable()
 	cout<<"Node: "<<fingerNodeList.size()<<endl;
 	cout<<"Successor: "<<fingerSuccessorList.size()<<endl;
 	cout<<"IP: "<<successorIPList.size()<<endl;
-	
+	/*
 	std::list<int>::iterator fingerNodeit = fingerNodeList.begin();
 	std::list<int>::iterator fingerSuccessorit = fingerSuccessorList.begin();
 	std::list<string>::iterator successorIPListit = successorIPList.begin();
+
 	for (;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			++fingerNodeit,++fingerSuccessorit,++successorIPListit)
 	{
@@ -342,6 +343,30 @@ void ChordService::printFingerTable()
 			<<&(*fingerSuccessorit)<<":"<<*fingerSuccessorit<<" "
 			<<&(*successorIPListit)<<":"<<*successorIPListit<<endl;
 	}
+	*/
+
+	std::list<int>::iterator fingerNodeit;
+	int n=1;
+	for (fingerNodeit=fingerNodeList.begin();fingerNodeit!=fingerNodeList.end();fingerNodeit++)
+	{
+		cout<<"["<<n<<"] "<<(*fingerNodeit)<<endl;
+		n++;
+	}
+
+	std::list<int>::iterator fingerSuccessorit;
+	n=1;
+	for(fingerSuccessorit=fingerSuccessorList.begin();fingerSuccessorit!=fingerSuccessorList.end();fingerSuccessorit++)
+	{
+		cout<<"["<<n<<"] "<<(*fingerSuccessorit)<<endl;
+	}
+
+	std::list<string>::iterator successorIPListit;
+	n=1;
+	for(successorIPListit=successorIPList.begin();successorIPListit!=successorIPList.end();successorIPListit++)
+	{
+		cout<<"["<<n<<"] "<<(*successorIPListit)<<endl;
+	}
+	
 }
 
 void ChordService::setSystemParam()
