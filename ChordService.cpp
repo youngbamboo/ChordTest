@@ -470,7 +470,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 {
 	cout<<"Begin to find finger table"<<endl;
 	std::list<int>::iterator fingerSuccessorit=ChordService::fingerSuccessorList.begin();
-    std::list<string>::iterator successorIPListit=ChordService::successorIPList.end();
+    std::list<string>::iterator successorIPListit=ChordService::successorIPList.begin();
 
 	int localID = getLocalNode()->getHashID();
 	if(localID==thekey)
