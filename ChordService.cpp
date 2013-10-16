@@ -267,8 +267,11 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 			{
 				if (tmpID<(*fingerNodeit))
 				{
+					cout<<"tmpID<(*fingerNodeit)"<<endl;
+					cout<<tmpID<<","<<(*fingerNodeit)<<","<<(*fingerSuccessorit)<<endl;
 					if ((tmpID<(*fingerSuccessorit))&&(*fingerNodeit)>(*fingerSuccessorit))
 					{
+						cout<<"tmpID<(*fingerSuccessorit))&&(*fingerNodeit)>(*fingerSuccessorit)"<<endl;
 						*fingerSuccessorit=tmpID;
 						*successorIPListit=tmpIP;
 					}
@@ -767,7 +770,9 @@ int main(int argc, char* argv[])
 
 	cout<<"Before ~~~~~"<<endl;
 	myService->printFingerTable();
+	
 	myService->buildFingerTable(&mymap);
+
 	cout<<"After ~~~~~"<<endl;
 	myService->printFingerTable();
 
