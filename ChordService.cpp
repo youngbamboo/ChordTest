@@ -438,6 +438,7 @@ void ChordService::sendRequestToServer(string receiverIP,string key, string valu
 int ChordService::calculateLength(int node,int key)
 {
 	int length;
+	/*
 	if(node > key)
 	{
 		length=(node-key)<(65535-node+key)?(node-key):(65535-node+key);
@@ -446,6 +447,19 @@ int ChordService::calculateLength(int node,int key)
 	{
 		length=(key-node)<(65535-key+node)?(key-node):(65535-key+node);
 	}
+	*/
+
+	//Just clockwise, or else it will be a mess...
+
+	if(node>key)
+	{
+		length=65535-node+key;
+	}
+	else
+	{
+		length=key-node;
+	}
+	
 	return length;
 }
 //request should be sent here
@@ -459,7 +473,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 	int localID = getLocalNode()->getHashID();
 
 	int myLength = calculateLength(localID,thekey);
-
+	
 	string tmpIP;
 	int tmpID;
 	
