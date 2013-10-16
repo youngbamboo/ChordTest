@@ -41,7 +41,7 @@ Node::~Node()
 //One-at-a-Time hash
 uint16_t Node::buildHashID(const string theStr)
 {
-/*
+
 	int len = theStr.length();
 	int hash = (int)(theStr[len/2]);
 	for(int i = 0; i < len; i ++)
@@ -54,10 +54,11 @@ uint16_t Node::buildHashID(const string theStr)
 		hash = hash *(-1);
 	}
 	return hash;
-	*/
+	
 	
 	//string nodeIP=getIP();
 	//const char* p = nodeIP.c_str();
+	/*
 	int h = 0;
 	int i;
     for ( i = 0; i < theStr.length(); i++ ) 
@@ -74,7 +75,7 @@ uint16_t Node::buildHashID(const string theStr)
 	h=h>>16;
 	
 	return (uint16_t)h;
-
+*/
 	/*
 	string nodeIP=getIP();
 	
