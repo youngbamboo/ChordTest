@@ -34,11 +34,11 @@ ChordService::ChordService():localNode(NULL),preNode(NULL),myDirectory("/tmp/zya
 {
 	localNode = new Node();
 	cout<<"Initialize finger table"<<endl;
-	unsigned aID = this->getLocalNode()->getHashID();
+	uint16_t aID = this->getLocalNode()->getHashID();
 	string aIP = this->getLocalNode()->getIP();
 	for (int i=1;i<=16;i++)
     {
-		unsigned key = (unsigned)fmod(aID+pow(2,i-1),65535);
+		uint16_t key = (uint16_t)fmod(aID+pow(2,i-1),65535);
         fingerNodeList.push_back(key);
         fingerSuccessorList.push_back(aID);
         successorIPList.push_back(aIP);
@@ -84,7 +84,7 @@ int ChordService::mkDirectory(const string s)
     return 1;
 }
 
-int ChordService::receiveReply(std::map<unsigned,string>* themap)
+int ChordService::receiveReply(std::map<uint16_t,string>* themap)
 {
     /*
 	cout<<"receiveReply: Waiting for reply..."<<endl;
@@ -203,13 +203,13 @@ int ChordService::receiveReply(std::map<unsigned,string>* themap)
        if (n>0)
        {
            cout<<buf<<endl;
-	       unsigned aID = atoi(buf);
+	       uint16_t aID = atoi(buf);
 	       cout<<"Recieve the id: "<< aID <<endl;
 	       char ipstr[INET6_ADDRSTRLEN];
 	      // string aIP = inet_ntop(cliaddr.ai_family,get_in_addr(cliaddr.ai_family,ipstr, sizeof ipstr);
            string aIP=inet_ntoa(cliaddr.sin_addr);
 	       cout<<"From IP: "<<aIP<<endl;
-           ((std::map<unsigned,string>*)themap)->insert(std::pair<unsigned,string>(aID,aIP));
+           ((std::map<uint16_t,string>*)themap)->insert(std::pair<uint16_t,string>(aID,aIP));
        }
        else
        {
@@ -228,11 +228,11 @@ int ChordService::receiveReply(std::map<unsigned,string>* themap)
    
 }
 
-void ChordService::buildFingerTable(std::map<unsigned,string>* themap)
+void ChordService::buildFingerTable(std::map<uint16_t,string>* themap)
 {
 	mtx.lock();
     cout<<"Enter build finger table"<<endl;
-	unsigned aID = this->getLocalNode()->getHashID();
+	uint16_t aID = this->getLocalNode()->getHashID();
 	string aIP = this->getLocalNode()->getIP();
 	if (themap==NULL || themap->size()==0)
 	{
@@ -246,15 +246,15 @@ void ChordService::buildFingerTable(std::map<unsigned,string>* themap)
 		//printFingerTable();
 		//Something in the ring.
 
-		std::list<unsigned>::iterator fingerNodeit;
-		std::list<unsigned>::iterator fingerSuccessorit;
+		std::list<uint16_t>::iterator fingerNodeit;
+		std::list<uint16_t>::iterator fingerSuccessorit;
 		std::list<string>::iterator successorIPListit;
 			
-		std::map<unsigned,string>::iterator it = themap->begin();
+		std::map<uint16_t,string>::iterator it = themap->begin();
 		
 		for (it=themap->begin(); it!=themap->end(); ++it)
 		{
-			unsigned tmpID = it->first;
+			uint16_t tmpID = it->first;
 			string tmpIP = it->second;
     		cout << tmpID << " => " << tmpIP << endl;
 			
@@ -316,8 +316,8 @@ void ChordService::printFingerTable()
 	cout<<"Successor: "<<fingerSuccessorList.size()<<endl;
 	cout<<"IP: "<<successorIPList.size()<<endl;
 	
-	std::list<unsigned>::iterator fingerNodeit = fingerNodeList.begin();
-	std::list<unsigned>::iterator fingerSuccessorit = fingerSuccessorList.begin();
+	std::list<uint16_t>::iterator fingerNodeit = fingerNodeList.begin();
+	std::list<uint16_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
 	std::list<string>::iterator successorIPListit = successorIPList.begin();
 	for (;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			++fingerNodeit,++fingerSuccessorit,++successorIPListit)
@@ -412,16 +412,16 @@ void ChordService::sendRequestToServer(string receiverIP,string key, string valu
 
 //request should be sent here
 //Return 0 failed, 1 success
-int ChordService::lookupFingerTable(unsigned thekey, string& theIP, unsigned initNode)
+int ChordService::lookupFingerTable(uint16_t thekey, string& theIP, uint16_t initNode)
 {
     cout<<"Begin to find finger table"<<endl;
 	//First check my node...
-	std::list<unsigned>::iterator fingerSuccessorit;
+	std::list<uint16_t>::iterator fingerSuccessorit;
 	std::list<string>::iterator successorIPListit;
-	unsigned compare = 65535;
-	unsigned tmpNode;
+	uint16_t compare = 65535;
+	uint16_t tmpNode;
 	string tmpIP;
-	unsigned localID = getLocalNode()->getHashID();
+	uint16_t localID = getLocalNode()->getHashID();
 
 	if (thekey==localID)
 	{ 
@@ -469,7 +469,7 @@ int ChordService::lookupFingerTable(unsigned thekey, string& theIP, unsigned ini
 				{
                     cout<<"~3"<<endl;
 					//My first successor is bigger than key, choose between local and successor
-					unsigned firstSuccessor = *fingerSuccessorit;
+					uint16_t firstSuccessor = *fingerSuccessorit;
 					if ((thekey-localID)<=(firstSuccessor-thekey))
 					{
                         cout<<"~4"<<endl;
@@ -483,8 +483,8 @@ int ChordService::lookupFingerTable(unsigned thekey, string& theIP, unsigned ini
 						return 0;
 					}
 				}
-				unsigned thisNode = *fingerSuccessorit;
-				unsigned lastNode = *(--fingerSuccessorit);
+				uint16_t thisNode = *fingerSuccessorit;
+				uint16_t lastNode = *(--fingerSuccessorit);
 				if ((thekey-lastNode)>(thisNode-thekey))
 				{
                     cout<<"~6"<<endl;
@@ -540,7 +540,7 @@ int ChordService::lookupFingerTable(unsigned thekey, string& theIP, unsigned ini
 						{
                             cout<<"~14"<<endl;
 							//My first successor is bigger than key, choose between local and successor
-							unsigned firstSuccessor = *fingerSuccessorit;
+							uint16_t firstSuccessor = *fingerSuccessorit;
 							if (localID>initNode)
 							{
                                 cout<<"~15"<<endl;
@@ -574,8 +574,8 @@ int ChordService::lookupFingerTable(unsigned thekey, string& theIP, unsigned ini
 							}
 							
 						}
-						unsigned thisNode = *fingerSuccessorit;
-						unsigned lastNode = *(--fingerSuccessorit);
+						uint16_t thisNode = *fingerSuccessorit;
+						uint16_t lastNode = *(--fingerSuccessorit);
 						if (lastNode>initNode)
 						{
                             cout<<"~20"<<endl;
@@ -759,7 +759,7 @@ int main(int argc, char* argv[])
     }
     printf("sent %d bytes to %s\n", numbytes, inet_ntoa(their_addr.sin_addr));
     close(sockfd);
-	std::map<unsigned,string> mymap;
+	std::map<uint16_t,string> mymap;
 	//pthread_t thread;
 	//int rc = pthread_create(&thread, NULL, receiveReply, mymap);
     //cout<<"Begin to sleep"<<endl;
@@ -856,9 +856,9 @@ int main(int argc, char* argv[])
 				{
 					if(i == chordSocket)
 					{
-						list<unsigned> tmpList=myService->fingerSuccessorList;
+						list<uint16_t> tmpList=myService->fingerSuccessorList;
 						cout<<"copy~~~~~~~~~~~~"<<endl;
-						for (std::list<unsigned>::iterator it=tmpList.begin(); it != tmpList.end(); ++it)
+						for (std::list<uint16_t>::iterator it=tmpList.begin(); it != tmpList.end(); ++it)
     								cout << ' ' << *it<<endl;
 						
 						cout<<"Received broadcast message"<<endl;
@@ -868,15 +868,15 @@ int main(int argc, char* argv[])
 	                    char buf[1024] = {0};
 	                    int newfd =recvfrom(chordSocket, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);              
 	                    cout<<buf<<endl;
-	               	   	unsigned aID = atoi(buf);
+	               	   	uint16_t aID = atoi(buf);
 	               	    cout<<"Recieve the broadcast from id: "<< aID <<endl;
 	               	    char ipstr[INET6_ADDRSTRLEN];
 
 	               	    string aIP=inet_ntoa(cliaddr.sin_addr);
 	                    cout<<"From IP: "<<aIP<<endl;
 						
-						std::map<unsigned,string> tmpMap;
-						tmpMap.insert(std::pair<unsigned,string>(aID,aIP));
+						std::map<uint16_t,string> tmpMap;
+						tmpMap.insert(std::pair<uint16_t,string>(aID,aIP));
 
 						cout<<"Before ~~~~~"<<endl;
 						myService->printFingerTable();
@@ -973,7 +973,7 @@ int main(int argc, char* argv[])
 							 len +=value_length;
 							 string clientIP = data.substr(len,clientIP_length);
 							 
-							 unsigned theHash = myService->getLocalNode()->buildHashID(key);
+							 uint16_t theHash = myService->getLocalNode()->buildHashID(key);
 							 
 							 cout<<"Message from client:"<<endl;
 							 cout<<"Key: "<<key<<endl;
