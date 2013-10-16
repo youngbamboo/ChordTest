@@ -508,6 +508,8 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 			//One cycle... The IP with smallest length has been recorded
 			//return 0;
 		}
+		fingerSuccessorit++;
+		successorIPListit++;
 	}
 
 	if(myLength<=smallestLength)
