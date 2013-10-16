@@ -31,6 +31,8 @@ Node::Node()
 	cout<<"My IP is: "<<myIP<<endl;
 	myID = buildHashID(myIP);
 	cout<<"My Hash ID is: "<<myID<<endl;
+
+	
 }
 
 Node::~Node()

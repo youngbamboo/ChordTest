@@ -27,6 +27,14 @@ class Node {
 		int buildHashID(const string theStr);
 		inline int getHashID() {return myID;};
 		void setReplyList(list<int>* theList);
+		/*
+		inline void getFingerTable(list<int>& nodeList, list<int>& succList, list<string>& succIPList) 
+		{
+			nodeList=fingerNodeList;
+			succList=fingerSuccessorList;
+			succIPList=successorIPList;
+		};
+		*/
 	private:
 		string myHostName;
 		string myIP;
@@ -34,6 +42,9 @@ class Node {
 		const int myBroadcastPort;
 		const int myReceivePort;
 		const int myClientPort;
+		//list<int> fingerNodeList;
+		//list<int> fingerSuccessorList;
+		//list<string> successorIPList;
 
 		
 		
