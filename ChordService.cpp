@@ -40,6 +40,7 @@ ChordService::ChordService():localNode(NULL),preNode(NULL),myDirectory("/tmp/zya
         fingerSuccessorList.push_back(aID);
         successorIPList.push_back(aIP);
     }
+	setSystemParam();
 	printFingerTable();
 	mkDirectory(myDirectory);
 	//Remove all files.
