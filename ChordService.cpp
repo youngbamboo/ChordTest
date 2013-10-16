@@ -18,6 +18,7 @@
 #include <dirent.h>
 #include <vector>
 #include <sys/stat.h>
+#include <mutex>
 
 
 #include "Node.h"
@@ -26,6 +27,8 @@
 
 
 using namespace std;
+std::mutex mtx; 
+
 
 ChordService::ChordService():localNode(NULL),preNode(NULL),myDirectory("/tmp/zyang/")
 {
@@ -304,7 +307,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 
 void ChordService::printFingerTable()
 {
-	cout<<"Finger Size: "<<endl;
+	cout<<"Finger Table: "<<endl;
 	cout<<"Node: "<<fingerNodeList.size()<<endl;
 	cout<<"Successor: "<<fingerSuccessorList.size()<<endl;
 	cout<<"IP: "<<successorIPList.size()<<endl;
