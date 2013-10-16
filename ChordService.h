@@ -34,6 +34,7 @@ class ChordService {
 		void setupCache();
 		void readFile(const char* fileName);
 		int mkDirectory(const string s);
+		void printFingerTable();
 	private:
 		Node* localNode;
 		Node* preNode;
@@ -48,7 +49,7 @@ class ChordService {
 
 		const string myDirectory;
  
-		void printFingerTable();
+		
 };
 
 #endif
