@@ -869,7 +869,7 @@ int main(int argc, char* argv[])
 
 						myService->buildFingerTable(&tmpMap);
 
-						cout<<"Before ~~~~~"<<endl;
+						cout<<"After ~~~~~"<<endl;
 						myService->printFingerTable();
 
 						if (!fork()) 
