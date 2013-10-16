@@ -473,7 +473,16 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
     std::list<string>::iterator successorIPListit=ChordService::successorIPList.end();
 
 	int localID = getLocalNode()->getHashID();
+	if(localID==thekey;)
+	{
+		return 1;
+	}
 
+	if(localID>thekey && localID<initNode)
+	{
+		return 1;
+	}
+	
 	int myLength = calculateLength(localID,thekey);
 	cout<<"myLength:"<<myLength<<endl;
 	
