@@ -435,236 +435,58 @@ void ChordService::sendRequestToServer(string receiverIP,string key, string valu
 
 }
 
-
+int ChordService::calculateLength(int node,int key)
+{
+	int length;
+	if(node > key)
+	{
+		length=(node-key)<(65535-node+key)?(node-key):(65535-node+key);
+	}
+	else
+	{
+		length=(key-node)<(65535-key+node)?(key-node):(65535-key+node);
+	}
+	return length;
+}
 //request should be sent here
 //Return 0 failed, 1 success
 int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 {
-    cout<<"Begin to find finger table"<<endl;
-	//First check my node...
-	std::list<int>::iterator fingerSuccessorit;
-	std::list<string>::iterator successorIPListit;
-	int compare = 65535;
-	int tmpNode;
-	string tmpIP;
+	cout<<"Begin to find finger table"<<endl;
+	std::list<int>::iterator fingerSuccessorit=ChordService::fingerSuccessorList.begin();
+    std::list<string>::iterator successorIPListit=ChordService::successorIPList.end();
+
 	int localID = getLocalNode()->getHashID();
 
-	if (thekey==localID)
-	{ 
+	int myLength = calculateLength(localID,thekey);
+
+	string tmpIP;
+	
+	int successorLength;
+
+	int smallestLength=myLength;
+	
+	while(fingerSuccessorit!=ChordService::fingerSuccessorList.end()
+		&&successorIPListit!=ChordService::successorIPList.end())
+	{
+		successorLength=calculateLength((*fingerSuccessorit),thekey);
+		if(smallestLength>=successorLength)
+		{
+			smallestLength=successorLength;
+			tmpIP=*successorIPListit;
+		}
+		if((*fingerSuccessorit)>initNode)
+		{
+			//One cycle... The IP with smallest length has been recorded
+			return 0;
+		}
+	}
+
+	if(myLength<=smallestLength)
+	{
 		return 1;
 	}
-	/*
-	else if (initNode!=65536)
-	{
-		if (thekey>initNode)
-		{
-            cout<<"thekey>initNode"<<endl;
-			if (localID>thekey)
-			{
-				return 1;
-			}
-		}
-		if (thekey<initNode)
-		{
-            cout<<"thekey<initNode"<<endl;
-			if (localID>thekey&&localID<initNode)
-			{
-				return 1;
-			}
-		}
-		
-	}
-	*/
-	if (thekey>initNode)
-	{
-        cout<<"~~~~~thekey>initNode"<<endl;
-		for (;fingerSuccessorit!=ChordService::fingerSuccessorList.end()&&successorIPListit!=ChordService::successorIPList.end();
-			fingerSuccessorit++,successorIPListit++)
-		{
-			if((*fingerSuccessorit)==thekey)
-			{
-                cout<<"~1"<<endl;
-				theIP=*successorIPListit;
-				cout<<"return "<<theIP<<endl;
-				return 0;
-			}
-			else if ((*fingerSuccessorit)>thekey)
-			{
-                cout<<"~2"<<endl;
-				if((*fingerSuccessorit)==ChordService::fingerSuccessorList.front())
-				{
-                    cout<<"~3"<<endl;
-					//My first successor is bigger than key, choose between local and successor
-					int firstSuccessor = *fingerSuccessorit;
-					if ((thekey-localID)<=(firstSuccessor-thekey))
-					{
-                        cout<<"~4"<<endl;
-						return 1;
-					}
-					else
-					{
-                        cout<<"~5"<<endl;
-						theIP=*successorIPListit;
-						cout<<"return "<<theIP<<endl;
-						return 0;
-					}
-				}
-				int thisNode = *fingerSuccessorit;
-				int lastNode = *(--fingerSuccessorit);
-				if ((thekey-lastNode)>(thisNode-thekey))
-				{
-                    cout<<"~6"<<endl;
-					theIP = *successorIPListit;
-					cout<<"return "<<theIP<<endl;
-					return 0;
-				}
-				else
-				{
-                    cout<<"~7"<<endl;
-					theIP = *(--successorIPListit);
-					cout<<"return "<<theIP<<endl;
-					return 0;
-				}
-			}
-			else 
-			{
-				theIP=*successorIPListit;
-			}
-		}
-		return 0;
-	}
-	if (thekey<initNode)
-	{		
-        cout<<"~8"<<endl;
-		for (;fingerSuccessorit!=ChordService::fingerSuccessorList.end()&&successorIPListit!=ChordService::successorIPList.end();
-			fingerSuccessorit++,successorIPListit++)
-		{
-			if((*fingerSuccessorit)==localID)
-			{
-                cout<<"~9"<<endl;
-				//only myself in the ring
-				return 1;
-			}
-			if((*fingerSuccessorit)==thekey)
-			{
-                cout<<"~10"<<endl;
-				theIP=*successorIPListit;
-				cout<<"return "<<theIP<<endl;
-				return 0;
-			}
-			else if (localID<=65535&&(*fingerSuccessorit)<localID)
-			{
-                cout<<"~11"<<endl;
-				if ((*fingerSuccessorit)<=initNode)
-				{
-                    cout<<"~12"<<endl;
-					if ((*fingerSuccessorit)>=thekey 
-						||(*fingerSuccessorit)>=initNode )
-					{
-                        cout<<"~13"<<endl;
-						if((*fingerSuccessorit)==ChordService::fingerSuccessorList.front())
-						{
-                            cout<<"~14"<<endl;
-							//My first successor is bigger than key, choose between local and successor
-							int firstSuccessor = *fingerSuccessorit;
-							if (localID>initNode)
-							{
-                                cout<<"~15"<<endl;
-								if((65535-localID+thekey)<=(firstSuccessor-thekey))
-								{
-                                    cout<<"~16"<<endl;
-									return 1;
-								}
-								else
-								{
-                                    cout<<"~17"<<endl;
-									theIP=*successorIPListit;
-									cout<<"return "<<theIP<<endl;
-									return 0;
-								}
-							}
-							else
-							{
-								if((thekey-localID)<=(firstSuccessor-thekey))
-								{
-                                    cout<<"~18"<<endl;
-									return 1;
-								}
-								else
-								{
-                                    cout<<"~19"<<endl;
-									theIP=*successorIPListit;
-									cout<<"return "<<theIP<<endl;
-									return 0;
-								}
-							}
-							
-						}
-						int thisNode = *fingerSuccessorit;
-						int lastNode = *(--fingerSuccessorit);
-						if (lastNode>initNode)
-						{
-                            cout<<"~20"<<endl;
-							if((65535-lastNode+thekey)<=(thisNode-thekey))
-							{
-                                cout<<"~21"<<endl;
-								return 1;
-							}
-							else
-							{
-                                cout<<"~22"<<endl;
-								theIP=*successorIPListit;
-								cout<<"return "<<theIP<<endl;
-								return 0;
-							}
-						}
-						else
-						{
-							if((thekey-lastNode)<=(thisNode-thekey))
-							{
-                                cout<<"~23"<<endl;
-								return 1;
-							}
-							else
-							{
-                                cout<<"~24"<<endl;
-								theIP=*successorIPListit;
-								cout<<"return "<<theIP<<endl;
-								return 0;
-							}
-						}
-						
-						if ((thekey-localID)>(thisNode-thekey))
-						{
-                            cout<<"~25"<<endl;
-							theIP = *successorIPListit;
-							cout<<"return "<<theIP<<endl;
-							return 0;
-						}
-						else
-						{
-                            cout<<"~26"<<endl;
-							return 1;
-						}
-					}
-				}
-			}
-			else
-			{
-				// one loop now. Needs to stop now...  
-				theIP=*successorIPListit;
-			}
-
-		}
-		return 0;
-	}
-	
-	//Not find correct node here. "compare" should be the most nearest one now. do something......
-
-	//We need to send this request with key and value to tmpIP.
-	theIP=tmpIP;
 	return 0;
-	
 }
 /*
 void ChordService::getFileList(std::list<string> &out)
