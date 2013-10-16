@@ -858,7 +858,7 @@ int main(int argc, char* argv[])
 					{
 						list<uint32_t> tmpList=myService->fingerSuccessorList;
 						cout<<"copy~~~~~~~~~~~~"<<endl;
-						for (std::list<int>::iterator it=tmpList.begin(); it != tmpList.end(); ++it)
+						for (list<int>::iterator it=tmpList.begin(); it != tmpList.end(); ++it)
     								cout << ' ' << *it<<endl;
 						
 						cout<<"Received broadcast message"<<endl;
