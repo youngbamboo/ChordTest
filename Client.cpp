@@ -255,12 +255,13 @@ int main(int argc,char **argv)
 					cout<< "Please enter the value"<<endl;
 
                     string value;
-                    cin>>value;
+                    getline(cin,value);
 
                     cout<< "Please enter the server ip"<<endl;
 
-                    string serverIP;
-                    cin>>serverIP;
+                    string serverIP;                    
+					getline(cin,serverIP);
+                    
 
                                     	
                     sendRequestToServer(serverIP,key,value,selfIP);
