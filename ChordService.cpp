@@ -540,7 +540,7 @@ int ChordService::lookupFingerTable(unsigned int thekey, string& theIP, unsigned
 						{
                             cout<<"~14"<<endl;
 							//My first successor is bigger than key, choose between local and successor
-							unsigned unsigned int firstSuccessor = *fingerSuccessorit;
+							unsigned int firstSuccessor = *fingerSuccessorit;
 							if (localID>initNode)
 							{
                                 cout<<"~15"<<endl;
