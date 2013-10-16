@@ -311,7 +311,6 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 
 void ChordService::printFingerTable()
 {
-	mtx.lock();
 	cout<<"Finger Table: "<<endl;
 	cout<<"Node: "<<fingerNodeList.size()<<endl;
 	cout<<"Successor: "<<fingerSuccessorList.size()<<endl;
@@ -325,7 +324,6 @@ void ChordService::printFingerTable()
 	{
 		cout<<*fingerNodeit<<" "<<*fingerSuccessorit<<" "<<*successorIPListit<<endl;
 	}
-	mtx.unlock();		
 }
 
 void ChordService::setSystemParam()
@@ -842,33 +840,21 @@ int main(int argc, char* argv[])
 		//This machine listens the port 10000, where broadcast of the new node will be received.
 		//Then send its id and update its own fingertable.
 		//It's based on the asumption that each node is added one by one.
-		cout<<"Before 1~~~~~"<<endl;
-						myService->printFingerTable();
 		read_fds = master;
 		activity = select( fdmax + 1 , &read_fds , NULL , NULL , NULL);
-		cout<<"Before 2~~~~~"<<endl;
-						myService->printFingerTable();
 		if ((activity < 0) && (errno!=EINTR)) 
         {
             cerr<<"select error"<<endl;
         }
 		else
 		{
-			cout<<"Before 3~~~~~"<<endl;
-						myService->printFingerTable();
 			for(int i = 0; i<=fdmax; i++)
 			{
-				cout<<"Before 4~~~~~"<<endl;
-						myService->printFingerTable();
 				if(FD_ISSET(i, &read_fds))
 				{
-					cout<<"Before 5~~~~~"<<endl;
-						myService->printFingerTable();
 					if(i == chordSocket)
 					{
 						cout<<"Received broadcast message"<<endl;
-						cout<<"Before 6~~~~~"<<endl;
-						myService->printFingerTable();
 						struct sockaddr_in cliaddr;
 						socklen_t cli_addr_len;
 						cli_addr_len = sizeof(cliaddr);
@@ -881,8 +867,11 @@ int main(int argc, char* argv[])
 
 	               	    string aIP=inet_ntoa(cliaddr.sin_addr);
 	                    cout<<"From IP: "<<aIP<<endl;
-						cout<<"Before 7~~~~~"<<endl;
-												myService->printFingerTable();
+						std::vector<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
+						while(fingerSuccessorit!=fingerSuccessorList.end())
+						{
+							cout<<*fingerSuccessorit<<endl;
+						}
 
 						std::map<uint32_t,string> tmpMap;
 						tmpMap.insert(std::pair<uint32_t,string>(aID,aIP));
@@ -897,22 +886,16 @@ int main(int argc, char* argv[])
 						myService->printFingerTable();
 
 						if (!fork()) 
-						{ 
-							cout<<"After 1~~~~~"<<endl;
-						myService->printFingerTable();// this is the child process
+						{ // this is the child process
 							//close(sockfd); // child doesn't need the listener
 							string myID = std::to_string(myService->getLocalNode()->getHashID());
 	                        int numbytes;
 	                        int sendfd;
-							cout<<"After 2~~~~~"<<endl;
-						myService->printFingerTable();
 	                        if ((sendfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
 	                        {
 	                            cerr<<"socket error"<<endl;
 	                            exit(1);
 	                        }
-							cout<<"After 3~~~~~"<<endl;
-						myService->printFingerTable();
 	                        cliaddr.sin_port = htons(10000);
 	                        if ((numbytes=sendto(sendfd, myID.c_str(), myID.length(), 0,
 	                                                (struct sockaddr *)&cliaddr, sizeof cliaddr)) == -1) 
@@ -925,13 +908,9 @@ int main(int argc, char* argv[])
 	                            cout<<"send back with my id: "<<myID<<endl;
 
 	                        }
-							cout<<"After 4~~~~~"<<endl;
-						myService->printFingerTable();
 							close(sendfd);
 						}
 						close(newfd);
-						cout<<"After 5~~~~~"<<endl;
-						myService->printFingerTable();
 						
 					}
 					else if (i == clientSocket)
