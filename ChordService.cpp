@@ -952,7 +952,7 @@ int main(int argc, char* argv[])
 							 
 							 if (initNode=="65536")
 							 {
-								string initNode = std::to_string(theHash);
+								initNode = std::to_string(theHash);
 							 }
 							 int result = myService->lookupFingerTable(theHash,theNextNodeIP,atoi(initNode.c_str()));
 							 if(result==1)
