@@ -435,7 +435,7 @@ void ChordService::sendRequestToServer(string receiverIP,string key, string valu
 
 }
 
-int ChordService::calculateLength(int node,int key)
+int ChordService::calculateLength(int node,int key,int initNode)
 {
 	int length;
 	/*
@@ -455,7 +455,14 @@ int ChordService::calculateLength(int node,int key)
 
 	if(node>key)
 	{
-		length=65535-node+key;
+		if(key<initNode)
+		{
+			length=65535-node+key;
+		}
+		else
+		{
+			length=node-key;
+		}
 	}
 	else
 	{
@@ -483,7 +490,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 		return 1;
 	}
 	
-	int myLength = calculateLength(localID,thekey);
+	int myLength = calculateLength(localID,thekey,initNode);
 	cout<<"myLength:"<<myLength<<endl;
 	
 	string tmpIP;
@@ -911,7 +918,7 @@ int main(int argc, char* argv[])
 			                        }
 									close(sendfd);
 								}
-								//close(recvRet);
+								close(recvRet);
 							 }
 							 else
 							 {
