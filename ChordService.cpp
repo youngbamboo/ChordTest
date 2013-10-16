@@ -312,7 +312,7 @@ void ChordService::printFingerTable()
 	std::list<uint32_t>::iterator fingerNodeit = fingerNodeList.begin();
 	std::list<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
 	std::list<string>::iterator successorIPListit = successorIPList.begin();
-	for (;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerNodeList.end()&&successorIPListit!=successorIPList.end();
+	for (;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			fingerNodeit++,fingerSuccessorit++,successorIPListit++)
 	{
 		cout<<*fingerNodeit<<" "<<*fingerSuccessorit<<" "<<*successorIPListit<<endl;
@@ -407,8 +407,8 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 {
     cout<<"Begin to find finger table"<<endl;
 	//First check my node...
-	std::list<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
-	std::list<string>::iterator successorIPListit = successorIPList.begin();
+	std::list<uint32_t>::iterator fingerSuccessorit;
+	std::list<string>::iterator successorIPListit;
 	uint32_t compare = 65535;
 	uint32_t tmpNode;
 	string tmpIP;
@@ -418,6 +418,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 	{ 
 		return 1;
 	}
+	/*
 	else if (initNode!=65536)
 	{
 		if (thekey>initNode)
@@ -438,6 +439,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 		}
 		
 	}
+	*/
 	if (thekey>initNode)
 	{
         cout<<"~~~~~thekey>initNode"<<endl;
