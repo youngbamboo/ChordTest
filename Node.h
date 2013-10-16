@@ -24,8 +24,8 @@ class Node {
 		inline int getClientPort() {return myClientPort;};
 		inline string getIP() {return myIP;};
 		inline string getHostName() {return myHostName;};
-		int buildHashID(const string theStr);
-		inline int getHashID() {return myID;};
+		unsigned int buildHashID(const string theStr);
+		inline unsigned int getHashID() {return myID;};
 		void setReplyList(list<int>* theList);
 	private:
 		string myHostName;

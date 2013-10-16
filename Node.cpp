@@ -39,7 +39,7 @@ Node::~Node()
 
 
 //One-at-a-Time hash
-int Node::buildHashID(const string theStr)
+unsigned int Node::buildHashID(const string theStr)
 {
 /*
 	int len = theStr.length();
@@ -73,7 +73,7 @@ int Node::buildHashID(const string theStr)
 
 	h=h>>16;
 	
-	return (int)h;
+	return (unsigned int)h;
 
 	/*
 	string nodeIP=getIP();
