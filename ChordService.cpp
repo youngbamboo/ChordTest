@@ -845,10 +845,10 @@ int main(int argc, char* argv[])
 		//Then send its id and update its own fingertable.
 		//It's based on the asumption that each node is added one by one.
 		
-		selectWaitTimer.tv_sec = 2; 
-   		selectWaitTimer.tv_usec = 0;  
+		//selectWaitTimer.tv_sec = 2; 
+   		//selectWaitTimer.tv_usec = 0;  
 		read_fds = master;
-		activity = select( fdmax + 1 , &read_fds , NULL , NULL , &selectWaitTimer);
+		activity = select( fdmax + 1 , &read_fds , NULL , NULL , NULL);
 		if ((activity < 0) && (errno!=EINTR)) 
         {
             cerr<<"select error "<<activity<<endl;
