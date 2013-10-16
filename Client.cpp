@@ -150,6 +150,7 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
     cout<<"sendRequestToServer "<<receiverIP<<" "<<key<<" "<<value<<" "<<clientIP<<endl;
     //ClientRequest req;
 	string initialNode_fake="65536";
+	string isStarted = "0";
 	
 	//req.key_length=key.length();
 	//req.value_length=value.length();
@@ -172,7 +173,7 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	//memcpy(msgBuffer+sizeof(ClientRequest)+initialNode_fake.length(),key.c_str(),key.length());
 	//memcpy(msgBuffer+sizeof(ClientRequest)+initialNode_fake.length()+key.length(),value.c_str(),value.length());
 	//memcpy(msgBuffer+sizeof(ClientRequest)+key.length()+value.length()+initialNode_fake.length(),clientIP.c_str(),clientIP.length());
-	string msgBuffer=lengthReport+initialNode_fake+key+value+clientIP;
+	string msgBuffer=isStarted+lengthReport+initialNode_fake+key+value+clientIP;
 	struct sockaddr_in receiverAddr;
 
     memset((char*)&receiverAddr, 0, sizeof(receiverAddr));

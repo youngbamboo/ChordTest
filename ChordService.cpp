@@ -497,7 +497,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 		if((*fingerSuccessorit)>initNode)
 		{
 			//One cycle... The IP with smallest length has been recorded
-			return 0;
+			//return 0;
 		}
 	}
 
@@ -802,6 +802,8 @@ int main(int argc, char* argv[])
 					{
 	                    
 						cout<<"Receive store request"<<endl;
+
+						int isStarted = 0;
 						
 	                    char* maxMessage = new char[1024];
 	                    struct sockaddr_in cliaddr;
@@ -821,6 +823,9 @@ int main(int argc, char* argv[])
 							 //memcpy(clientMsg, maxMessage, sizeof(ClientRequest));
 							 
 							 string data = maxMessage;
+							 if()
+							 {
+							 }
                              //Find the length report first
                              int comma=data.find(',');
                              int initNode_length = atoi(data.substr(0,comma).c_str());
