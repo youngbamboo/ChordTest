@@ -833,17 +833,18 @@ int main(int argc, char* argv[])
 
 	int activity;
 	struct timeval selectWaitTimer;
+	FD_ZERO(&read_fds); // clear the read fd set
+	FD_ZERO(&master); // clear the read fd set
+
+	FD_SET(chordSocket, &read_fds);
+	FD_SET(clientSocket, &read_fds);
 
 	while (1)
 	{
 		//This machine listens the port 10000, where broadcast of the new node will be received.
 		//Then send its id and update its own fingertable.
 		//It's based on the asumption that each node is added one by one.
-		FD_ZERO(&read_fds); // clear the read fd set
-	    FD_ZERO(&master); // clear the read fd set
-
-		FD_SET(chordSocket, &read_fds);
-	    FD_SET(clientSocket, &read_fds);
+		
 		selectWaitTimer.tv_sec = 2; 
    		selectWaitTimer.tv_usec = 0;  
 		read_fds = master;
