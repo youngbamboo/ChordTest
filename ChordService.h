@@ -35,8 +35,8 @@ class ChordService {
 		void readFile(const char* fileName);
 		int mkDirectory(const string s);
 		void printFingerTable();
-		list<uint32_t> fingerNodeList;
-		list<uint32_t> fingerSuccessorList;
+		list<int> fingerNodeList;
+		list<int> fingerSuccessorList;
 		list<string> successorIPList;
 	private:
 		Node* localNode;
