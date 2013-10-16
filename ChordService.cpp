@@ -359,7 +359,7 @@ void ChordService::sendRequestToServer(string receiverIP,string key, string valu
 
     memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
     receiverAddr.sin_family = AF_INET;
-    receiverAddr.sin_port = htons(CLIENT_PORT);
+    receiverAddr.sin_port = htons(9999);
     cout<<"msgBuffer "<<msgBuffer<<endl;
 
     if(inet_aton(receiverIP.c_str(), &receiverAddr.sin_addr) == 0)
