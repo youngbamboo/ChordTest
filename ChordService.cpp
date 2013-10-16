@@ -451,6 +451,8 @@ int ChordService::calculateLength(int node,int key)
 
 	//Just clockwise, or else it will be a mess...
 
+	cout<<"node "<<node<<" key "<<key<<endl;;
+
 	if(node>key)
 	{
 		length=65535-node+key;
@@ -459,7 +461,7 @@ int ChordService::calculateLength(int node,int key)
 	{
 		length=key-node;
 	}
-	
+	cout<<"length: "<<length<<endl;
 	return length;
 }
 //request should be sent here
