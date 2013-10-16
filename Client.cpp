@@ -228,7 +228,7 @@ int main(int argc,char **argv)
 
     cout<<"Self IP is: "<<selfIP<<endl;
 
-    int command;
+    string command;
 
     setSystemParam();
     
@@ -242,46 +242,41 @@ int main(int argc,char **argv)
         
         getline(cin,command);
 
-        switch(command)
-        {
-            case 0:
-                {
-                    //cout<< "You selected put key-value one by one"<<endl;
-                    cout<< "Please enter the key"<<endl;
+		if(command=="1")
+		{
+			//cout<< "You selected put key-value one by one"<<endl;
+            cout<< "Please enter the key"<<endl;
 
-                    string key;
-                    getline(cin,key);
+            string key;
+            getline(cin,key);
 
-					cout<< "Please enter the value"<<endl;
+			cout<< "Please enter the value"<<endl;
 
-                    string value;
-                    getline(cin,value);
+            string value;
+            getline(cin,value);
 
-                    cout<< "Please enter the server ip"<<endl;
+            cout<< "Please enter the server ip"<<endl;
 
-                    string serverIP;                    
-					getline(cin,serverIP);
+            string serverIP;                    
+			getline(cin,serverIP);
                     
 
                                     	
-                    sendRequestToServer(serverIP,key,value,selfIP);
-                    int result = recieveMessageFromServer();
+            sendRequestToServer(serverIP,key,value,selfIP);
+            int result = recieveMessageFromServer();
                     
-                    if(result == 1)
-                    {
-                        cout<<"Successfully put" << endl;
-                    }
-					else
-					{
-						cout<<"Failed" << endl;
-					}
-                    break;
-                }             
-            default:
-                {
-                    cout<<"Please select an option from the available choices"<<endl;
-                }
-        }
+            if(result == 1)
+            {
+            	cout<<"Successfully put" << endl;
+            }
+			else
+			{
+				cout<<"Failed" << endl;
+			}
+		}
+
+       
+        
     }
 
 }
