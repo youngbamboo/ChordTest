@@ -204,7 +204,7 @@ int ChordService::receiveReply(std::map<int,string>* themap)
        {
            cout<<buf<<endl;
 	       int aID = atoi(buf);
-	       cout<<"Recieve the id: "<< aID <<endl;
+	       cout<<"Recieve the id: "<< aID <<"   "<<buf<<endl;
 	       char ipstr[INET6_ADDRSTRLEN];
 	      // string aIP = inet_ntop(cliaddr.ai_family,get_in_addr(cliaddr.ai_family,ipstr, sizeof ipstr);
            string aIP=inet_ntoa(cliaddr.sin_addr);
