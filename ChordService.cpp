@@ -455,7 +455,15 @@ int ChordService::calculateLength(int node,int key,int initNode)
 
 	if(node>key)
 	{
-		length=65535-node+key;
+		
+		if(key<initNode)
+		{
+			length=65535-node+key;
+		}
+		else
+		{
+			length=node-key;
+		}
 	}
 	else
 	{
@@ -481,6 +489,16 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 	if(localID>thekey && localID<initNode)
 	{
 		return 1;
+	}
+
+	//First node should only go clockwise.
+	if(localID>thekey)
+	{
+		myLength=65535-localID+thekey;
+	}
+	else
+	{
+		myLength=thekey-localID;
 	}
 	
 	int myLength = calculateLength(localID,thekey,initNode);
