@@ -331,7 +331,7 @@ void ChordService::printFingerTable()
 	cout<<"Node: "<<fingerNodeList.size()<<endl;
 	cout<<"Successor: "<<fingerSuccessorList.size()<<endl;
 	cout<<"IP: "<<successorIPList.size()<<endl;
-	/*
+	
 	std::list<int>::iterator fingerNodeit = fingerNodeList.begin();
 	std::list<int>::iterator fingerSuccessorit = fingerSuccessorList.begin();
 	std::list<string>::iterator successorIPListit = successorIPList.begin();
@@ -342,31 +342,6 @@ void ChordService::printFingerTable()
 		cout<<&(*fingerNodeit)<<":"<<*fingerNodeit<<" "
 			<<&(*fingerSuccessorit)<<":"<<*fingerSuccessorit<<" "
 			<<&(*successorIPListit)<<":"<<*successorIPListit<<endl;
-	}
-	*/
-
-	std::list<int>::iterator fingerNodeit;
-	int n=1;
-	for (fingerNodeit=fingerNodeList.begin();fingerNodeit!=fingerNodeList.end();fingerNodeit++)
-	{
-		cout<<"["<<n<<"] "<<(*fingerNodeit)<<endl;
-		n++;
-	}
-
-	std::list<int>::iterator fingerSuccessorit;
-	n=1;
-	for(fingerSuccessorit=fingerSuccessorList.begin();fingerSuccessorit!=fingerSuccessorList.end();fingerSuccessorit++)
-	{
-		cout<<"["<<n<<"] "<<(*fingerSuccessorit)<<endl;
-		n++;
-	}
-
-	std::list<string>::iterator successorIPListit;
-	n=1;
-	for(successorIPListit=successorIPList.begin();successorIPListit!=successorIPList.end();successorIPListit++)
-	{
-		cout<<"["<<n<<"] "<<(*successorIPListit)<<endl;
-		n++;
 	}
 	
 }
@@ -905,12 +880,13 @@ int main(int argc, char* argv[])
 				{
 					if(i == chordSocket)
 					{
-						/*
+						
 						list<int> tmpList=myService->fingerSuccessorList;
 						cout<<"copy~~~~~~~~~~~~"<<endl;
 						for (std::list<int>::iterator it=tmpList.begin(); it != tmpList.end(); ++it)
-    								cout << ' ' << *it<<endl;
-						*/
+    								cout << ' ' << *it<<" ";
+						cout<<endl;
+						
 						cout<<"Received broadcast message"<<endl;
 						struct sockaddr_in cliaddr;
 						socklen_t cli_addr_len;
