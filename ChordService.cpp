@@ -867,12 +867,7 @@ int main(int argc, char* argv[])
 
 	               	    string aIP=inet_ntoa(cliaddr.sin_addr);
 	                    cout<<"From IP: "<<aIP<<endl;
-						std::vector<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
-						while(fingerSuccessorit!=fingerSuccessorList.end())
-						{
-							cout<<*fingerSuccessorit<<endl;
-						}
-
+						
 						std::map<uint32_t,string> tmpMap;
 						tmpMap.insert(std::pair<uint32_t,string>(aID,aIP));
 
@@ -884,6 +879,7 @@ int main(int argc, char* argv[])
 
 						cout<<"After ~~~~~"<<endl;
 						myService->printFingerTable();
+						
 
 						if (!fork()) 
 						{ // this is the child process
@@ -911,6 +907,8 @@ int main(int argc, char* argv[])
 							close(sendfd);
 						}
 						close(newfd);
+						cout<<"After 2~~~~~"<<endl;
+						myService->printFingerTable();
 						
 					}
 					else if (i == clientSocket)
