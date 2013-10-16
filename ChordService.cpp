@@ -824,7 +824,7 @@ int main(int argc, char* argv[])
     }
 
 	fd_set read_fds, master; // set of read fds.
-/*
+
     FD_ZERO(&read_fds); // clear the read fd set
 	FD_ZERO(&master); // clear the read fd set
 
@@ -833,10 +833,11 @@ int main(int argc, char* argv[])
 
 	int fdmax = (chordSocket > clientSocket ? chordSocket : clientSocket);
 
-	master = read_fds;
+	
+	//master = read_fds;
 
 	int activity;
-	*/
+	
 	struct timeval selectWaitTimer;
 	
 
@@ -845,24 +846,10 @@ int main(int argc, char* argv[])
 		//This machine listens the port 10000, where broadcast of the new node will be received.
 		//Then send its id and update its own fingertable.
 		//It's based on the asumption that each node is added one by one.
-		
-		selectWaitTimer.tv_sec = 0; 
-   		selectWaitTimer.tv_usec = 0;
-   		FD_ZERO(&read_fds); // clear the read fd set
-		FD_ZERO(&master); // clear the read fd set
-
-		FD_SET(chordSocket, &read_fds);
-		FD_SET(clientSocket, &read_fds);
-
-		int fdmax = (chordSocket > clientSocket ? chordSocket : clientSocket);
-
-		master = read_fds;
-
-		int activity;
-
 	
-		read_fds = master;
-		activity = select( fdmax + 1 , &read_fds , NULL , NULL , NULL);
+		//master=read_fds;
+		memcpy(&master, &read_fds, sizeof(read_fds));
+		activity = select( fdmax + 1 , &master , NULL , NULL , NULL);
 		if ((activity < 0) && (errno!=EINTR)) 
         {
             cerr<<"select error "<<activity<<endl;
@@ -871,7 +858,7 @@ int main(int argc, char* argv[])
 		{
 			for(int i = 0; i<=fdmax; i++)
 			{
-				if(FD_ISSET(i, &read_fds))
+				if(FD_ISSET(i, &master))
 				{
 					if(i == chordSocket)
 					{
