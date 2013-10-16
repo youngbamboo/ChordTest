@@ -243,7 +243,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 	else
 	{
 		cout<<"There are nodes in the ring"<<endl;
-		printFingerTable();
+		//printFingerTable();
 		//Something in the ring.
 
 		std::list<uint32_t>::iterator fingerNodeit;
@@ -299,7 +299,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 				//i++;
 			}
 			
-			printFingerTable();
+			//printFingerTable();
 			
 		}
 	}
@@ -764,9 +764,12 @@ int main(int argc, char* argv[])
     //cout<<"Kill the thread"<<endl;
 
 	myService->receiveReply(&mymap);
-	
-	myService->buildFingerTable(&mymap);
 
+	cout<<"Before ~~~~~"<<endl;
+	myService->printFingerTable();
+	myService->buildFingerTable(&mymap);
+	cout<<"After ~~~~~"<<endl;
+	myService->printFingerTable();
 
 
 	//Initialization is finished.
