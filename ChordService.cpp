@@ -167,7 +167,7 @@ int ChordService::receiveReply(std::map<int,string>* themap)
 	cout<<"receiveReply: Waiting for reply..."<<endl;
 	int n, fd;
     socklen_t cli_addr_len;
-    char buf[1024] = {0};
+    //char buf[1024] = {0};
     struct sockaddr_in servaddr, cliaddr;
 
     if((fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
@@ -199,7 +199,8 @@ int ChordService::receiveReply(std::map<int,string>* themap)
           perror("Error");
        }
 	   */
-       n =recvfrom(fd, buf, 1024, MSG_DONTWAIT, (struct sockaddr *)&cliaddr, &cli_addr_len);
+	   string buf;
+       n =recvfrom(fd, buf.c_str(), 1024, MSG_DONTWAIT, (struct sockaddr *)&cliaddr, &cli_addr_len);
        if (n>0)
        {
            cout<<buf<<endl;
