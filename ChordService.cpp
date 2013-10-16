@@ -343,9 +343,9 @@ void ChordService::printFingerTable()
 {
 	mtx.lock();
 	cout<<"Finger Table: "<<endl;
-	cout<<"Node: "<<fingerNodeList.size()<<endl;
-	cout<<"Successor: "<<fingerSuccessorList.size()<<endl;
-	cout<<"IP: "<<successorIPList.size()<<endl;
+	cout<<"Node: "<<fingerNodeList->size()<<endl;
+	cout<<"Successor: "<<fingerSuccessorList->size()<<endl;
+	cout<<"IP: "<<successorIPList->size()<<endl;
 	
 	std::list<int>::iterator fingerNodeit = fingerNodeList->begin();
 	std::list<int>::iterator fingerSuccessorit = fingerSuccessorList->begin();
