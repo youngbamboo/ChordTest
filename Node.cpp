@@ -43,7 +43,7 @@ uint16_t Node::buildHashID(const string theStr)
 {
 
 	int len = theStr.length();
-	int hash = (int)(theStr[len/2]);
+	int hash = (int)(theStr[len-1]);
 	for(int i = 0; i < len; i ++)
 	{
 		hash = (hash << 5) - hash + theStr[i];
