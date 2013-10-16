@@ -846,8 +846,8 @@ int main(int argc, char* argv[])
 		//Then send its id and update its own fingertable.
 		//It's based on the asumption that each node is added one by one.
 		
-		//selectWaitTimer.tv_sec = 2; 
-   		//selectWaitTimer.tv_usec = 0;
+		selectWaitTimer.tv_sec = 0; 
+   		selectWaitTimer.tv_usec = 0;
    		FD_ZERO(&read_fds); // clear the read fd set
 		FD_ZERO(&master); // clear the read fd set
 
