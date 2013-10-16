@@ -276,9 +276,10 @@ void ChordService::buildFingerTable(std::map<int,string>* themap)
 						//*fingerSuccessorit=tmpID;
 						//*successorIPListit=tmpIP;
 						fingerSuccessorList.erase(fingerSuccessorit);
-						successorIPListit.erase(successorIPListit);
+						successorIPList.erase(successorIPListit);
+						
 						fingerSuccessorList.insert(fingerSuccessorit,tmpID);
-						successorIPListit.insert(successorIPListit,tmpIP);
+						successorIPList.insert(successorIPListit,tmpIP);
 					}
 				}
 				else
@@ -287,8 +288,13 @@ void ChordService::buildFingerTable(std::map<int,string>* themap)
                     if ((*fingerNodeit)>(*fingerSuccessorit))
                     {
 						cout<<"fingerNodeit)>(*fingerSuccessorit"<<endl;
-						*fingerSuccessorit=tmpID;
-						*successorIPListit=tmpIP;
+						//*fingerSuccessorit=tmpID;
+						//*successorIPListit=tmpIP;
+						fingerSuccessorList.erase(fingerSuccessorit);
+						successorIPList.erase(successorIPListit);
+						
+						fingerSuccessorList.insert(fingerSuccessorit,tmpID);
+						successorIPList.insert(successorIPListit,tmpIP);
                     }
 					else 
 					{
@@ -297,8 +303,13 @@ void ChordService::buildFingerTable(std::map<int,string>* themap)
 						{
 							cout<<tmpID<<","<<(*fingerSuccessorit)<<endl;
 							cout<<"final change here??"<<endl;
-							*fingerSuccessorit=tmpID;
-							*successorIPListit=tmpIP;
+							//*fingerSuccessorit=tmpID;
+							//*successorIPListit=tmpIP;
+							fingerSuccessorList.erase(fingerSuccessorit);
+							successorIPList.erase(successorIPListit);
+							
+							fingerSuccessorList.insert(fingerSuccessorit,tmpID);
+							successorIPList.insert(successorIPListit,tmpIP);
 						}
 					}
 					//It is bigger than the (i-1) column
