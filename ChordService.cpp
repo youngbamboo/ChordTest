@@ -824,20 +824,21 @@ int main(int argc, char* argv[])
     }
 
 	fd_set read_fds, master; // set of read fds.
+/*
+    FD_ZERO(&read_fds); // clear the read fd set
+	FD_ZERO(&master); // clear the read fd set
 
-    
+	FD_SET(chordSocket, &read_fds);
+	FD_SET(clientSocket, &read_fds);
 
 	int fdmax = (chordSocket > clientSocket ? chordSocket : clientSocket);
 
 	master = read_fds;
 
 	int activity;
+	*/
 	struct timeval selectWaitTimer;
-	FD_ZERO(&read_fds); // clear the read fd set
-	FD_ZERO(&master); // clear the read fd set
-
-	FD_SET(chordSocket, &read_fds);
-	FD_SET(clientSocket, &read_fds);
+	
 
 	while (1)
 	{
@@ -846,7 +847,20 @@ int main(int argc, char* argv[])
 		//It's based on the asumption that each node is added one by one.
 		
 		//selectWaitTimer.tv_sec = 2; 
-   		//selectWaitTimer.tv_usec = 0;  
+   		//selectWaitTimer.tv_usec = 0;
+   		FD_ZERO(&read_fds); // clear the read fd set
+		FD_ZERO(&master); // clear the read fd set
+
+		FD_SET(chordSocket, &read_fds);
+		FD_SET(clientSocket, &read_fds);
+
+		int fdmax = (chordSocket > clientSocket ? chordSocket : clientSocket);
+
+		master = read_fds;
+
+		int activity;
+
+	
 		read_fds = master;
 		activity = select( fdmax + 1 , &read_fds , NULL , NULL , NULL);
 		if ((activity < 0) && (errno!=EINTR)) 
