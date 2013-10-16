@@ -311,6 +311,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 
 void ChordService::printFingerTable()
 {
+	mtx.lock();
 	cout<<"Finger Table: "<<endl;
 	cout<<"Node: "<<fingerNodeList.size()<<endl;
 	cout<<"Successor: "<<fingerSuccessorList.size()<<endl;
@@ -324,6 +325,7 @@ void ChordService::printFingerTable()
 	{
 		cout<<*fingerNodeit<<" "<<*fingerSuccessorit<<" "<<*successorIPListit<<endl;
 	}
+	mtx.unlock();		
 }
 
 void ChordService::setSystemParam()
