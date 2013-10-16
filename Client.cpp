@@ -240,7 +240,7 @@ int main(int argc,char **argv)
         cout<<"2 - get by key"<<endl;
         cout<<"3 - delete by key"<<endl;
         
-        cin >> command;
+        getline(cin,command);
 
         switch(command)
         {
