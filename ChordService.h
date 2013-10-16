@@ -23,10 +23,10 @@ class ChordService {
 		inline Node* getLocalNode() {return this->localNode;};
 		inline Node* getPreNode() {return this->preNode;};
 		inline void setPreNode(Node* theNode) {this->preNode=theNode;};
-		void buildFingerTable(std::map<uint32_t,string>* themap);
-		int receiveReply(std::map<uint32_t,string>* themap);
+		void buildFingerTable(std::map<int,string>* themap);
+		int receiveReply(std::map<int,string>* themap);
         void sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode);
-        int lookupFingerTable(uint32_t thekey, string& theIP, uint32_t initNode);
+        int lookupFingerTable(int thekey, string& theIP, int initNode);
 		//use for send to other nodes param
 		void setSystemParam();
 
@@ -46,7 +46,7 @@ class ChordService {
 		//map<string,string>* themap;
 		//used for when this node is taken as a client
 		//int client_sockfd;
-		//void* receiveReply(std::map<uint32_t,string>* themap);
+		//void* receiveReply(std::map<int,string>* themap);
 
 		const string myDirectory;
  
