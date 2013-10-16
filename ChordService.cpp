@@ -278,7 +278,9 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 				}
 				else
 				{
-					cout<<tmpID<<","<<(*fingerNodeit)<<","<<(*fingerSuccessorit)<<endl;
+					cout<<tmpID<<","
+						<<fingerNodeit<<":"<<(*fingerNodeit)<<","
+						fingerSuccessorit<<":"<<(*fingerSuccessorit)<<endl;
                     if ((*fingerNodeit)>(*fingerSuccessorit))
                     {
 						cout<<"fingerNodeit)>(*fingerSuccessorit"<<endl;
@@ -322,7 +324,9 @@ void ChordService::printFingerTable()
 	for (;fingerNodeit!=fingerNodeList.end()&&fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			++fingerNodeit,++fingerSuccessorit,++successorIPListit)
 	{
-		cout<<*fingerNodeit<<" "<<*fingerSuccessorit<<" "<<*successorIPListit<<endl;
+		cout<<fingerNodeit<<":"<<*fingerNodeit<<" "
+			<<fingerSuccessorit<<":"<<*fingerSuccessorit<<" "
+			<<successorIPListit<<":"<<*successorIPListit<<endl;
 	}
 }
 
