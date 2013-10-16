@@ -823,9 +823,7 @@ int main(int argc, char* argv[])
 							 //memcpy(clientMsg, maxMessage, sizeof(ClientRequest));
 							 
 							 string data = maxMessage;
-							 if()
-							 {
-							 }
+							 
                              //Find the length report first
                              int comma=data.find(',');
                              int initNode_length = atoi(data.substr(0,comma).c_str());
