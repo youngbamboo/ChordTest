@@ -503,7 +503,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 	while(fingerSuccessorit!=ChordService::fingerSuccessorList.end()
 		&&successorIPListit!=ChordService::successorIPList.end())
 	{
-		successorLength=calculateLength((*fingerSuccessorit),thekey);
+		successorLength=calculateLength((*fingerSuccessorit),thekey,initNode);
 		if(smallestLength>=successorLength)
 		{
 			smallestLength=successorLength;
