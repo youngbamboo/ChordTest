@@ -230,6 +230,7 @@ int ChordService::receiveReply(std::map<uint32_t,string>* themap)
 
 void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 {
+	mtx.lock();
     cout<<"Enter build finger table"<<endl;
 	uint32_t aID = this->getLocalNode()->getHashID();
 	string aIP = this->getLocalNode()->getIP();
@@ -302,7 +303,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 			
 		}
 	}
-	
+	 mtx.unlock();
 }
 
 void ChordService::printFingerTable()
