@@ -397,6 +397,7 @@ void ChordService::sendRequestToServer(string receiverIP,string key, string valu
 //Return 0 failed, 1 success
 int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t initNode)
 {
+    cout<<"Begin to find finger table"<<endl;
 	//First check my node...
 	std::list<uint32_t>::iterator fingerSuccessorit = fingerSuccessorList.begin();
 	std::list<string>::iterator successorIPListit = successorIPList.begin();
@@ -404,7 +405,6 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 	uint32_t tmpNode;
 	string tmpIP;
 	uint32_t localID = getLocalNode()->getHashID();
-	
 
 	if (thekey==localID)
 	{ 
@@ -414,6 +414,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 	{
 		if (thekey>initNode)
 		{
+            cout<<"thekey>initNode"<<endl;
 			if (localID>thekey)
 			{
 				return 1;
@@ -421,6 +422,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 		}
 		if (thekey<initNode)
 		{
+            cout<<"thekey<initNode"<<endl;
 			if (localID>thekey&&localID<initNode)
 			{
 				return 1;
@@ -430,26 +432,32 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 	}
 	if (thekey>initNode)
 	{
+        cout<<"~~~~~thekey>initNode"<<endl;
 		for (;fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			fingerSuccessorit++,successorIPListit++)
 		{
 			if((*fingerSuccessorit)==thekey)
 			{
+                cout<<"~1"<<endl;
 				theIP=*successorIPListit;
 				return 0;
 			}
 			else if ((*fingerSuccessorit)>thekey)
 			{
+                cout<<"~2"<<endl;
 				if((*fingerSuccessorit)==fingerSuccessorList.front())
 				{
+                    cout<<"~3"<<endl;
 					//My first successor is bigger than key, choose between local and successor
 					uint32_t firstSuccessor = *fingerSuccessorit;
 					if ((thekey-localID)<=(firstSuccessor-thekey))
 					{
+                        cout<<"~4"<<endl;
 						return 1;
 					}
 					else
 					{
+                        cout<<"~5"<<endl;
 						theIP=*successorIPListit;
 						return 0;
 					}
@@ -458,11 +466,13 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 				uint32_t lastNode = *(--fingerSuccessorit);
 				if ((thekey-lastNode)>(thisNode-thekey))
 				{
+                    cout<<"~6"<<endl;
 					theIP = *successorIPListit;
 					return 0;
 				}
 				else
 				{
+                    cout<<"~7"<<endl;
 					theIP = *(--successorIPListit);
 					return 0;
 				}
@@ -476,38 +486,48 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 	}
 	if (thekey<initNode)
 	{		
+        cout<<"~8"<<endl;
 		for (;fingerSuccessorit!=fingerSuccessorList.end()&&successorIPListit!=successorIPList.end();
 			fingerSuccessorit++,successorIPListit++)
 		{
 			if((*fingerSuccessorit)==localID)
 			{
+                cout<<"~9"<<endl;
 				//only myself in the ring
 				return 1;
 			}
 			if((*fingerSuccessorit)==thekey)
 			{
+                cout<<"~10"<<endl;
 				theIP=*successorIPListit;
 				return 0;
 			}
 			else if (localID<=65535&&(*fingerSuccessorit)<localID)
 			{
+                cout<<"~11"<<endl;
 				if ((*fingerSuccessorit)<=initNode)
 				{
+                    cout<<"~12"<<endl;
 					if ((*fingerSuccessorit)>=thekey 
 						||(*fingerSuccessorit)>=initNode )
 					{
+                        cout<<"~13"<<endl;
 						if((*fingerSuccessorit)==fingerSuccessorList.front())
 						{
+                            cout<<"~14"<<endl;
 							//My first successor is bigger than key, choose between local and successor
 							uint32_t firstSuccessor = *fingerSuccessorit;
 							if (localID>initNode)
 							{
+                                cout<<"~15"<<endl;
 								if((65535-localID+thekey)<=(firstSuccessor-thekey))
 								{
+                                    cout<<"~16"<<endl;
 									return 1;
 								}
 								else
 								{
+                                    cout<<"~17"<<endl;
 									theIP=*successorIPListit;
 									return 0;
 								}
@@ -516,10 +536,12 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 							{
 								if((thekey-localID)<=(firstSuccessor-thekey))
 								{
+                                    cout<<"~18"<<endl;
 									return 1;
 								}
 								else
 								{
+                                    cout<<"~19"<<endl;
 									theIP=*successorIPListit;
 									return 0;
 								}
@@ -530,12 +552,15 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 						uint32_t lastNode = *(--fingerSuccessorit);
 						if (lastNode>initNode)
 						{
+                            cout<<"~20"<<endl;
 							if((65535-lastNode+thekey)<=(thisNode-thekey))
 							{
+                                cout<<"~21"<<endl;
 								return 1;
 							}
 							else
 							{
+                                cout<<"~22"<<endl;
 								theIP=*successorIPListit;
 								return 0;
 							}
@@ -544,10 +569,12 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 						{
 							if((thekey-lastNode)<=(thisNode-thekey))
 							{
+                                cout<<"~23"<<endl;
 								return 1;
 							}
 							else
 							{
+                                cout<<"~24"<<endl;
 								theIP=*successorIPListit;
 								return 0;
 							}
@@ -555,11 +582,13 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 						
 						if ((thekey-localID)>(thisNode-thekey))
 						{
+                            cout<<"~25"<<endl;
 							theIP = *successorIPListit;
 							return 0;
 						}
 						else
 						{
+                            cout<<"~26"<<endl;
 							return 1;
 						}
 					}
