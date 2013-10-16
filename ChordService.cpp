@@ -280,7 +280,7 @@ void ChordService::buildFingerTable(std::map<uint32_t,string>* themap)
 				{
 					cout<<tmpID<<","
 						<<fingerNodeit<<":"<<(*fingerNodeit)<<","
-						fingerSuccessorit<<":"<<(*fingerSuccessorit)<<endl;
+						<<fingerSuccessorit<<":"<<(*fingerSuccessorit)<<endl;
                     if ((*fingerNodeit)>(*fingerSuccessorit))
                     {
 						cout<<"fingerNodeit)>(*fingerSuccessorit"<<endl;
