@@ -38,9 +38,9 @@ class ChordService {
 	private:
 		Node* localNode;
 		Node* preNode;
-		list<uint32_t> fingerNodeList;
-		list<uint32_t> fingerSuccessorList;
-		list<string> successorIPList;
+		//list<uint32_t> fingerNodeList;
+		//list<uint32_t> fingerSuccessorList;
+		//list<string> successorIPList;
 		//cache the data in this machine
 		map<string,string>* themap;
 		//used for when this node is taken as a client
