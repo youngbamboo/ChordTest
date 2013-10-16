@@ -825,25 +825,29 @@ int main(int argc, char* argv[])
 
 	fd_set read_fds, master; // set of read fds.
 
-    FD_ZERO(&read_fds); // clear the read fd set
-    FD_ZERO(&master); // clear the read fd set
-
-	FD_SET(chordSocket, &read_fds);
-    FD_SET(clientSocket, &read_fds);
+    
 
 	int fdmax = (chordSocket > clientSocket ? chordSocket : clientSocket);
 
 	master = read_fds;
 
 	int activity;
+	struct timeval selectWaitTimer;
 
 	while (1)
 	{
 		//This machine listens the port 10000, where broadcast of the new node will be received.
 		//Then send its id and update its own fingertable.
 		//It's based on the asumption that each node is added one by one.
+		FD_ZERO(&read_fds); // clear the read fd set
+	    FD_ZERO(&master); // clear the read fd set
+
+		FD_SET(chordSocket, &read_fds);
+	    FD_SET(clientSocket, &read_fds);
+		//selectWaitTimer.tv_sec = 2; 
+   		//selectWaitTimer.tv_usec = 0;  
 		read_fds = master;
-		activity = select( fdmax + 1 , &read_fds , NULL , NULL , NULL);
+		activity = select( fdmax + 1 , &read_fds , NULL , NULL , &selectWaitTimer);
 		if ((activity < 0) && (errno!=EINTR)) 
         {
             cerr<<"select error "<<activity<<endl;
@@ -1023,13 +1027,7 @@ int main(int argc, char* argv[])
 							 {
 							 	//send to the next node.
 							 	myService->sendRequestToServer(theNextNodeIP,key, value, clientIP, initNode);
-							 }
-	                         
-
-							
-							 
-							 
-							
+							 }		
 
 	                     }
 	                     else{
