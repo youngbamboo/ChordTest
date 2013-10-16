@@ -358,6 +358,7 @@ void ChordService::printFingerTable()
 	for(fingerSuccessorit=fingerSuccessorList.begin();fingerSuccessorit!=fingerSuccessorList.end();fingerSuccessorit++)
 	{
 		cout<<"["<<n<<"] "<<(*fingerSuccessorit)<<endl;
+		n++;
 	}
 
 	std::list<string>::iterator successorIPListit;
@@ -365,6 +366,7 @@ void ChordService::printFingerTable()
 	for(successorIPListit=successorIPList.begin();successorIPListit!=successorIPList.end();successorIPListit++)
 	{
 		cout<<"["<<n<<"] "<<(*successorIPListit)<<endl;
+		n++;
 	}
 	
 }
