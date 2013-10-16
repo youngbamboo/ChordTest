@@ -349,37 +349,25 @@ void ChordService::setSystemParam()
 
 void ChordService::sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode)
 {
-    ClientRequest* req = new ClientRequest;
+	cout<<"sendRequestToServer "<<receiverIP<<" "<<key<<" "<<value<<" "<<clientIP<<endl;
 	
-	req->key_length=key.length();
-	req->value_length=value.length();
-	req->initialNode_length=initNode.length();
-	req->clientIP_length=clientIP.length();
-	
-	char* msgBuffer = NULL;
-	long messageLen = 0;
-	messageLen = sizeof(ClientRequest) + key.length() + value.length()+ initNode.length() + clientIP.length();
-	
-	msgBuffer = new char[messageLen];
-	memcpy(msgBuffer,req,sizeof(ClientRequest));
-	memcpy(msgBuffer+sizeof(ClientRequest),initNode.c_str(),initNode.length());
-	memcpy(msgBuffer+sizeof(ClientRequest)+initNode.length(),key.c_str(),key.length());
-	memcpy(msgBuffer+sizeof(ClientRequest)+initNode.length()+key.length(),value.c_str(),value.length());
-	memcpy(msgBuffer+sizeof(ClientRequest)+key.length()+value.length()+initNode.length(),clientIP.c_str(),clientIP.length());
-	
+    string lengthReport = std::to_string(initNode.length())+","+to_string(key.length())+","
+        +to_string(value.length())+","+to_string(clientIP.length())+",";
+
+	string msgBuffer=lengthReport+initNode+key+value+clientIP;
 	struct sockaddr_in receiverAddr;
 
     memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
     receiverAddr.sin_family = AF_INET;
-    receiverAddr.sin_port = htons(9999);
+    receiverAddr.sin_port = htons(CLIENT_PORT);
+    cout<<"msgBuffer "<<msgBuffer<<endl;
 
     if(inet_aton(receiverIP.c_str(), &receiverAddr.sin_addr) == 0)
 	{
         cerr<<"INET_ATON Failed\n"<<endl;
         exit(1);
     }
-    
-    if(sendto(client_sockfd, msgBuffer, messageLen, 0,
+    if(sendto(client_sockfd, msgBuffer.c_str(), msgBuffer.length(), 0,
                 (struct sockaddr*) &receiverAddr, sizeof(receiverAddr)) == -1)
     {
 
@@ -389,6 +377,7 @@ void ChordService::sendRequestToServer(string receiverIP,string key, string valu
 	{
         cerr<<"Successfully send to "<<receiverIP<<" with data "<<msgBuffer<<endl;
     }
+	
 
 }
 
@@ -440,6 +429,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 			{
                 cout<<"~1"<<endl;
 				theIP=*successorIPListit;
+				cout<<"return "<<theIP<<endl;
 				return 0;
 			}
 			else if ((*fingerSuccessorit)>thekey)
@@ -459,6 +449,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 					{
                         cout<<"~5"<<endl;
 						theIP=*successorIPListit;
+						cout<<"return "<<theIP<<endl;
 						return 0;
 					}
 				}
@@ -468,12 +459,14 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 				{
                     cout<<"~6"<<endl;
 					theIP = *successorIPListit;
+					cout<<"return "<<theIP<<endl;
 					return 0;
 				}
 				else
 				{
                     cout<<"~7"<<endl;
 					theIP = *(--successorIPListit);
+					cout<<"return "<<theIP<<endl;
 					return 0;
 				}
 			}
@@ -500,6 +493,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 			{
                 cout<<"~10"<<endl;
 				theIP=*successorIPListit;
+				cout<<"return "<<theIP<<endl;
 				return 0;
 			}
 			else if (localID<=65535&&(*fingerSuccessorit)<localID)
@@ -529,6 +523,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 								{
                                     cout<<"~17"<<endl;
 									theIP=*successorIPListit;
+									cout<<"return "<<theIP<<endl;
 									return 0;
 								}
 							}
@@ -543,6 +538,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 								{
                                     cout<<"~19"<<endl;
 									theIP=*successorIPListit;
+									cout<<"return "<<theIP<<endl;
 									return 0;
 								}
 							}
@@ -562,6 +558,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 							{
                                 cout<<"~22"<<endl;
 								theIP=*successorIPListit;
+								cout<<"return "<<theIP<<endl;
 								return 0;
 							}
 						}
@@ -576,6 +573,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 							{
                                 cout<<"~24"<<endl;
 								theIP=*successorIPListit;
+								cout<<"return "<<theIP<<endl;
 								return 0;
 							}
 						}
@@ -584,6 +582,7 @@ int ChordService::lookupFingerTable(uint32_t thekey, string& theIP, uint32_t ini
 						{
                             cout<<"~25"<<endl;
 							theIP = *successorIPListit;
+							cout<<"return "<<theIP<<endl;
 							return 0;
 						}
 						else
