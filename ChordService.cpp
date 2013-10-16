@@ -844,8 +844,8 @@ int main(int argc, char* argv[])
 
 		FD_SET(chordSocket, &read_fds);
 	    FD_SET(clientSocket, &read_fds);
-		//selectWaitTimer.tv_sec = 2; 
-   		//selectWaitTimer.tv_usec = 0;  
+		selectWaitTimer.tv_sec = 2; 
+   		selectWaitTimer.tv_usec = 0;  
 		read_fds = master;
 		activity = select( fdmax + 1 , &read_fds , NULL , NULL , &selectWaitTimer);
 		if ((activity < 0) && (errno!=EINTR)) 
