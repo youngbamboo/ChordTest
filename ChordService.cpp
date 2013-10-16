@@ -455,14 +455,7 @@ int ChordService::calculateLength(int node,int key,int initNode)
 
 	if(node>key)
 	{
-		if(key<initNode)
-		{
-			length=65535-node+key;
-		}
-		else
-		{
-			length=node-key;
-		}
+		length=65535-node+key;
 	}
 	else
 	{
