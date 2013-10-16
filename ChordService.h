@@ -43,7 +43,7 @@ class ChordService {
 		//cache the data in this machine
 		map<string,string>* themap;
 		//used for when this node is taken as a client
-		int client_sockfd;
+		//int client_sockfd;
 		//void* receiveReply(std::map<uint32_t,string>* themap);
 
 		const string myDirectory;

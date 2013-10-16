@@ -40,7 +40,7 @@ ChordService::ChordService():localNode(NULL),preNode(NULL),myDirectory("/tmp/zya
         fingerSuccessorList.push_back(aID);
         successorIPList.push_back(aIP);
     }
-	setSystemParam();
+	//setSystemParam();
 	printFingerTable();
 	mkDirectory(myDirectory);
 	//Remove all files.
@@ -356,6 +356,21 @@ void ChordService::sendRequestToServer(string receiverIP,string key, string valu
         +to_string(value.length())+","+to_string(clientIP.length())+",";
 
 	string msgBuffer=lengthReport+initNode+key+value+clientIP;
+
+    
+   
+
+    int client_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+    if(client_sockfd == -1)
+    {
+        printf("Could not create socket \n");
+        exit(EXIT_FAILURE);
+    }
+
+    
+    
+///
 	struct sockaddr_in receiverAddr;
 
     memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
@@ -378,6 +393,7 @@ void ChordService::sendRequestToServer(string receiverIP,string key, string valu
 	{
         cerr<<"Successfully send to "<<receiverIP<<" with data "<<msgBuffer<<endl;
     }
+	close(client_sockfd);
 	
 
 }
