@@ -242,7 +242,7 @@ int main(int argc,char **argv)
         
         getline(cin,command);
 
-		if(command=="1")
+		if(command=="0")
 		{
 			//cout<< "You selected put key-value one by one"<<endl;
             cout<< "Please enter the key"<<endl;
