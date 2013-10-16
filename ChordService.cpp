@@ -864,7 +864,13 @@ int main(int argc, char* argv[])
 						std::map<uint32_t,string> tmpMap;
 						tmpMap.insert(std::pair<uint32_t,string>(aID,aIP));
 
+						cout<<"Before ~~~~~"<<endl;
+						myService->printFingerTable();
+
 						myService->buildFingerTable(&tmpMap);
+
+						cout<<"Before ~~~~~"<<endl;
+						myService->printFingerTable();
 
 						if (!fork()) 
 						{ // this is the child process
