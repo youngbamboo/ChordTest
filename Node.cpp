@@ -39,7 +39,7 @@ Node::~Node()
 
 
 //One-at-a-Time hash
-uint16_t Node::buildHashID(const string theStr)
+int Node::buildHashID(const string theStr)
 {
 
 	int len = theStr.length();
@@ -74,7 +74,7 @@ uint16_t Node::buildHashID(const string theStr)
 
 	h=h>>16;
 	
-	return (uint16_t)h;
+	return (int)h;
 */
 	/*
 	string nodeIP=getIP();
@@ -82,8 +82,8 @@ uint16_t Node::buildHashID(const string theStr)
     string digest;
     EVP_MD_CTX mdctx;
     const EVP_MD *md;
-    uint16_t char md_value[EVP_MAX_MD_SIZE];
-    uint16_t md_len;
+    int char md_value[EVP_MAX_MD_SIZE];
+    int md_len;
     int i;
 
     OpenSSL_add_all_digests();
