@@ -31,7 +31,7 @@ std::mutex mtx;
 
 
 ChordService::ChordService():localNode(NULL),preNode(NULL),myDirectory("/tmp/zyang/"),
-	fingerNodeList(NULL),fingerSuccessorList(NULL),fingerSuccessorList(NULL)
+	fingerNodeList(NULL),fingerSuccessorList(NULL),successorIPList(NULL)
 {
 	localNode = new Node();
 	cout<<"Initialize finger table"<<endl;
