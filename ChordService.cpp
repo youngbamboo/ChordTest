@@ -846,7 +846,7 @@ int main(int argc, char* argv[])
 		activity = select( fdmax + 1 , &read_fds , NULL , NULL , NULL);
 		if ((activity < 0) && (errno!=EINTR)) 
         {
-            cerr<<"select error"<<endl;
+            cerr<<"select error "<<activity<<endl;
         }
 		else
 		{
