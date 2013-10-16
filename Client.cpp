@@ -246,7 +246,7 @@ int main(int argc,char **argv)
         {
             case 0:
                 {
-                    cout<< "You selected put key-value one by one"<<endl;
+                    //cout<< "You selected put key-value one by one"<<endl;
                     cout<< "Please enter the key"<<endl;
 
                     string key;
