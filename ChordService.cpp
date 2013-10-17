@@ -681,7 +681,7 @@ int main(int argc, char* argv[])
 	//Initialization is finished.
 
 	//Define the socket
-	//ChordSocket: Listen the 10000 port for broadcast. Send the reply (to 10001) and update its own finger table.
+	//ChordSocket: Listen the 10000 port for broadcast.
 	//ClientSocket: Listen the 9999 to receive the key-value data. 
 
 	int clientSocket, chordSocket, clientGetSocket, clientDeleteSocket;
@@ -691,20 +691,22 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
+	if((clientGetSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){
+        cerr<<"Error when initializing client get socket"<<endl;
+        exit(1);
+    }
+
+	if((clientDeleteSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){
+        cerr<<"Error when initializing client delete socket"<<endl;
+        exit(1);
+    }
+
     if((chordSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){
         cerr<<"Error when initializing chord socket"<<endl;
         exit(1);
     }
 
-	if((clientGetSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){
-        cerr<<"Error when initializing chord socket"<<endl;
-        exit(1);
-    }
-
-	if((clientDeleteSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){
-        cerr<<"Error when initializing chord socket"<<endl;
-        exit(1);
-    }
+	
 
 	struct sockaddr_in clientUDP,chordUDP, clietGetUDP, clientDeleteUDP;
 

@@ -1,4 +1,3 @@
-
 /* Client is used to ping server for a file name or put, get, ls , exists
  * Usage: ./Client
  */

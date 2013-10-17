@@ -22,7 +22,7 @@ std::mutex cachemtx;
 
 Node::Node()
     :myHostName(""),myIP(""),
-    myBroadcastPort(10000),myReceivePort(10001),myClientPort(9999),myClientGetPort(9999),myClientDeletePort(9999),
+    myBroadcastPort(10000),myReceivePort(10001),myClientPort(9999),myClientGetPort(8888),myClientDeletePort(7777),
     myID(0),myFile("/tmp/zyang/zyang.db")
 {
 	struct hostent* he;
