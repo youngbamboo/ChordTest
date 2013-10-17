@@ -201,7 +201,7 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	{
 		string operation="2";
 		string value = "N/A";
-		string lengthReport = to_string(operation.length())+","+to_string(initialNode_fake.length())+","+
+		string lengthReport = to_string(operation.length())+","+to_string(initialNode_fake.length())+","
 			+to_string(value.length())+","+to_string(key.length())+","+to_string(clientIP.length())+",";
 		string msgBuffer=lengthReport+operation+initialNode_fake+key+value+clientIP;
 		
