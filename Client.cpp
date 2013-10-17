@@ -237,7 +237,7 @@ void setSystemParam()
         exit(EXIT_FAILURE);
     }
 
-	int bval = bind(clientdelete_sockfd,(struct sockaddr *)&servaddr_delete,sizeof(servaddr_delete));
+	bval = bind(clientdelete_sockfd,(struct sockaddr *)&servaddr_delete,sizeof(servaddr_delete));
 
     if(bval==-1)
     {
@@ -411,8 +411,8 @@ int main(int argc,char **argv)
 			getline(cin,serverIP);
                     
 
-                                    	
-            sendRequestToServer(serverIP,key,value,selfIP,"PUT");
+			string operation  = "PUT";                                    	
+            sendRequestToServer(serverIP,key,value,selfIP,operation);
             int result = recieveMessageFromServer();
                     
             if(result == 1)
@@ -429,7 +429,15 @@ int main(int argc,char **argv)
 			cout<< "Please enter the key"<<endl;
 			string key;
             getline(cin,key);
-			sendRequestToServer(serverIP,key,value,selfIP,"GET");
+
+			cout<< "Please enter the server ip"<<endl;
+            string serverIP;                    
+			getline(cin,serverIP);
+			
+			string value = " ";
+			string operation = "GET";
+			
+			sendRequestToServer(serverIP,key,value,selfIP,operation);
 			list<string> result;
             int result = recieveGetMessageFromServer(result);
 			if (result==SUCCESS)
@@ -446,7 +454,15 @@ int main(int argc,char **argv)
 			cout<< "Please enter the key"<<endl;
 			string key;
             getline(cin,key);
-			sendRequestToServer(serverIP,key,value,selfIP,"DELETE");
+
+			cout<< "Please enter the server ip"<<endl;
+            string serverIP;                    
+			getline(cin,serverIP);
+
+			string value = " ";
+			string operation = "DELETE";
+			
+			sendRequestToServer(serverIP,key,value,selfIP,operation);
 			int result = recieveDeleteMessageFromServer();
 			if(result == 1)
             {
@@ -456,10 +472,7 @@ int main(int argc,char **argv)
 			{
 				cout<<"Failed" << endl;
 			}
-		}
-
-       
-        
+		}        
     }
 
 }
