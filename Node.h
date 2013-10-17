@@ -38,7 +38,7 @@ class Node {
 		const int myReceivePort;
 		const int myClientPort;
 		std::multimap<string,string> myCacheMape;
-		const string myDirectory;
+		const string myFile;
 
 		
 		

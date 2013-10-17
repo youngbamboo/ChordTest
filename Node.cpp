@@ -22,7 +22,7 @@ std::mutex cachemtx;
 
 Node::Node()
     :myHostName(""),myIP(""),
-    myBroadcastPort(10000),myReceivePort(10001),myClientPort(9999),myID(0),myDirectory("/tmp/zyang/")
+    myBroadcastPort(10000),myReceivePort(10001),myClientPort(9999),myID(0),myFile("/tmp/zyang/zyang.db")
 {
 	struct hostent* he;
     char aName[100];
@@ -39,10 +39,18 @@ Node::Node()
 	myID = buildHashID(myIP);
 	cout<<"My Hash ID is: "<<myID<<endl;
 
-	mkdir(myDirectory.c_str(),666);
+	mkdir("/tmp/zyang/",666);
 	//Remove all files.
 	system("exec rm -r /tmp/zyang");
 
+	
+
+	int fd = open (myFile.c_str(), O_RDWR|O_CREAT,777);
+	if (fd==-1)
+	{
+		cerr<<"Create db file failed"<<endl;
+		exit(1);
+	}
 	
 }
 
@@ -127,7 +135,7 @@ int Node::storeData(const string theKey, const string theValue)
 	//Write them to the file.
 	string content = theKey+","+theValue;
 	std::fstream fs;
-	fs.open(myDirectory.c_str(),std::ios_base::app);
+	fs.open(myFile.c_str(),std::ios_base::app);
 	if (fs.is_open())
 	{
 		fs <<content<<'\n';
@@ -160,7 +168,7 @@ int Node::deleteData(const string theKey)
 	//Delete in cache and rewrite the file
 	
 	std::fstream fs;
-	fs.open(myDirectory.c_str());
+	fs.open(myFile.c_str());
 	if (fs.is_open())
 	{
 		myCacheMape.erase(theKey);
