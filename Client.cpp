@@ -56,7 +56,7 @@ int recieveMessageFromServer(list<string>& result)
 
         recvRet = recvfrom(client_sockfd, maxMessage, MAX_MSG_SIZE,
                 MSG_DONTWAIT, (struct sockaddr*) &senderProcAddrUDP, &senderLenUDP);
-		cout<<"Raw message received is: "<<maxMessage<<endl;
+		
 
         if(recvRet > 0)
         {
@@ -73,19 +73,16 @@ int recieveMessageFromServer(list<string>& result)
 				if (data.substr(0,5)=="Data:")
 				{
                     data.erase(0,5);
-					cout<<"values are "<<data<<endl;
 					string value;
 					
 					for (string::iterator it=data.begin(); it!=data.end(); ++it)
 					{
-						cout<<(*it)<<endl;;
 						if ((*it)!='|')
 						{
 							value.append(1,(*it));
 						}
 						else
 						{
-							cout<<"value got is "<<value<<endl;
 							result.push_back(value);
 							value.clear();
 						}

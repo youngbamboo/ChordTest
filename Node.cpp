@@ -172,6 +172,13 @@ int Node::deleteData(const string theKey)
 {
 	cachemtx.lock();
 	//Delete in cache and rewrite the file
+
+	system("exec rm /tmp/zyang/*");
+
+	fstream f;
+	f.open( myFile.c_str(), ios::out );
+	f << flush;
+	f.close();
 	
 	std::fstream fs;
 	fs.open(myFile.c_str());
@@ -181,7 +188,6 @@ int Node::deleteData(const string theKey)
 		std::multimap<string,string>::iterator it;
 		for (it=myCacheMape.begin(); it!=myCacheMape.end(); ++it)
     		fs << (*it).first << "," << (*it).second << '\n';
-		
 	}
 	else
 	{
@@ -190,6 +196,7 @@ int Node::deleteData(const string theKey)
 	}
 	fs.close();
 	cachemtx.unlock();
+	return 1;
 }
 
 
