@@ -893,6 +893,8 @@ int main(int argc, char* argv[])
 							 if(result==1)
 							 {
 							 	//store data
+							 	string aKey=std:;to_string(theHash);
+							 	myService->getLocalNode()->storeData(aKey,value);
 							 	//send back to client 	
 								cout<<"Send successful response message"<<endl;
 								if (!fork()) 
