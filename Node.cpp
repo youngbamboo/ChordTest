@@ -139,8 +139,8 @@ int Node::storeData(const string theKey, const string theValue)
 	cachemtx.lock();
 	//Write them to the file.
 	string content = theKey+","+theValue;
-	std::fstream fs;
-	fs.open(myFile.c_str(),std::ios_base::app);
+	std::ofstream fs;
+	fs.open(myFile.c_str(), ios::out | ios::app);
 	if (fs.is_open())
 	{
 		fs <<content<<'\n';
