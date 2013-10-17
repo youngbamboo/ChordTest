@@ -701,7 +701,7 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-	if((chordclientDeleteSocketocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){
+	if((clientDeleteSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){
         cerr<<"Error when initializing chord socket"<<endl;
         exit(1);
     }
@@ -1152,12 +1152,12 @@ int main(int argc, char* argv[])
 						 	//store data
 						 	string aKey=std::to_string(theHash);
 							list<string> valueResult;
-						 	int result = myService->getLocalNode()->deleteData(aKey);
-							cout<<"Delete result is "<<result<<endl
+						 	int res = myService->getLocalNode()->deleteData(aKey);
+							cout<<"Delete result is "<<res<<endl
 							
 							//send back to client 	
 							cout<<"Send successful response message"<<endl;
-							string result = to_string(result);
+							string result = to_string(res);
 							if (!fork()) 
 							{ // this is the child process
 								//close(sockfd); // child doesn't need the listener
