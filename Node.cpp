@@ -11,11 +11,14 @@
 #include <fstream> 
 #include <dirent.h>
 #include <mutex>
+#include <sys/stat.h>
 
 
 #include "Node.h"
 
 using namespace std;
+std::mutex mtx; 
+
 
 Node::Node()
     :myHostName(""),myIP(""),

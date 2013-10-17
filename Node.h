@@ -28,7 +28,8 @@ class Node {
 		inline int getHashID() {return myID;};
 		void setReplyList(list<int>* theList);
 		int storeData(const string theKey, const string theValue);
-		void getData(const string theKey);
+		void getData(const string theKey, list<string>& result);
+		int deleteData(const string theKey);
 	private:
 		string myHostName;
 		string myIP;
