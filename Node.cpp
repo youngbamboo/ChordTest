@@ -17,7 +17,7 @@
 #include "Node.h"
 
 using namespace std;
-std::mutex mtx; 
+std::mutex cachemtx; 
 
 
 Node::Node()
@@ -123,7 +123,7 @@ int Node::buildHashID(const string theStr)
 int Node::storeData(const string theKey, const string theValue)
 {	 
 	cout<<"Node:Store Data: "<<theKey<<" "<<theValue<<endl;
-	mtx.lock();
+	cachemtx.lock();
 	//Write them to the file.
 	string content = theKey+","+theValue;
 	std::fstream fs;
@@ -140,23 +140,23 @@ int Node::storeData(const string theKey, const string theValue)
 		return 0;		
 	}
 	fs.close();
-	mtx.unlock();
+	cachemtx.unlock();
 	return 1;
 }
 
 void Node::getData(const string theKey, list<string>& result)
 {
-	mtx.lock();
+	cachemtx.lock();
 	std::pair <std::multimap<string,string>::iterator, std::multimap<string,string>::iterator> ret;
 	ret = myCacheMape.equal_range(theKey);
 	for (std::multimap<string,string>::iterator it=ret.first; it!=ret.second; ++it)
       result.push_back(it->second);
-	mtx.unlock();
+	cachemtx.unlock();
 }
 
 int Node::deleteData(const string theKey)
 {
-	mtx.lock();
+	cachemtx.lock();
 	//Delete in cache and rewrite the file
 	
 	std::fstream fs;
@@ -175,7 +175,7 @@ int Node::deleteData(const string theKey)
 		return 0;		
 	}
 	fs.close();
-	mtx.unlock();
+	cachemtx.unlock();
 }
 
 
