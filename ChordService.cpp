@@ -385,7 +385,7 @@ void ChordService::setSystemParam()
 void ChordService::sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode,string operation)
 {
 	cout<<"sendRequestToServer "<<receiverIP<<" "<<key<<" "<<value<<" "<<clientIP<<" "<<initNode<<endl;
-	string operation="0";
+	
     string lengthReport = std::to_string(operation.length())+","+std::to_string(initNode.length())+","+to_string(key.length())+","
         +to_string(value.length())+","+to_string(clientIP.length())+",";
 
@@ -1021,7 +1021,7 @@ int main(int argc, char* argv[])
 							 {
 							 	//send to the next node.
 							 	cout<<"Needs to send to find again: "<<theNextNodeIP<<endl;
-							 	myService->sendRequestToServer(theNextNodeIP,key, value, clientIP, initNode);
+							 	myService->sendRequestToServer(theNextNodeIP,key, value, clientIP, initNode,operation);
 							 }		
 
 	                     }
