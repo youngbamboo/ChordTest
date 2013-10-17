@@ -45,7 +45,7 @@ Node::Node()
 		exit(1);
 	}
 	*/
-	system("mkdir -p /tmp/zyang")
+	system("mkdir -p /tmp/zyang");
 	//Remove all files.
 	system("exec rm -r /tmp/zyang");
 
