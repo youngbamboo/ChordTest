@@ -530,6 +530,10 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 	printFingerTable();
 	cout<<"Own ID: "<<localID<<endl;
 	cout<<"The shortest is "<<tmpID<<" "<<theIP<<endl;
+	if(localID==tmpID)
+	{
+		return 1;
+	}
 	
 	return 0;
 }
