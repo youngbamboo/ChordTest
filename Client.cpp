@@ -23,8 +23,7 @@
 using namespace std;
 
 const int CLIENT_PORT = 9999;
-const int CLIENT_GETPORT = 8888;
-const int CLIENT_DELETEPORT = 7777;
+
 const int MAX_MSG_SIZE = 1024;
 const int SUCCESS = 1;
 const int FAILED_DUPLICATED = 2;
@@ -40,7 +39,7 @@ int client_sockfd,clientget_sockfd,clientdelete_sockfd;
 //0: key-value pair is existed
 //>2 means the numbers inserted form the file...
 //Data:xxx means get the resone by get operation
-int recieveMessageFromServer()
+int recieveMessageFromServer(list<string>& result)
 {
 	time_t startTime;
 	time(&startTime);
@@ -60,28 +59,32 @@ int recieveMessageFromServer()
 
         if(recvRet > 0)
         {
-            string tmp = maxMessage;
-			if (tmp.length()==1)
+            string data = maxMessage;
+			if (data.length()==1)
 			{
-				if (tmp[0]=='1')
+				if (data[0]=='1')
 				{
 					return SUCCESS;
-				}
-				else if (tmp[0]=='2')
-				{
-					return FAILED_DUPLICATED;
 				}
 			}
 			else
 			{
-				if (tmp.substr(0,5)=="Data:")
+				if (data.substr(0,5)=="Data:")
 				{
-                    //Needs to be taken care...
+                    data.erase(0,5);
+					int found=data.find('|');//ugly method... but no choice now
+					while (found!=std::string::npos)
+					{
+						int length = atoi(data.substr(0,found).c_str());
+						string value = data.substr(0,length);
+						result.push_back(value);
+						data.erase(0,length+1);
+					}
 					return SUCCESS;
 				}
 				else
 				{
-					return atoi(tmp.c_str());
+					return atoi(data.c_str());
 				}
 			}
         }
@@ -95,106 +98,12 @@ int recieveMessageFromServer()
 	    }
     }
 }
-
-int recieveGetMessageFromServer(list<string>& result)
-{
-	time_t startTime;
-	time(&startTime);
-	
-    while(1)
-    {
-        char* maxMessage = new char[MAX_MSG_SIZE];
-        struct sockaddr_in senderProcAddrUDP;
-
-        memset((char*)&senderProcAddrUDP, 0, sizeof(senderProcAddrUDP));
-        socklen_t senderLenUDP = sizeof(senderProcAddrUDP);
-
-        int recvRet = 0;      
-
-        recvRet = recvfrom(clientget_sockfd, maxMessage, MAX_MSG_SIZE,
-                MSG_DONTWAIT, (struct sockaddr*) &senderProcAddrUDP, &senderLenUDP);
-
-        if(recvRet > 0)
-        {
-			string data=maxMessage;
-			
-			int found=data.find('|');//ugly method... but no choice now
-			while (found!=std::string::npos)
-			{
-				int length = atoi(data.substr(0,found).c_str());
-				string value = data.substr(0,length);
-				result.push_back(value);
-				data.erase(0,length+1);
-			}
-            
-			return SUCCESS;
-        }
-		else
-		{
-			return FAILED;
-		}
-		
-		time_t currentTime;
-	    time(&currentTime);
-		if (difftime(currentTime,startTime)>5)
-	    {
-	       cout<<"Timer expired. Please Retry " << endl;
-		   return FAILED;
-	    }
-    }
-}
-
-int recieveDeleteMessageFromServer()
-{
-	time_t startTime;
-	time(&startTime);
-	
-    while(1)
-    {
-        char* maxMessage = new char[MAX_MSG_SIZE];
-        struct sockaddr_in senderProcAddrUDP;
-
-        memset((char*)&senderProcAddrUDP, 0, sizeof(senderProcAddrUDP));
-        socklen_t senderLenUDP = sizeof(senderProcAddrUDP);
-
-        int recvRet = 0;      
-
-        recvRet = recvfrom(clientdelete_sockfd, maxMessage, MAX_MSG_SIZE,
-                MSG_DONTWAIT, (struct sockaddr*) &senderProcAddrUDP, &senderLenUDP);
-
-        if(recvRet > 0)
-        {
-            string tmp = maxMessage;
-			if (tmp.length()==1)
-			{
-				if (tmp[0]=='1')
-				{
-					return SUCCESS;
-				}
-			}
-			else
-			{
-				cout<<"Unknown message: "<<maxMessage<<endl;
-				return FAILED;
-			}
-        }
-		
-		time_t currentTime;
-	    time(&currentTime);
-		if (difftime(currentTime,startTime)>5)
-	    {
-	       cout<<"Timer expired. Please Retry " << endl;
-		   return FAILED;
-	    }
-    }
-}
-
 
 void setSystemParam()
 {
      //Socket variables for client
     int n;
-    struct sockaddr_in servaddr,servaddr_get,servaddr_delete;
+    struct sockaddr_in servaddr;
     socklen_t lensock;
 
     client_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -205,38 +114,10 @@ void setSystemParam()
         exit(EXIT_FAILURE);
     }
 
-	clientget_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-
-    if(clientget_sockfd == -1)
-    {
-        printf("Could not create get socket \n");
-        exit(EXIT_FAILURE);
-    }
-
-	clientdelete_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-
-    if(client_sockfd == -1)
-    {
-        printf("Could not create delete socket \n");
-        exit(EXIT_FAILURE);
-    }
-	
-	
-
     bzero(&servaddr,sizeof(servaddr));
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
     servaddr.sin_port=htons(CLIENT_PORT);
-
-	bzero(&servaddr_get,sizeof(servaddr_get));
-    servaddr_get.sin_family = AF_INET;
-    servaddr_get.sin_addr.s_addr=htonl(INADDR_ANY);
-    servaddr_get.sin_port=htons(CLIENT_GETPORT);
-
-	bzero(&servaddr_delete,sizeof(servaddr_delete));
-    servaddr_delete.sin_family = AF_INET;
-    servaddr_delete.sin_addr.s_addr=htonl(INADDR_ANY);
-    servaddr_delete.sin_port=htons(CLIENT_DELETEPORT);
 
     int bval = bind(client_sockfd,(struct sockaddr *)&servaddr,sizeof(servaddr));
 
@@ -245,40 +126,24 @@ void setSystemParam()
         printf("Bind failed for put socket\n");
         exit(EXIT_FAILURE);
     }
-
-	bval = bind(clientget_sockfd,(struct sockaddr *)&servaddr_get,sizeof(servaddr_get));
-
-    if(bval==-1)
-    {
-        printf("Bind failed for get socket\n");
-        exit(EXIT_FAILURE);
-    }
-
-	bval = bind(clientdelete_sockfd,(struct sockaddr *)&servaddr_delete,sizeof(servaddr_delete));
-
-    if(bval==-1)
-    {
-        printf("Bind failed for delete socket\n");
-        exit(EXIT_FAILURE);
-    }
-
-	
     
 }
 
-
+//0:out 1:get 2:delete
 void sendRequestToServer(string receiverIP,string key, string value, string clientIP,string operation)
 {
     cout<<"sendRequestToServer "<<receiverIP<<" "<<key<<" "<<value<<" "<<clientIP<<" "<<operation<<endl;
+	string initialNode_fake="65536";
 	if (operation=="PUT")
 	{
 	    //ClientRequest req;
-		string initialNode_fake="65536";
 		
-	    string lengthReport = std::to_string(initialNode_fake.length())+","+to_string(key.length())+","
+		string operation="0";
+		
+	    string lengthReport = std::to_string(operation.length())+","+std::to_string(initialNode_fake.length())+","+to_string(key.length())+","
 	        +to_string(value.length())+","+to_string(clientIP.length())+",";
 		
-		string msgBuffer=lengthReport+initialNode_fake+key+value+clientIP;
+		string msgBuffer=lengthReport+operation+initialNode_fake+key+value+clientIP;
 		struct sockaddr_in receiverAddr;
 
 	    memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
@@ -304,14 +169,14 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	}
 	else if (operation=="GET")
 	{
-		string initialNode_fake="65536";
-		string lengthReport = std::to_string(initialNode_fake.length())+","+to_string(key.length())+","+to_string(clientIP.length())+",";
-		string msgBuffer=lengthReport+initialNode_fake+key+clientIP;
+		string operation="1";
+		string lengthReport = to_string(operation.length())+","+to_string(initialNode_fake.length())+","+to_string(key.length())+","+to_string(clientIP.length())+",";
+		string msgBuffer=lengthReport+operation+initialNode_fake+key+clientIP;
 		struct sockaddr_in receiverAddr;
 
 	    memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
 	    receiverAddr.sin_family = AF_INET;
-	    receiverAddr.sin_port = htons(CLIENT_GETPORT);
+	    receiverAddr.sin_port = htons(CLIENT_PORT);
 	    cout<<"msgBuffer "<<msgBuffer<<endl;
 
 		if(inet_aton(receiverIP.c_str(), &receiverAddr.sin_addr) == 0)
@@ -332,15 +197,15 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	}
 	else if (operation=="DELETE")
 	{
-		string initialNode_fake="65536";
-		string lengthReport = std::to_string(initialNode_fake.length())+","+to_string(key.length())+","+to_string(clientIP.length())+",";
-		string msgBuffer=lengthReport+initialNode_fake+key+clientIP;
+		string operation="2";
+		string lengthReport = to_string(operation.length())+","+to_string(initialNode_fake.length())+","+to_string(key.length())+","+to_string(clientIP.length())+",";
+		string msgBuffer=lengthReport+operation+initialNode_fake+key+clientIP;
 		
 		struct sockaddr_in receiverAddr;
 
 	    memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
 	    receiverAddr.sin_family = AF_INET;
-	    receiverAddr.sin_port = htons(CLIENT_DELETEPORT);
+	    receiverAddr.sin_port = htons(CLIENT_PORT);
 	    cout<<"msgBuffer "<<msgBuffer<<endl;
 
 		if(inet_aton(receiverIP.c_str(), &receiverAddr.sin_addr) == 0)
@@ -430,7 +295,8 @@ int main(int argc,char **argv)
 
 			string operation  = "PUT";                                    	
             sendRequestToServer(serverIP,key,value,selfIP,operation);
-            int result = recieveMessageFromServer();
+			list<string> resultList;
+            int result = recieveMessageFromServer(resultList);
                     
             if(result == 1)
             {
@@ -456,7 +322,7 @@ int main(int argc,char **argv)
 			
 			sendRequestToServer(serverIP,key,value,selfIP,operation);
 			list<string> resultList;
-            int result = recieveGetMessageFromServer(resultList);
+            int result = recieveMessageFromServer(resultList);
 			if (result==SUCCESS)
 			{
 				cout<<"The value is:"<<endl;
@@ -480,7 +346,8 @@ int main(int argc,char **argv)
 			string operation = "DELETE";
 			
 			sendRequestToServer(serverIP,key,value,selfIP,operation);
-			int result = recieveDeleteMessageFromServer();
+			list<string> resultList;
+			int result = recieveMessageFromServer(resultList);
 			if(result == SUCCESS)
             {
             	cout<<"Successfully deleted" << endl;
