@@ -34,7 +34,7 @@ list<int> ChordService::fingerSuccessorList;
 list<string> ChordService::successorIPList;
 
 
-ChordService::ChordService():localNode(NULL),preNode(NULL),myDirectory("/tmp/zyang/")
+ChordService::ChordService():localNode(NULL),preNode(NULL)
 {
 	localNode = new Node();
 	cout<<"Initialize finger table"<<endl;

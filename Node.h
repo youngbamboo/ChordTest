@@ -10,7 +10,7 @@
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <list>
+#include <map>
 
 
 using namespace std;
@@ -27,14 +27,8 @@ class Node {
 		int buildHashID(const string theStr);
 		inline int getHashID() {return myID;};
 		void setReplyList(list<int>* theList);
-		/*
-		inline void getFingerTable(list<int>& nodeList, list<int>& succList, list<string>& succIPList) 
-		{
-			nodeList=fingerNodeList;
-			succList=fingerSuccessorList;
-			succIPList=successorIPList;
-		};
-		*/
+		int storeData(const string theKey, const string theValue);
+		void getData(const string theKey);
 	private:
 		string myHostName;
 		string myIP;
@@ -42,9 +36,8 @@ class Node {
 		const int myBroadcastPort;
 		const int myReceivePort;
 		const int myClientPort;
-		//list<int> fingerNodeList;
-		//list<int> fingerSuccessorList;
-		//list<string> successorIPList;
+		std::multimap<string,string> myCacheMape;
+		const string myDirectory;
 
 		
 		

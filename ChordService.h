@@ -51,7 +51,7 @@ class ChordService {
 		//int client_sockfd;
 		//void* receiveReply(std::map<int,string>* themap);
 
-		const string myDirectory;
+		
  
 		
 };

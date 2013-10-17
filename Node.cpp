@@ -8,6 +8,10 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <openssl/evp.h>
+#include <fstream> 
+#include <dirent.h>
+#include <mutex>
+
 
 #include "Node.h"
 
@@ -15,7 +19,7 @@ using namespace std;
 
 Node::Node()
     :myHostName(""),myIP(""),
-    myBroadcastPort(10000),myReceivePort(10001),myClientPort(9999),myID(0)
+    myBroadcastPort(10000),myReceivePort(10001),myClientPort(9999),myID(0),myDirectory("/tmp/zyang/")
 {
 	struct hostent* he;
     char aName[100];
@@ -32,6 +36,10 @@ Node::Node()
 	myID = buildHashID(myIP);
 	cout<<"My Hash ID is: "<<myID<<endl;
 
+	mkDirectory(myDirectory);
+	//Remove all files.
+	system("exec rm -r /tmp/zyang");
+
 	
 }
 
@@ -40,7 +48,6 @@ Node::~Node()
 }
 
 
-//One-at-a-Time hash
 int Node::buildHashID(const string theStr)
 {
 
@@ -109,6 +116,66 @@ int Node::buildHashID(const string theStr)
     return digest;
     */
 }
+
+int Node::storeData(const string theKey, const string theValue)
+{	 
+	cout<<"Node:Store Data: "<<theKey<<" "<<theValue<<endl;
+	mtx.lock();
+	//Write them to the file.
+	string content = theKey+","+theValue;
+	std::fstream fs;
+	fs.open(myDirectory.c_str());
+	if (fs.is_open())
+	{
+		fs <<content<<'\n';
+		//Cache it!
+		myCacheMape.insert( std::pair<string,string>(theKey,theValue) );
+	}
+	else
+	{
+		cout<<"Open file error"<<endl;
+		return 0;		
+	}
+	fs.close();
+	mtx.unlock();
+	return 1;
+}
+
+void Node::getData(const string theKey, list<string>& result)
+{
+	mtx.lock();
+	std::pair <std::multimap<string,string>::iterator, std::multimap<string,string>::iterator> ret;
+	ret = myCacheMape.equal_range(theKey);
+	for (std::multimap<string,string>::iterator it=ret.first; it!=ret.second; ++it)
+      result..push_back(it->second);
+	mtx.unlock();
+}
+
+int Node::deleteData(const string theKey)
+{
+	mtx.lock();
+	//Delete in cache and rewrite the file
+	
+	std::fstream fs;
+	fs.open(myDirectory.c_str());
+	if (fs.is_open())
+	{
+		myCacheMape.erase(theKey);
+		std::multimap<string,string>::iterator it;
+		for (it=myCacheMape.begin(); it!=myCacheMape.end(); ++it)
+    		fs << (*it).first << "," << (*it).second << '\n';
+		
+	}
+	else
+	{
+		cout<<"Open file error"<<endl;
+		return 0;		
+	}
+	fs.close();
+	mtx.unlock();
+}
+
+
 
 
 
