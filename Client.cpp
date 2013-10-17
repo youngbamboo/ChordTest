@@ -438,13 +438,13 @@ int main(int argc,char **argv)
 			string operation = "GET";
 			
 			sendRequestToServer(serverIP,key,value,selfIP,operation);
-			list<string> result;
-            int result = recieveGetMessageFromServer(result);
+			list<string> resultList;
+            int result = recieveGetMessageFromServer(resultList);
 			if (result==SUCCESS)
 			{
 				cout<<"The value is:"<<endl;
-				std::list<string>::iterator it;
-				for (std::liststring::iterator it=result.begin(); it != mylist.end(); ++it)
+				list<string>::iterator it;
+				for (list<string>::iterator it=resultList.begin(); it != resultList.end(); ++it)
     				cout<<*it<<endl;;
 			}
 			
@@ -464,7 +464,7 @@ int main(int argc,char **argv)
 			
 			sendRequestToServer(serverIP,key,value,selfIP,operation);
 			int result = recieveDeleteMessageFromServer();
-			if(result == 1)
+			if(result == SUCCESS)
             {
             	cout<<"Successfully deleted" << endl;
             }
