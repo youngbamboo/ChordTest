@@ -350,7 +350,7 @@ int main(int argc,char **argv)
 			int i=0;
 			if (myfile.is_open())
 			{
-				while ( getline (myfile,line) && i<50000)
+				while ( getline (myfile,line) && i<10000)
 				{
 					int pos=line.find("- -");
 					string key = line.substr(0,pos-1);
