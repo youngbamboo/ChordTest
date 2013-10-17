@@ -79,7 +79,7 @@ int recieveMessageFromServer(list<string>& result)
 					{
 						if ((*it)!='|')
 						{
-							value.append(*it);
+							value=+(*it);
 						}
 						else
 						{
