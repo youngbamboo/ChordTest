@@ -328,6 +328,30 @@ int main(int argc,char **argv)
 				cout<<"Failed" << endl;
 			}
 		}
+		else if(command=="1")
+		{
+			//Here I only use 98 world cup file
+			//File fomat
+			//0.0.0.0 - - [30/Apr/1998:22:00:02 +0000] "GET /images/home_intro.anim.gif HTTP/1.0" 200 60349
+			//Here uses IP address as key, because it's the record from different address.
+			ifstream myfile ("./recreate_wc_day6_1.out");
+			string line;
+			int i=0;
+			if (myfile.is_open())
+			{
+				while ( getline (myfile,line) && i<10)
+				{
+					int pos=line.find("- -");
+					cout<<pos<<endl;
+					string key = line.substr(0,pos-1);
+					line.erase(0,pos+4);
+					cout<<line<<endl;
+					i++;
+					
+				}
+				myfile.close();
+			}
+		}
 		else if(command=="2")
 		{
 			cout<< "Please enter the key"<<endl;
