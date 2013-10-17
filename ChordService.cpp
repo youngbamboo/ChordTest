@@ -684,7 +684,7 @@ int main(int argc, char* argv[])
 	//ChordSocket: Listen the 10000 port for broadcast. Send the reply (to 10001) and update its own finger table.
 	//ClientSocket: Listen the 9999 to receive the key-value data. 
 
-	int clientSocket, chordSocket, clientGetSocket;
+	int clientSocket, chordSocket, clientGetSocket, clientDeleteSocket;
 	
 	if((clientSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){
         cerr<<"Error when initializing client socket"<<endl;
@@ -696,12 +696,32 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-	struct sockaddr_in clientUDP,chordUDP, clietGetUDP;
+	if((clientGetSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){
+        cerr<<"Error when initializing chord socket"<<endl;
+        exit(1);
+    }
+
+	if((chordclientDeleteSocketocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){
+        cerr<<"Error when initializing chord socket"<<endl;
+        exit(1);
+    }
+
+	struct sockaddr_in clientUDP,chordUDP, clietGetUDP, clientDeleteUDP;
 
     memset((char*)&clientUDP, 0, sizeof(clientUDP));
     clientUDP.sin_family = AF_INET;
     clientUDP.sin_port = htons(myService->getLocalNode()->getClientPort());
     clientUDP.sin_addr.s_addr = htonl(INADDR_ANY);
+
+	memset((char*)&clietGetUDP, 0, sizeof(clietGetUDP));
+    clietGetUDP.sin_family = AF_INET;
+    clietGetUDP.sin_port = htons(myService->getLocalNode()->getClienGetPort());
+    clietGetUDP.sin_addr.s_addr = htonl(INADDR_ANY);
+
+	memset((char*)&clientDeleteUDP, 0, sizeof(clientDeleteUDP));
+    clientDeleteUDP.sin_family = AF_INET;
+    clientDeleteUDP.sin_port = htons(myService->getLocalNode()->getClientDeletePort());
+    clientDeleteUDP.sin_addr.s_addr = htonl(INADDR_ANY);
 
     memset((char*)&chordUDP, 0, sizeof(chordUDP));
     chordUDP.sin_family = AF_INET;
@@ -711,6 +731,18 @@ int main(int argc, char* argv[])
 	if(bind(clientSocket, (struct sockaddr*) &clientUDP, sizeof(clientUDP)) == -1)
     {
         cerr<<"Bind failed for client socket"<<endl;
+        exit(1);
+    }
+
+	if(bind(clientGetSocket, (struct sockaddr*) &clietGetUDP, sizeof(clietGetUDP)) == -1)
+    {
+        cerr<<"Bind failed for client Get socket"<<endl;
+        exit(1);
+    }
+
+	if(bind(clientDeleteSocket, (struct sockaddr*) &clientDeleteUDP, sizeof(clientDeleteUDP)) == -1)
+    {
+        cerr<<"Bind failed for client delete socket"<<endl;
         exit(1);
     }
     
@@ -727,8 +759,12 @@ int main(int argc, char* argv[])
 
 	FD_SET(chordSocket, &read_fds);
 	FD_SET(clientSocket, &read_fds);
+	FD_SET(clientGetSocket, &read_fds);
+	FD_SET(clientDeleteSocket, &read_fds);
 
 	int fdmax = (chordSocket > clientSocket ? chordSocket : clientSocket);
+	fdmax = (clientGetSocket > fdmax ? clientGetSocket : fdmax);
+	fdmax = (clientDeleteSocket > fdmax ? clientDeleteSocket : fdmax);
 
 	
 	//master = read_fds;
@@ -826,7 +862,6 @@ int main(int argc, char* argv[])
 	                    
 						cout<<"Receive store request"<<endl;
 
-						int isStarted = 0;
 						
 	                    char* maxMessage = new char[1024];
 	                    struct sockaddr_in cliaddr;
@@ -840,11 +875,6 @@ int main(int argc, char* argv[])
 
 	                    if(recvRet > 0)
 						{
-	                         // It's a put key-value message
-	                         //Format: "key//value"
-	                         //ClientRequest* clientMsg = new ClientRequest;
-							 //memcpy(clientMsg, maxMessage, sizeof(ClientRequest));
-							 
 							 string data = maxMessage;
 							 
                              //Find the length report first
@@ -947,6 +977,225 @@ int main(int argc, char* argv[])
 	                     delete[] maxMessage;
 	                     
 					}
+				}
+				else if (i==clientGetSocket)
+				{
+					cout<<"Received Get request"<<endl;
+					char* maxMessage = new char[1024];
+	                struct sockaddr_in cliaddr;
+					socklen_t cli_addr_len;
+					cli_addr_len = sizeof(cliaddr);
+	                        
+	                int recvRet = 0;
+
+	                recvRet = recvfrom(clientGetSocket, maxMessage, 1024,
+	                                0, (struct sockaddr*) &cliaddr, &cli_addr_len);
+					if(recvRet > 0)
+					{
+						string data = maxMessage;
+						cout<<"Needs to get the value of "<<data<<endl;
+
+						//Find the length report first
+						int comma=data.find(',');
+                        int initNode_length = atoi(data.substr(0,comma).c_str());
+                        data.erase(0,comma+1);
+							 
+                        comma=data.find(',');
+                        int key_length = atoi(data.substr(0,comma).c_str());
+                        data.erase(0,comma+1);
+
+                        comma=data.find(',');
+                        int clientIP_length=atoi(data.substr(0,comma).c_str());
+                        data.erase(0,comma+1);
+
+                        cout<<"The pure buffer is: "<<data<<endl;
+						 
+						//long len=sizeof(ClientRequest);
+                        int len=0;
+						string initNode = data.substr(len,initNode_length);
+
+						len +=initNode_length;
+						string key = data.substr(len,key_length);
+
+						len +=key_length;
+						string clientIP = data.substr(len,clientIP_length);
+							 
+                        //Data is the key, hash it.
+                        int theHash = myService->getLocalNode()->buildHashID(key);
+							 
+						cout<<"Message from client to Get:"<<endl;
+						cout<<"Key: "<<key<<endl;
+						cout<<"Key hash: "<<theHash<<endl;						 
+						cout<<"Client IP: "<<clientIP<<endl;
+
+						string theNextNodeIP;
+							 
+						if (initNode=="65536")
+						{
+							initNode = std::to_string(myService->getLocalNode()->getHashID());
+						}
+						int result = myService->lookupFingerTable(theHash,theNextNodeIP,atoi(initNode.c_str()));
+						if(result==1)
+						{
+						 	//store data
+						 	string aKey=std::to_string(theHash);
+							list<string> valueResult;
+						 	myService->getLocalNode()->getData(aKey,valueResult);
+							//Get the result, seperate them with 'I'. A bad solution.
+							string result;
+							for (list<string>::iterator it=valueResult.begin(); it != valueResult.end(); ++it)
+							{
+								result=(*it)+"|";
+							}
+							cout<<"Get raw result is "<<result<<endl;
+							
+						 	//send back to client 	
+							cout<<"Send successful response message"<<endl;
+							if (!fork()) 
+							{ // this is the child process
+								//close(sockfd); // child doesn't need the listener
+			                    int numbytes;
+			                    int sendfd;
+			                    if ((sendfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+			                    {
+			                         cerr<<"socket error"<<endl;
+			                         exit(1);
+			                     }
+			                    cliaddr.sin_port = htons(myService->getLocalNode()->getClienGetPort());
+								if(inet_aton(clientIP.c_str(), &cliaddr.sin_addr) == 0)
+								{
+							        cerr<<"INET_ATON Failed\n"<<endl;
+							        exit(1);
+							    }
+			                       if ((numbytes=sendto(sendfd, result.c_str(), result.length(), 0,
+			                                               (struct sockaddr *)&cliaddr, sizeof cliaddr)) == -1) 
+			                       {
+			                           cerr<<"send error"<<endl;
+			                           exit(1);
+			                       }
+			                       else
+			                       {
+			                        }
+								close(sendfd);
+							}
+							close(recvRet);
+						 }
+						 else
+						 {
+						 	//send to the next node.
+						 	cout<<"Needs to send to find again: "<<theNextNodeIP<<endl;
+							string value = "";
+						 	myService->sendRequestToServer(theNextNodeIP,key, value, clientIP, initNode);
+						 }		
+
+	               }	
+				}
+				else if (i==clientDeleteSocket)
+				{
+					cout<<"Received Delete request"<<endl;
+					char* maxMessage = new char[1024];
+	                struct sockaddr_in cliaddr;
+					socklen_t cli_addr_len;
+					cli_addr_len = sizeof(cliaddr);
+	                        
+	                int recvRet = 0;
+
+	                recvRet = recvfrom(clientDeleteSocket, maxMessage, 1024,
+	                                0, (struct sockaddr*) &cliaddr, &cli_addr_len);
+					if(recvRet > 0)
+					{
+						string data = maxMessage;
+						cout<<"Needs to delete the value of "<<data<<endl;
+
+						//Find the length report first
+						int comma=data.find(',');
+                        int initNode_length = atoi(data.substr(0,comma).c_str());
+                        data.erase(0,comma+1);
+							 
+                        comma=data.find(',');
+                        int key_length = atoi(data.substr(0,comma).c_str());
+                        data.erase(0,comma+1);
+
+                        comma=data.find(',');
+                        int clientIP_length=atoi(data.substr(0,comma).c_str());
+                        data.erase(0,comma+1);
+
+                        cout<<"The pure buffer is: "<<data<<endl;
+						 
+						//long len=sizeof(ClientRequest);
+                        int len=0;
+						string initNode = data.substr(len,initNode_length);
+
+						len +=initNode_length;
+						string key = data.substr(len,key_length);
+
+						len +=key_length;
+						string clientIP = data.substr(len,clientIP_length);
+							 
+                        //Data is the key, hash it.
+                        int theHash = myService->getLocalNode()->buildHashID(key);
+							 
+						cout<<"Message from client to Delete:"<<endl;
+						cout<<"Key: "<<key<<endl;
+						cout<<"Key hash: "<<theHash<<endl;						 
+						cout<<"Client IP: "<<clientIP<<endl;
+
+						string theNextNodeIP;
+							 
+						if (initNode=="65536")
+						{
+							initNode = std::to_string(myService->getLocalNode()->getHashID());
+						}
+						int result = myService->lookupFingerTable(theHash,theNextNodeIP,atoi(initNode.c_str()));
+						if(result==1)
+						{
+						 	//store data
+						 	string aKey=std::to_string(theHash);
+							list<string> valueResult;
+						 	int result = myService->getLocalNode()->deleteData(aKey);
+							cout<<"Delete result is "<<result<<endl
+							
+							//send back to client 	
+							cout<<"Send successful response message"<<endl;
+							string result = to_string(result);
+							if (!fork()) 
+							{ // this is the child process
+								//close(sockfd); // child doesn't need the listener
+			                    int numbytes;
+			                    int sendfd;
+			                    if ((sendfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+			                    {
+			                         cerr<<"socket error"<<endl;
+			                         exit(1);
+			                     }
+			                    cliaddr.sin_port = htons(myService->getLocalNode()->getClientDeletePort());
+								if(inet_aton(clientIP.c_str(), &cliaddr.sin_addr) == 0)
+								{
+							        cerr<<"INET_ATON Failed\n"<<endl;
+							        exit(1);
+							    }
+			                    if ((numbytes=sendto(sendfd, result.c_str(), result.length(), 0,
+			                             (struct sockaddr *)&cliaddr, sizeof cliaddr)) == -1) 
+			                    {
+			                        cerr<<"send error"<<endl;
+			                        exit(1);
+			                    }
+			                    else
+			                    {
+			                    }
+								close(sendfd);
+							}
+							close(recvRet);
+						 }
+						 else
+						 {
+						 	//send to the next node.
+						 	cout<<"Needs to send to find again: "<<theNextNodeIP<<endl;
+							string value = "";
+						 	myService->sendRequestToServer(theNextNodeIP,key, value, clientIP, initNode);
+						 }		
+
+	               }	
 				}
 			}
 		}

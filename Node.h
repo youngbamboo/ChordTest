@@ -22,6 +22,8 @@ class Node {
 		inline int getBroadcastPort() {return myBroadcastPort;};
 		inline int getReceivePort() {return myReceivePort;};
 		inline int getClientPort() {return myClientPort;};
+		inline int getClienGetPort() {return myClientGetPort;};
+		inline int getClientDeletePort() {return myClientDeletePort;};
 		inline string getIP() {return myIP;};
 		inline string getHostName() {return myHostName;};
 		int buildHashID(const string theStr);
@@ -37,6 +39,8 @@ class Node {
 		const int myBroadcastPort;
 		const int myReceivePort;
 		const int myClientPort;
+		const int myClientGetPort;
+		const int myClientDeletePort;
 		std::multimap<string,string> myCacheMape;
 		const string myFile;
 
