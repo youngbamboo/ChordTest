@@ -835,6 +835,7 @@ int main(int argc, char* argv[])
 	                    if(recvRet > 0)
 						{
 							 string data = maxMessage;
+							 cout<<"The raw data received is: "<<data<<endl;
 							 
                              //Find the length report first
                              int comma=data.find(',');
