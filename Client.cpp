@@ -75,12 +75,13 @@ int recieveMessageFromServer(list<string>& result)
                     data.erase(0,5);
 					cout<<"values are "<<data<<endl;
 					string value;
-					string tmp="|";//seperation...
-					for (std::string::iterator it=data.begin(); it!=data.end(); ++it)
+					
+					for (string::iterator it=data.begin(); it!=data.end(); ++it)
 					{
-						if ((*it)!=tmp)
+						cout<<(*it)<<endl;;
+						if ((*it)!='|')
 						{
-							value=+(*it);
+							value.append(1,(*it));
 						}
 						else
 						{
