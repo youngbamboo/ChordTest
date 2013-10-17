@@ -56,6 +56,7 @@ int recieveMessageFromServer(list<string>& result)
 
         recvRet = recvfrom(client_sockfd, maxMessage, MAX_MSG_SIZE,
                 MSG_DONTWAIT, (struct sockaddr*) &senderProcAddrUDP, &senderLenUDP);
+		cout<<"Raw message received is: "<<maxMessage<<endl;
 
         if(recvRet > 0)
         {
@@ -75,10 +76,9 @@ int recieveMessageFromServer(list<string>& result)
 					int found=data.find('|');//ugly method... but no choice now
 					while (found!=std::string::npos)
 					{
-						int length = atoi(data.substr(0,found).c_str());
-						string value = data.substr(0,length);
+						string value = data.substr(0,found);
 						result.push_back(value);
-						data.erase(0,length+1);
+						data.erase(0,found+1);
 					}
 					return SUCCESS;
 				}
