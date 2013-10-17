@@ -39,7 +39,7 @@ Node::Node()
 	myID = buildHashID(myIP);
 	cout<<"My Hash ID is: "<<myID<<endl;
 
-	mkdir(myDirectory.c_str());
+	mkdir(myDirectory.c_str(),666);
 	//Remove all files.
 	system("exec rm -r /tmp/zyang");
 
