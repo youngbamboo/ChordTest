@@ -124,7 +124,7 @@ int Node::storeData(const string theKey, const string theValue)
 	//Write them to the file.
 	string content = theKey+","+theValue;
 	std::fstream fs;
-	fs.open(myDirectory.c_str());
+	fs.open(myDirectory.c_str(),std::ios_base::app);
 	if (fs.is_open())
 	{
 		fs <<content<<'\n';
