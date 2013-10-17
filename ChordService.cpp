@@ -899,7 +899,7 @@ int main(int argc, char* argv[])
 							 int result = myService->lookupFingerTable(theHash,theNextNodeIP,atoi(initNode.c_str()));
 							 if(result==1)
 							 {
-							 	if (operation == "1")
+							 	if (operation == "0")
 								{
 								 	//store data
 								 	string aKey=std::to_string(theHash);
@@ -937,7 +937,7 @@ int main(int argc, char* argv[])
 									}
 									close(recvRet);
 								}
-								else if (operation=="2")
+								else if (operation=="1")
 								{
 								 	//Get data
 								 	string aKey=std::to_string(theHash);
@@ -982,7 +982,7 @@ int main(int argc, char* argv[])
 									}
 									close(recvRet);
 								 }
-								else if (operation=="3")
+								else if (operation=="2")
 								{
 								 	//delete data
 								 	string aKey=std::to_string(theHash);
