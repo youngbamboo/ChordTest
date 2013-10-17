@@ -50,7 +50,7 @@ Node::Node()
 cout<<"~~~~~~~~~~~~~"<<status<<endl;
 
 	//Remove all files.
-	system("exec rm -r /tmp/zyang");
+	system("exec rm /tmp/zyang/*");
 
 	fstream f;
 	f.open( myFile.c_str(), ios::out );
