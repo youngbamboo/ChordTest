@@ -211,12 +211,12 @@ void setSystemParam()
     servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
     servaddr.sin_port=htons(CLIENT_PORT);
 
-	bzero(&servaddr,sizeof(servaddr_get));
+	bzero(&servaddr_get,sizeof(servaddr_get));
     servaddr_get.sin_family = AF_INET;
     servaddr_get.sin_addr.s_addr=htonl(INADDR_ANY);
     servaddr_get.sin_port=htons(CLIENT_GETPORT);
 
-	bzero(&servaddr,sizeof(servaddr_delete));
+	bzero(&servaddr_delete,sizeof(servaddr_delete));
     servaddr_delete.sin_family = AF_INET;
     servaddr_delete.sin_addr.s_addr=htonl(INADDR_ANY);
     servaddr_delete.sin_port=htons(CLIENT_DELETEPORT);
