@@ -474,7 +474,7 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 		return 1;
 	}
 
-	if(localID>thekey && localNode<initNode)
+	if(localID>thekey && localID<initNode)
 	{
 		return 1;
 	}
