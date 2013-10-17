@@ -334,7 +334,7 @@ int main(int argc,char **argv)
 			//File fomat
 			//0.0.0.0 - - [30/Apr/1998:22:00:02 +0000] "GET /images/home_intro.anim.gif HTTP/1.0" 200 60349
 			//Here uses IP address as key, because it's the record from different address.
-			ifstream myfile ("./recreate_wc_day6_1.out");
+			std::ifstream myfile("./recreate_wc_day6_1.out");
 			string line;
 			int i=0;
 			if (myfile.is_open())
