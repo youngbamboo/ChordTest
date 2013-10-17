@@ -29,7 +29,7 @@ const int SUCCESS = 1;
 const int FAILED_DUPLICATED = 2;
 const int FAILED = 0;
 
-int client_sockfd,clientget_sockfd,clientdelete_sockfd;
+int client_sockfd;
 
 
 
@@ -184,7 +184,7 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	        cerr<<"INET_ATON Failed\n"<<endl;
 	        exit(1);
 	    }
-	    if(sendto(clientget_sockfd, msgBuffer.c_str(), msgBuffer.length(), 0,
+	    if(sendto(client_sockfd, msgBuffer.c_str(), msgBuffer.length(), 0,
 	                (struct sockaddr*) &receiverAddr, sizeof(receiverAddr)) == -1)
 	    {
 
@@ -213,7 +213,7 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	        cerr<<"INET_ATON Failed\n"<<endl;
 	        exit(1);
 	    }
-	    if(sendto(clientdelete_sockfd, msgBuffer.c_str(), msgBuffer.length(), 0,
+	    if(sendto(client_sockfd, msgBuffer.c_str(), msgBuffer.length(), 0,
 	                (struct sockaddr*) &receiverAddr, sizeof(receiverAddr)) == -1)
 	    {
 
