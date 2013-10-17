@@ -73,6 +73,7 @@ int recieveMessageFromServer(list<string>& result)
 				if (data.substr(0,5)=="Data:")
 				{
                     data.erase(0,5);
+					cout<<"values are "<<data<<endl;
 					string value;
 					for (std::string::iterator it=data.begin(); it!=data.end(); ++it)
 					{
