@@ -335,6 +335,16 @@ int main(int argc,char **argv)
 			//File fomat
 			//0.0.0.0 - - [30/Apr/1998:22:00:02 +0000] "GET /images/home_intro.anim.gif HTTP/1.0" 200 60349
 			//Here uses IP address as key, because it's the record from different address.
+			cout<<"The file is under ~zyang/CS581/assignment_1/ChordTest/recreate_wc_day6_1.out"<<endl;
+			cout<<"YOu have no choice to choose files in this version..."<<endl;
+			cout<< "Please enter the server ip"<<endl;
+
+            string serverIP;                    
+			getline(cin,serverIP);
+
+			unsigned int success;
+			unsigned int failed;
+			
 			std::ifstream myfile("./recreate_wc_day6_1.out");
 			string line;
 			int i=0;
@@ -348,10 +358,25 @@ int main(int argc,char **argv)
 					line.erase(0,pos+4);
 					cout<<line<<endl;
 					i++;
-					
+					string operation  = "PUT";                                    	
+		            sendRequestToServer(serverIP,key,line,selfIP,operation);
+					list<string> resultList;
+		            int result = recieveMessageFromServer(resultList);
+		                    
+		            if(result == 1)
+		            {
+		            	success++;
+		            }
+					else
+					{
+						failed;
+					}
 				}
 				myfile.close();
 			}
+			cout<<"Final result for recreate_wc_day6_1.out is:"<<endl;
+			cout<<"Successful: "<<success++<<endl;
+			cout<<"Failed: "<<failed++<<endl;
 		}
 		else if(command=="2")
 		{
