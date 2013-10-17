@@ -343,8 +343,8 @@ int main(int argc,char **argv)
 				while ( getline (myfile,line) && i<10)
 				{
 					int pos=line.find("- -");
-					cout<<pos<<endl;
 					string key = line.substr(0,pos-1);
+					cout<<key<<endl;
 					line.erase(0,pos+4);
 					cout<<line<<endl;
 					i++;
