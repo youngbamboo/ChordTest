@@ -79,10 +79,11 @@ int recieveMessageFromServer(list<string>& result)
 					{
 						if ((*it)!='|')
 						{
-							value=+(*it);
+							value.append(*it);
 						}
 						else
 						{
+							cout<<"value got is "<<value<<endl;
 							result.push_back(value);
 							value.clear();
 						}
