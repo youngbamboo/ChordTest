@@ -170,7 +170,7 @@ void Node::getData(const string theKey, list<string>& result)
       result.push_back(it->second);
       */
     std::multimap<string,string>::iterator it;
-	for (it=myCacheMape.begin(); it!=myCacheMape.end(); ++it)
+	for (it=myCacheMape.begin(); it!=myCacheMape.end(); it++)
 	{
 		cout<<it->first<<endl;
 		if(it->first==theKey)
