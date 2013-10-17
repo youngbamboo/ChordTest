@@ -387,7 +387,7 @@ void ChordService::setSystemParam()
 
 void ChordService::sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode)
 {
-	cout<<"sendRequestToServer "<<receiverIP<<" "<<key<<" "<<value<<" "<<clientIP<<endl;
+	cout<<"sendRequestToServer "<<receiverIP<<" "<<key<<" "<<value<<" "<<clientIP<<" "<<initNode<<endl;
 	
     string lengthReport = std::to_string(initNode.length())+","+to_string(key.length())+","
         +to_string(value.length())+","+to_string(clientIP.length())+",";
