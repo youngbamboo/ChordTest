@@ -39,7 +39,8 @@ Node::Node()
 	myID = buildHashID(myIP);
 	cout<<"My Hash ID is: "<<myID<<endl;
 
-	mkdir("/tmp/zyang/",666);
+	if (mkdir("/tmp/zyang/",666)!=0)
+		perror("mkdir() error");
 	//Remove all files.
 	system("exec rm -r /tmp/zyang");
 
