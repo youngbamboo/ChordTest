@@ -49,9 +49,6 @@ ChordService::ChordService():localNode(NULL),preNode(NULL)
     }
 	//setSystemParam();
 	printFingerTable();
-	mkDirectory(myDirectory);
-	//Remove all files.
-	system("exec rm -r /tmp/zyang");
 }
 
 ChordService::~ChordService()
