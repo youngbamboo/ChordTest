@@ -40,7 +40,10 @@ Node::Node()
 	cout<<"My Hash ID is: "<<myID<<endl;
 
 	if (mkdir("/tmp/zyang/",666)!=0)
+	{
 		perror("mkdir() error");
+		exit(1);
+	}
 	//Remove all files.
 	system("exec rm -r /tmp/zyang");
 
