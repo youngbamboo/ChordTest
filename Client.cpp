@@ -77,7 +77,7 @@ int recieveMessageFromServer(list<string>& result)
 					string value;
 					for (std::string::iterator it=data.begin(); it!=data.end(); ++it)
 					{
-						if ((*it)!='|')
+						if ((*it)!="|")
 						{
 							value=+(*it);
 						}
