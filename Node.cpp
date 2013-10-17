@@ -43,14 +43,10 @@ Node::Node()
 	//Remove all files.
 	system("exec rm -r /tmp/zyang");
 
-	
-
-	int fd = open (myFile.c_str(), O_RDWR|O_CREAT,777);
-	if (fd==-1)
-	{
-		cerr<<"Create db file failed"<<endl;
-		exit(1);
-	}
+	fstream f;
+	f.open( myFile.c_str(), ios::out );
+	f << flush;
+	f.close();
 	
 }
 
