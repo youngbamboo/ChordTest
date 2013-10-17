@@ -25,7 +25,7 @@ class ChordService {
 		inline void setPreNode(Node* theNode) {this->preNode=theNode;};
 		void buildFingerTable(std::map<int,string>* themap);
 		int receiveReply(std::map<int,string>* themap);
-        void sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode);
+        void sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode,string operation);
         int lookupFingerTable(int thekey, string& theIP, int initNode);
 		//use for send to other nodes param
 		void setSystemParam();

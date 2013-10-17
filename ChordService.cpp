@@ -382,17 +382,14 @@ void ChordService::setSystemParam()
     */
 }
 
-void ChordService::sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode)
+void ChordService::sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode,string operation)
 {
 	cout<<"sendRequestToServer "<<receiverIP<<" "<<key<<" "<<value<<" "<<clientIP<<" "<<initNode<<endl;
-	
-    string lengthReport = std::to_string(initNode.length())+","+to_string(key.length())+","
+	string operation="0";
+    string lengthReport = std::to_string(operation.length())+","+std::to_string(initNode.length())+","+to_string(key.length())+","
         +to_string(value.length())+","+to_string(clientIP.length())+",";
 
-	string msgBuffer=lengthReport+initNode+key+value+clientIP;
-
-    
-   
+	string msgBuffer=lengthReport+operation+initNode+key+value+clientIP;
 
     int client_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
@@ -402,9 +399,6 @@ void ChordService::sendRequestToServer(string receiverIP,string key, string valu
         exit(EXIT_FAILURE);
     }
 
-    
-    
-///
 	struct sockaddr_in receiverAddr;
 
     memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
