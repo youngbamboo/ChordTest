@@ -73,13 +73,29 @@ int recieveMessageFromServer(list<string>& result)
 				if (data.substr(0,5)=="Data:")
 				{
                     data.erase(0,5);
-					int found=data.find('|');//ugly method... but no choice now
+					string value;
+					for (std::string::iterator it=data.begin(); it!=data.end(); ++it)
+					{
+						if ((*it)!='|')
+						{
+							value=+(*it);
+						}
+						else
+						{
+							result.push_back(value);
+							value.clear();
+						}
+					}
+    
+					/*
+					 int found=data.find('|');//ugly method... but no choice now
 					while (found!=std::string::npos)
 					{
 						string value = data.substr(0,found);
 						result.push_back(value);
 						data.erase(0,found+1);
 					}
+					*/
 					return SUCCESS;
 				}
 				else
