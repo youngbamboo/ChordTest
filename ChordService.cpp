@@ -947,7 +947,7 @@ int main(int argc, char* argv[])
 									string result="Data:";
 									for (list<string>::iterator it=valueResult.begin(); it != valueResult.end(); ++it)
 									{
-										result=(*it)+"|";
+										result=result+(*it)+"|";
 									}
 									cout<<"Get raw result is "<<result<<endl;
 									

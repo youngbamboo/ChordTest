@@ -170,8 +170,10 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	else if (operation=="GET")
 	{
 		string operation="1";
-		string lengthReport = to_string(operation.length())+","+to_string(initialNode_fake.length())+","+to_string(key.length())+","+to_string(clientIP.length())+",";
-		string msgBuffer=lengthReport+operation+initialNode_fake+key+clientIP;
+		string value = "N/A";
+		string lengthReport = to_string(operation.length())+","+to_string(initialNode_fake.length())+","
+			+to_string(value.length())+","+to_string(key.length())+","+to_string(clientIP.length())+",";
+		string msgBuffer=lengthReport+operation+initialNode_fake+key+value+clientIP;
 		struct sockaddr_in receiverAddr;
 
 	    memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
@@ -198,8 +200,10 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	else if (operation=="DELETE")
 	{
 		string operation="2";
-		string lengthReport = to_string(operation.length())+","+to_string(initialNode_fake.length())+","+to_string(key.length())+","+to_string(clientIP.length())+",";
-		string msgBuffer=lengthReport+operation+initialNode_fake+key+clientIP;
+		string value = "N/A";
+		string lengthReport = to_string(operation.length())+","+to_string(initialNode_fake.length())+","+
+			+to_string(value.length())+","+to_string(key.length())+","+to_string(clientIP.length())+",";
+		string msgBuffer=lengthReport+operation+initialNode_fake+key+value+clientIP;
 		
 		struct sockaddr_in receiverAddr;
 
