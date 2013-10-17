@@ -188,8 +188,8 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	{
 		string operation="1";
 		string value = "N/A";
-		string lengthReport = to_string(operation.length())+","+to_string(initialNode_fake.length())+","
-			+to_string(value.length())+","+to_string(key.length())+","+to_string(clientIP.length())+",";
+		string lengthReport = std::to_string(operation.length())+","+std::to_string(initialNode_fake.length())+","+to_string(key.length())+","
+	        +to_string(value.length())+","+to_string(clientIP.length())+",";
 		string msgBuffer=lengthReport+operation+initialNode_fake+key+value+clientIP;
 		struct sockaddr_in receiverAddr;
 
@@ -218,8 +218,8 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	{
 		string operation="2";
 		string value = "N/A";
-		string lengthReport = to_string(operation.length())+","+to_string(initialNode_fake.length())+","
-			+to_string(value.length())+","+to_string(key.length())+","+to_string(clientIP.length())+",";
+		string lengthReport = std::to_string(operation.length())+","+std::to_string(initialNode_fake.length())+","+to_string(key.length())+","
+	        +to_string(value.length())+","+to_string(clientIP.length())+",";
 		string msgBuffer=lengthReport+operation+initialNode_fake+key+value+clientIP;
 		
 		struct sockaddr_in receiverAddr;
