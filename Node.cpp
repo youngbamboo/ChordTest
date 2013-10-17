@@ -161,10 +161,20 @@ int Node::storeData(const string theKey, const string theValue)
 void Node::getData(const string theKey, list<string>& result)
 {
 	cachemtx.lock();
+	/*
 	std::pair <std::multimap<string,string>::iterator, std::multimap<string,string>::iterator> ret;
 	ret = myCacheMape.equal_range(theKey);
 	for (std::multimap<string,string>::iterator it=ret.first; it!=ret.second; ++it)
       result.push_back(it->second);
+      */
+    std::multimap<string,string>::iterator it;
+	for (it=myCacheMape.begin(); it!=myCacheMape.end(); ++it)
+	{
+		if(it->first==theKey)
+		{
+			 result.push_back(it->second);
+		}
+	}
 	cachemtx.unlock();
 }
 
