@@ -145,14 +145,16 @@ int Node::storeData(const string theKey, const string theValue)
 	if (fs.is_open())
 	{
 		fs <<content<<'\n';
-		//Cache it!
-		myCacheMape.insert( std::pair<string,string>(theKey,theValue) );
+		
+		
 	}
 	else
 	{
 		cout<<"Open file error"<<endl;
 		return 0;		
 	}
+	//Cache it!
+	myCacheMape.insert( std::pair<string,string>(theKey,theValue) );
 	fs.close();
 	cachemtx.unlock();
 	return 1;
