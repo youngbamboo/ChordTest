@@ -39,7 +39,7 @@ Node::Node()
 	myID = buildHashID(myIP);
 	cout<<"My Hash ID is: "<<myID<<endl;
 
-	mkdir(myDirectory);
+	mkdir(myDirectory.c_str());
 	//Remove all files.
 	system("exec rm -r /tmp/zyang");
 
@@ -150,7 +150,7 @@ void Node::getData(const string theKey, list<string>& result)
 	std::pair <std::multimap<string,string>::iterator, std::multimap<string,string>::iterator> ret;
 	ret = myCacheMape.equal_range(theKey);
 	for (std::multimap<string,string>::iterator it=ret.first; it!=ret.second; ++it)
-      result..push_back(it->second);
+      result.push_back(it->second);
 	mtx.unlock();
 }
 
