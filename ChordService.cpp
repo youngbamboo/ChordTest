@@ -1153,7 +1153,7 @@ int main(int argc, char* argv[])
 						 	string aKey=std::to_string(theHash);
 							list<string> valueResult;
 						 	int res = myService->getLocalNode()->deleteData(aKey);
-							cout<<"Delete result is "<<res<<endl
+							cout<<"Delete result is "<<res<<endl;
 							
 							//send back to client 	
 							cout<<"Send successful response message"<<endl;
