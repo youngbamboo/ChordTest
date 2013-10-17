@@ -206,6 +206,24 @@ void setSystemParam()
         exit(EXIT_FAILURE);
     }
 
+	clientget_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+    if(clientget_sockfd == -1)
+    {
+        printf("Could not create get socket \n");
+        exit(EXIT_FAILURE);
+    }
+
+	clientdelete_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+    if(client_sockfd == -1)
+    {
+        printf("Could not create delete socket \n");
+        exit(EXIT_FAILURE);
+    }
+	
+	
+
     bzero(&servaddr,sizeof(servaddr));
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
