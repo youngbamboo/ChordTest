@@ -347,17 +347,17 @@ int main(int argc,char **argv)
 			
 			std::ifstream myfile("./recreate_wc_day6_1.out");
 			string line;
-	
+			int i=0;
 			if (myfile.is_open())
 			{
-				while ( getline (myfile,line))
+				while ( getline (myfile,line) && i<50000)
 				{
 					int pos=line.find("- -");
 					string key = line.substr(0,pos-1);
 					cout<<key<<endl;
 					line.erase(0,pos+4);
 					cout<<line<<endl;
-				
+					i++;
 					string operation  = "PUT";                                    	
 		            sendRequestToServer(serverIP,key,line,selfIP,operation);
 					list<string> resultList;
