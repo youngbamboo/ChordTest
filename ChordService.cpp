@@ -476,7 +476,7 @@ int ChordService::calculateLength(int node,int key,int initNode)
 //Return 0 failed, 1 success
 int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 {
-	cout<<"Begin to find finger table"<<endl;
+	cout<<"Begin to find finger table "<<thekey<<" "<<initNode<<endl;
 	std::list<int>::iterator fingerSuccessorit=ChordService::fingerSuccessorList.begin();
     std::list<string>::iterator successorIPListit=ChordService::successorIPList.begin();
 
