@@ -342,8 +342,8 @@ int main(int argc,char **argv)
             string serverIP;                    
 			getline(cin,serverIP);
 
-			unsigned int success;
-			unsigned int failed;
+			int success;
+			int failed;
 			
 			std::ifstream myfile("./recreate_wc_day6_1.out");
 			string line;
@@ -375,8 +375,8 @@ int main(int argc,char **argv)
 				myfile.close();
 			}
 			cout<<"Final result for recreate_wc_day6_1.out is:"<<endl;
-			cout<<"Successful: "<<success++<<endl;
-			cout<<"Failed: "<<failed++<<endl;
+			cout<<"Successful: "<<success<<endl;
+			cout<<"Failed: "<<failed<<endl;
 		}
 		else if(command=="2")
 		{
