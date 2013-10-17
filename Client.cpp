@@ -342,8 +342,8 @@ int main(int argc,char **argv)
             string serverIP;                    
 			getline(cin,serverIP);
 
-			int success;
-			int failed;
+			int success=0;
+			int failed=0;
 			
 			std::ifstream myfile("./recreate_wc_day6_1.out");
 			string line;
