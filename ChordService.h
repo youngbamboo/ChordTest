@@ -27,12 +27,9 @@ class ChordService {
 		int receiveReply(std::map<int,string>* themap);
         void sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode,string operation);
         int lookupFingerTable(int thekey, string& theIP, int initNode);
-		//use for send to other nodes param
-		void setSystemParam();
-
+		
 		void getFileList();
-		void setupCache();
-		void readFile(const char* fileName);
+		
 		int mkDirectory(const string s);
 		void printFingerTable();
 		int calculateLength(int node,int key, int initNode);

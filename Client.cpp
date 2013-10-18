@@ -1,11 +1,3 @@
-/* Client is used to ping server for a file name or put, get, ls , exists
- * Usage: ./Client
- */
-
-/* TODO: When client receives the output of the ls command then it will
- * look into all the file names and remove the duplicate one.
- */
-
 #include <iostream>
 #include <stdio.h>
 #include <cstdlib>
@@ -34,12 +26,6 @@ int client_sockfd;
 
 
 
-
-//Simple resone format
-//1: put successful
-//0: key-value pair is existed
-//>2 means the numbers inserted form the file...
-//Data:xxx means get the resone by get operation
 int recieveMessageFromServer(list<string>& result)
 {
 	time_t startTime;
@@ -167,7 +153,7 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	    memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
 	    receiverAddr.sin_family = AF_INET;
 	    receiverAddr.sin_port = htons(CLIENT_PORT);
-	    cout<<"msgBuffer "<<msgBuffer<<endl;
+	    //cout<<"msgBuffer "<<msgBuffer<<endl;
 
 	    if(inet_aton(receiverIP.c_str(), &receiverAddr.sin_addr) == 0)
 		{
@@ -197,7 +183,7 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	    memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
 	    receiverAddr.sin_family = AF_INET;
 	    receiverAddr.sin_port = htons(CLIENT_PORT);
-	    cout<<"msgBuffer "<<msgBuffer<<endl;
+	    //cout<<"msgBuffer "<<msgBuffer<<endl;
 
 		if(inet_aton(receiverIP.c_str(), &receiverAddr.sin_addr) == 0)
 		{
@@ -228,7 +214,7 @@ void sendRequestToServer(string receiverIP,string key, string value, string clie
 	    memset((char*)&receiverAddr, 0, sizeof(receiverAddr));
 	    receiverAddr.sin_family = AF_INET;
 	    receiverAddr.sin_port = htons(CLIENT_PORT);
-	    cout<<"msgBuffer "<<msgBuffer<<endl;
+	    //cout<<"msgBuffer "<<msgBuffer<<endl;
 
 		if(inet_aton(receiverIP.c_str(), &receiverAddr.sin_addr) == 0)
 		{
@@ -347,10 +333,10 @@ int main(int argc,char **argv)
 			
 			std::ifstream myfile("./recreate_wc_day6_1.out");
 			string line;
-			int i=0;
+			//int i=0;
 			if (myfile.is_open())
 			{
-				while ( getline (myfile,line) && i<10000)
+				while ( getline (myfile,line))
 				{
 					int pos=line.find("- -");
 					string key = line.substr(0,pos-1);

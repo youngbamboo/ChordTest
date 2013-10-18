@@ -86,85 +86,7 @@ int ChordService::mkDirectory(const string s)
 }
 
 int ChordService::receiveReply(std::map<int,string>* themap)
-{
-    /*
-	cout<<"receiveReply: Waiting for reply..."<<endl;
-	int n, fd;
-    socklen_t cli_addr_len;
-    char buf[1024] = {0};
-	
-	if((fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
-    {
-        cerr<<"socket error!"<<endl;
-        exit(1);
-    } 
-
-	struct sockaddr_in servaddr, cliaddr;
-
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port = htons(10000);
-
-	fd_set read_fds, master; // set of read fds.
-
-    FD_ZERO(&read_fds); // clear the read fd set
-    FD_ZERO(&master); // clear the read fd set
-
-	FD_SET(fd, &read_fds);
-    
-
-	int fdmax = fd;
-
-	master = read_fds;
-
-	int activity;
-	time_t startTime;
-	time(&startTime);
-	while (1)
-	{
-		read_fds = master;
-		activity = select( fdmax + 1 , &read_fds , NULL , NULL , NULL);
-		if ((activity < 0) && (errno!=EINTR)) 
-        {
-            cerr<<"select error"<<endl;
-        }
-		for(int i = 0; i<=fdmax; i++)
-		{
-			if(FD_ISSET(i, &read_fds))
-			{
-				if(i == fd)
-				{
-					cli_addr_len = sizeof(cliaddr);
-    			    n =recvfrom(fd, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);
-    			    if (n>0)
-    			    {
-    			        cout<<buf<<endl;
-    				    int aID = atoi(buf);
-    				    cout<<"Recieve the id: "<< aID <<endl;
-    				    char ipstr[INET6_ADDRSTRLEN];
-    				   // string aIP = inet_ntop(cliaddr.ai_family,get_in_addr(cliaddr.ai_family,ipstr, sizeof ipstr);
-    			        string aIP=inet_ntoa(cliaddr.sin_addr);
-    				    cout<<"From IP: "<<aIP<<endl;
-    			        ((std::map<int,string>*)themap)->insert(std::pair<int,string>(aID,aIP));
-    			    }
-    			    else
-    			    {
-    			        //cout<<"Nothing received"<<endl;
-    			    }
-				}
-				
-			}
-            time_t currentTime;
-            time(&currentTime);
-            if (difftime(currentTime,startTime)>5)
-            {
-                cout<<"sleep 5s is over"<<endl;
-                close(fd);
-                break;
-            }
-		}
-	}*/
-    
+{ 
 	cout<<"receiveReply: Waiting for reply..."<<endl;
 	int n, fd;
     socklen_t cli_addr_len;
@@ -191,20 +113,12 @@ int ChordService::receiveReply(std::map<int,string>* themap)
     while(1)
     {
        cli_addr_len = sizeof(cliaddr);
-		/*
-	   struct timeval tv;
-       tv.tv_sec = 0;
-       tv.tv_usec = 500000;//500ms
-       if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) 
-       {
-          perror("Error");
-       }
-	   */
+
 	   char buf[1024] = {0};
        n =recvfrom(fd, buf, 1024, MSG_DONTWAIT, (struct sockaddr *)&cliaddr, &cli_addr_len);
        if (n>0)
        {
-           cout<<buf<<endl;
+           //cout<<buf<<endl;
 	       int aID = atoi(buf);
 	       cout<<"Recieve the id: "<< aID <<"   "<<buf<<endl;
 	       char ipstr[INET6_ADDRSTRLEN];
@@ -270,26 +184,21 @@ void ChordService::buildFingerTable(std::map<int,string>* themap)
 			{
 				if (tmpID<(*fingerNodeit))
 				{
-					cout<<"tmpID<(*fingerNodeit)"<<endl;
-					cout<<tmpID<<","<<(*fingerNodeit)<<","<<(*fingerSuccessorit)<<endl;
+					//cout<<"tmpID<(*fingerNodeit)"<<endl;
+					//cout<<tmpID<<","<<(*fingerNodeit)<<","<<(*fingerSuccessorit)<<endl;
 					if ((tmpID<(*fingerSuccessorit))&&(*fingerNodeit)>(*fingerSuccessorit))
 					{
-						cout<<"tmpID<(*fingerSuccessorit))&&(*fingerNodeit)>(*fingerSuccessorit)"<<endl;
+						//cout<<"tmpID<(*fingerSuccessorit))&&(*fingerNodeit)>(*fingerSuccessorit)"<<endl;
 						*fingerSuccessorit=tmpID;
 						*successorIPListit=tmpIP;
-						//fingerSuccessorList.erase(fingerSuccessorit);
-						//successorIPList.erase(successorIPListit);
-						
-						//fingerSuccessorList.insert(fingerSuccessorit,tmpID);
-						//successorIPList.insert(successorIPListit,tmpIP);
 					}
 				}
 				else
 				{
-					cout<<tmpID<<","<<&(*fingerNodeit)<<":"<<(*fingerNodeit)<<","<<&(*fingerSuccessorit)<<":"<<(*fingerSuccessorit)<<endl;
+					//cout<<tmpID<<","<<&(*fingerNodeit)<<":"<<(*fingerNodeit)<<","<<&(*fingerSuccessorit)<<":"<<(*fingerSuccessorit)<<endl;
                     if ((*fingerNodeit)>(*fingerSuccessorit))
                     {
-						cout<<"fingerNodeit)>(*fingerSuccessorit"<<endl;
+						//cout<<"fingerNodeit)>(*fingerSuccessorit"<<endl;
 						*fingerSuccessorit=tmpID;
 						*successorIPListit=tmpIP;
 						//fingerSuccessorList.erase(fingerSuccessorit);
@@ -300,18 +209,13 @@ void ChordService::buildFingerTable(std::map<int,string>* themap)
                     }
 					else 
 					{
-						cout<<"else~~~"<<endl;
+						//cout<<"else~~~"<<endl;
 						if(tmpID<(*fingerSuccessorit))
 						{
-							cout<<tmpID<<","<<(*fingerSuccessorit)<<endl;
-							cout<<"final change here??"<<endl;
+							//cout<<tmpID<<","<<(*fingerSuccessorit)<<endl;
+							//cout<<"final change here??"<<endl;
 							*fingerSuccessorit=tmpID;
 							*successorIPListit=tmpIP;
-							//fingerSuccessorList.erase(fingerSuccessorit);
-							//successorIPList.erase(successorIPListit);
-							
-							//fingerSuccessorList.insert(fingerSuccessorit,tmpID);
-							//successorIPList.insert(successorIPListit,tmpIP);
 						}
 					}
 					//It is bigger than the (i-1) column
@@ -351,36 +255,6 @@ void ChordService::printFingerTable()
 	
 }
 
-void ChordService::setSystemParam()
-{
-	/*
-     //Socket variables for client
-    int n;
-    struct sockaddr_in servaddr;
-    socklen_t lensock;
-
-    client_sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-
-    if(client_sockfd == -1)
-    {
-        printf("Could not create socket \n");
-        exit(EXIT_FAILURE);
-    }
-
-    bzero(&servaddr,sizeof(servaddr));
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
-    servaddr.sin_port=htons(9999);
-
-    int bval = bind(client_sockfd,(struct sockaddr *)&servaddr,sizeof(servaddr));
-
-    if(bval==-1)
-    {
-        printf("Bind failed\n");
-        exit(EXIT_FAILURE);
-    }
-    */
-}
 
 void ChordService::sendRequestToServer(string receiverIP,string key, string value, string clientIP, string initNode,string operation)
 {
@@ -442,7 +316,7 @@ int ChordService::calculateLength(int node,int key,int initNode)
 
 	//Just clockwise, or else it will be a mess...
 
-	cout<<"node "<<node<<" key "<<key<<endl;;
+	//cout<<"node "<<node<<" key "<<key<<endl;;
 
 	if(node>key)
 	{
@@ -452,7 +326,7 @@ int ChordService::calculateLength(int node,int key,int initNode)
 	{
 		length=key-node;
 	}
-	cout<<"length: "<<length<<endl;
+	//cout<<"length: "<<length<<endl;
 	return length;
 }
 //request should be sent here
@@ -536,80 +410,8 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 	
 	return 0;
 }
-/*
-void ChordService::getFileList(std::list<string> &out)
-{
-	DIR *dir;
-    class dirent *ent;
-    class stat st;
 
-    dir = opendir(myDirectory);
-    while ((ent = readdir(dir)) != NULL) {
-    	const string file_name = ent->d_name;
-    	const string full_file_name = directory + "/" + file_name;
 
-    	if (file_name[0] == '.')
-    		continue;
-
-    	if (stat(full_file_name.c_str(), &st) == -1)
-    		continue;
-
-    	const bool is_directory = (st.st_mode & S_IFDIR) != 0;
-
-    	if (!is_directory)
-    		continue;
-
-    	out.push_back(full_file_name);
-    }
-    closedir(dir);
-}
-*/
-
-void ChordService::setupCache()
-{
-	/*
-	list<string> aFileList;
-	getFileList(aFileList);
-	for (std::list<int>::iterator it = mylist.begin() ; it != mylist.end(); ++it)
-	{
-		readFile((*it).c_str());
-	}
-	*/
-	
-}
-
-void ChordService::readFile(const char* fileName)
-{
-	/*
-	cout<<"Begin to read file: "<<readFile<<endl;
-	ofstream o_file;  
-	ifstream i_file;  
-	string out_text;  
-	
-	o_file.open(fileName);  
-	for (int i = 1; i < = 10; i++)  
-	{  
-	
-	}  
-	o_file.close();  
-	//read
-	i_file.open(filename);  
-	if (i_file.is_open())  
-	{  
-	while (i_file.good())  
-	{  
-	i_file >> out_text; //  
-	cout < <  out_text < <  endl;
-	 
-	}  
-	}  
-	else  
-	
-	i_file.close();  
-	system("PAUSE");  
-	return 0;
-	*/
-}
 int main(int argc, char* argv[])
 {
 	ChordService* myService = new ChordService();
@@ -666,12 +468,12 @@ int main(int argc, char* argv[])
 
 	myService->receiveReply(&mymap);
 
-	cout<<"Before ~~~~~"<<endl;
-	myService->printFingerTable();
+	//cout<<"Before ~~~~~"<<endl;
+	//myService->printFingerTable();
 	
 	myService->buildFingerTable(&mymap);
 
-	cout<<"After ~~~~~"<<endl;
+	//cout<<"After ~~~~~"<<endl;
 	myService->printFingerTable();
 
 	mymap.clear();
@@ -762,10 +564,10 @@ int main(int argc, char* argv[])
 					{
 						
 						list<int> tmpList=ChordService::fingerSuccessorList;
-						cout<<"copy~~~~~~~~~~~~"<<endl;
-						for (std::list<int>::iterator it=tmpList.begin(); it != tmpList.end(); ++it)
-    								cout << ' ' << *it<<" ";
-						cout<<endl;
+						//cout<<"copy~~~~~~~~~~~~"<<endl;
+						//for (std::list<int>::iterator it=tmpList.begin(); it != tmpList.end(); ++it)
+    					//			cout << ' ' << *it<<" ";
+						//cout<<endl;
 						
 						cout<<"Received broadcast message"<<endl;
 						struct sockaddr_in cliaddr;
@@ -784,13 +586,13 @@ int main(int argc, char* argv[])
 						std::map<int,string> tmpMap;
 						tmpMap.insert(std::pair<int,string>(aID,aIP));
 
-						cout<<"Before ~~~~~"<<endl;
-						myService->printFingerTable();
+						//cout<<"Before ~~~~~"<<endl;
+						//myService->printFingerTable();
 
 						myService->buildFingerTable(&tmpMap);
 						tmpMap.clear();
 
-						cout<<"After ~~~~~"<<endl;
+						//cout<<"After ~~~~~"<<endl;
 						myService->printFingerTable();
 						
 
@@ -1043,38 +845,6 @@ int main(int argc, char* argv[])
 			}
 		}
 	}
-
-	
-	
-	/*int n, fd;
-    socklen_t cli_addr_len;
-    char buf[1024] = {0};
-    struct sockaddr_in servaddr, cliaddr;
- 
-    if((fd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
-    {
-        printf("socket error!\n");
-        exit(0);
-    }
- 
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port = htons(myService->getPort());
- 
-    if (bind(fd, (struct sockaddr *)&servaddr, sizeof(servaddr))<0)
-    {
-        perror("bind");
-        exit(-1);
-    }
-    while(1)
-    {
-       cli_addr_len = sizeof(cliaddr);
-       n =recvfrom(fd, buf, 1024, 0, (struct sockaddr *)&cliaddr, &cli_addr_len);
-       cout<<buf<<endl;
-    }
-
-*/
-
     return 0;
 }
 

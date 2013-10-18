@@ -48,7 +48,6 @@ Node::Node()
 	*/
 	//system("mkdir /tmp/zyang");
 	int status = mkdir("/tmp/zyang", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-cout<<"~~~~~~~~~~~~~"<<status<<endl;
 
 	//Remove all files.
 	system("exec rm /tmp/zyang/*");
