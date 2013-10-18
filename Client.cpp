@@ -343,7 +343,7 @@ int main(int argc,char **argv)
 					cout<<key<<endl;
 					line.erase(0,pos+4);
 					cout<<line<<endl;
-					i++;
+					//i++;
 					string operation  = "PUT";                                    	
 		            sendRequestToServer(serverIP,key,line,selfIP,operation);
 					list<string> resultList;
