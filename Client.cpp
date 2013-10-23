@@ -109,7 +109,7 @@ int recieveMessageFromServer(list<string>& result)
 		   return FAILED;
 	    }
     }
-    delete maxMessage;
+    delete[] maxMessage;
     maxMessage=NULL;
 }
 
