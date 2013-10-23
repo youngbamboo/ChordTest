@@ -405,6 +405,10 @@ int ChordService::lookupFingerTable(int thekey, string& theIP, int initNode)
 	{
 		return 1;
 	}
+	if(tmpID>=initNode;)
+	{
+		return 1;
+	}
 	
 	return 0;
 }
