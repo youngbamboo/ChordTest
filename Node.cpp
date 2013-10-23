@@ -154,9 +154,11 @@ int Node::storeData(const string theKey, const string theValue)
 	}
 	//Cache it!
 	myCacheMape.insert( std::pair<string,string>(theKey,theValue) );
+	/*
     cout<<"After insert: size is: "<<myCacheMape.size()<<endl;
     for (std::multimap<string,string>::iterator it=myCacheMape.begin(); it!=myCacheMape.end(); ++it)
             std::cout << (*it).first << " => " << (*it).second << '\n';
+            */
 	fs.close();
 	cachemtx.unlock();
 	return 1;
@@ -171,9 +173,11 @@ void Node::getData(const string theKey, list<string>& result)
 	for (std::multimap<string,string>::iterator it=ret.first; it!=ret.second; ++it)
       result.push_back(it->second);
       */
-    cout<<"Get: "<<myCacheMape.size()<<endl;
+    //cout<<"Get: "<<myCacheMape.size()<<endl;
+	/*
     for (std::multimap<string,string>::iterator it=myCacheMape.begin(); it!=myCacheMape.end(); ++it)
        std::cout << (*it).first << " => " << (*it).second << '\n';
+       */
     std::multimap<string,string>::iterator it;
 	for (it=myCacheMape.begin(); it!=myCacheMape.end(); it++)
 	{
