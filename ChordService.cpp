@@ -240,15 +240,17 @@ void ChordService::printFingerTable()
 	std::list<int>::iterator fingerNodeit = ChordService::fingerNodeList.begin();
 	std::list<int>::iterator fingerSuccessorit = ChordService::fingerSuccessorList.begin();
 	std::list<string>::iterator successorIPListit = ChordService::successorIPList.begin();
-
+	
+	
 	for (;fingerNodeit!=ChordService::fingerNodeList.end()&&fingerSuccessorit!=ChordService::fingerSuccessorList.end()
 		&&successorIPListit!=ChordService::successorIPList.end();
 			++fingerNodeit,++fingerSuccessorit,++successorIPListit)
 	{
-		cout<<&(*fingerNodeit)<<":"<<*fingerNodeit<<" "
-			<<&(*fingerSuccessorit)<<":"<<*fingerSuccessorit<<" "
-			<<&(*successorIPListit)<<":"<<*successorIPListit<<endl;
+		cout<<fingerNodeit<<":"<<*fingerNodeit<<" "
+			<<fingerSuccessorit<<":"<<*fingerSuccessorit<<" "
+			<<successorIPListit<<":"<<*successorIPListit<<endl;
 	}
+	
 	mtx.unlock();
 	
 }
@@ -600,8 +602,8 @@ int main(int argc, char* argv[])
 						myService->printFingerTable();
 						
 
-						if (!fork()) 
-						{ // this is the child process
+						//if (!fork()) 
+						//{ // this is the child process
 							//close(sockfd); // child doesn't need the listener
 							string myID = std::to_string(myService->getLocalNode()->getHashID());
 	                        int numbytes;
@@ -624,7 +626,7 @@ int main(int argc, char* argv[])
 
 	                        }
 							close(sendfd);
-						}
+						//}
 						//close(newfd);
 						
 					}
