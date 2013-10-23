@@ -92,10 +92,13 @@ int recieveMessageFromServer(list<string>& result)
 					return atoi(data.c_str());
 				}
 			}
-        }
+			close(recvRet);
+		}
+		else
+		{
+	        cout << "Error " << errno << " while receiving message at clientsocket\n" << endl;
+	    }
         memset(maxMessage, 0, 1024);
-        //delete maxMessage;
-        //maxMessage=NULL;
 		
 		time_t currentTime;
 	    time(&currentTime);

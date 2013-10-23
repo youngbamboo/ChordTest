@@ -627,6 +627,7 @@ int main(int argc, char* argv[])
 	                    
 						cout<<"Receive request from client"<<endl;
 						
+						
 	                    char* maxMessage = new char[1024];
 	                    struct sockaddr_in cliaddr;
 						socklen_t cli_addr_len;
@@ -636,7 +637,17 @@ int main(int argc, char* argv[])
 
 	                    recvRet = recvfrom(clientSocket, maxMessage, 1024,
 	                                0, (struct sockaddr*) &cliaddr, &cli_addr_len);
-
+						
+						/*
+						char* maxMessage = new char[1024];
+						newfd = accept(clientSocket, (struct sockaddr *) &cliaddr, &cli_addr_len);
+						if (newfd == -1) 
+						{
+						perror("accept");
+						continue;
+						}
+						int recvRet= recv(newfd, maxMessage, 1024, 0);
+						*/
 	                    if(recvRet > 0)
 						{
 							 string data = maxMessage;
