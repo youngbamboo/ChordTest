@@ -346,14 +346,14 @@ int main(int argc,char **argv)
 			int i=0;
 			if (myfile.is_open())
 			{
-				while ( getline (myfile,line)&&i<2000)
+				while ( getline (myfile,line)&&i<10000)
 				{
 					int pos=line.find("- -");
 					string key = line.substr(0,pos-1);
 					cout<<key<<endl;
 					line.erase(0,pos+4);
 					cout<<line<<endl;
-					//i++;
+					i++;
 					string operation  = "PUT";                                    	
 		            sendRequestToServer(serverIP,key,line,selfIP,operation);
 					list<string> resultList;
