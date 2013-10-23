@@ -470,12 +470,12 @@ int main(int argc, char* argv[])
 
 	myService->receiveReply(&mymap);
 
-	cout<<"Before ~~~~~"<<endl;
+	//cout<<"Before ~~~~~"<<endl;
 	//myService->printFingerTable();
 	
 	myService->buildFingerTable(&mymap);
 
-	cout<<"After ~~~~~"<<endl;
+	//cout<<"After ~~~~~"<<endl;
 	myService->printFingerTable();
 
 	mymap.clear();
@@ -565,11 +565,11 @@ int main(int argc, char* argv[])
 					if(i == chordSocket)
 					{
 						
-						list<int> tmpList=ChordService::fingerSuccessorList;
-						cout<<"copy~~~~~~~~~~~~"<<endl;
-						for (std::list<int>::iterator it=tmpList.begin(); it != tmpList.end(); ++it)
-    								cout << ' ' << *it<<" ";
-						cout<<endl;
+						//list<int> tmpList=ChordService::fingerSuccessorList;
+						//cout<<"copy~~~~~~~~~~~~"<<endl;
+						//for (std::list<int>::iterator it=tmpList.begin(); it != tmpList.end(); ++it)
+    					//			cout << ' ' << *it<<" ";
+						//cout<<endl;
 						
 						cout<<"Received broadcast message"<<endl;
 						struct sockaddr_in cliaddr;
@@ -585,14 +585,16 @@ int main(int argc, char* argv[])
 	               	    string aIP=inet_ntoa(cliaddr.sin_addr);
 	                    cout<<"From IP: "<<aIP<<endl;
 						
-						std::map<int,string> tmpMap;
-						tmpMap.insert(std::pair<int,string>(aID,aIP));
+						std::map<int,string>* tmpMap = new map<int,string>();
+						tmpMap->insert(std::pair<int,string>(aID,aIP));
 
 						cout<<"Before ~~~~~"<<endl;
 						myService->printFingerTable();
 
-						myService->buildFingerTable(&tmpMap);
-						tmpMap.clear();
+						myService->buildFingerTable(tmpMap);
+						//tmpMap.clear();
+						delete tmpMap;
+						tmpMap=NULL;
 
 						cout<<"After ~~~~~"<<endl;
 						myService->printFingerTable();
