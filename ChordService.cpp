@@ -772,8 +772,8 @@ int main(int argc, char* argv[])
 									
 								 	//send back to client 	
 									cout<<"Send successful response message"<<endl;
-									if (!fork()) 
-									{ // this is the child process
+									//if (!fork()) 
+									//{ // this is the child process
 										//close(sockfd); // child doesn't need the listener
 					                    int numbytes;
 					                    int sendfd;
@@ -798,7 +798,7 @@ int main(int argc, char* argv[])
 					                       {
 					                        }
 										close(sendfd);
-									}
+									//}
 									close(recvRet);
 								 }
 								else if (operation=="2")
@@ -812,8 +812,8 @@ int main(int argc, char* argv[])
 									//send back to client 	
 									cout<<"Send successful response message"<<endl;
 									string result = to_string(res);
-									if (!fork()) 
-									{ // this is the child process
+									//if (!fork()) 
+									//{ // this is the child process
 										//close(sockfd); // child doesn't need the listener
 					                    int numbytes;
 					                    int sendfd;
@@ -838,7 +838,7 @@ int main(int argc, char* argv[])
 					                    {
 					                    }
 										close(sendfd);
-									}
+									//}
 									close(recvRet);
 								 }
 							 }
