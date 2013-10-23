@@ -246,9 +246,9 @@ void ChordService::printFingerTable()
 		&&successorIPListit!=ChordService::successorIPList.end();
 			++fingerNodeit,++fingerSuccessorit,++successorIPListit)
 	{
-		cout<<fingerNodeit<<":"<<*fingerNodeit<<" "
-			<<fingerSuccessorit<<":"<<*fingerSuccessorit<<" "
-			<<successorIPListit<<":"<<*successorIPListit<<endl;
+		cout<<&(*fingerNodeit)<<":"<<*fingerNodeit<<" "
+			<<&(*fingerSuccessorit)<<":"<<*fingerSuccessorit<<" "
+			<<&(*successorIPListit)<<":"<<*successorIPListit<<endl;
 	}
 	
 	mtx.unlock();
