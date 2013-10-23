@@ -92,7 +92,7 @@ int recieveMessageFromServer(list<string>& result)
 					return atoi(data.c_str());
 				}
 			}
-			close(client_sockfd);
+			
 		}
 		else
 		{

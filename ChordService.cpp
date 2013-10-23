@@ -717,8 +717,8 @@ int main(int argc, char* argv[])
 								 	myService->getLocalNode()->storeData(aKey,value);
 								 	//send back to client 	
 									cout<<"Send successful response message"<<endl;
-									if (!fork()) 
-									{ // this is the child process
+									//if (!fork()) 
+									//{ // this is the child process
 										//close(sockfd); // child doesn't need the listener
 										string result="1";
 				                        int numbytes;
@@ -742,10 +742,10 @@ int main(int argc, char* argv[])
 				                        }
 				                        else
 				                        {
-
+											cerr<<"send successfully"<<endl;
 				                        }
 										close(sendfd);
-									}
+									//}
 									close(recvRet);
 								}
 								else if (operation=="1")
