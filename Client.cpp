@@ -30,10 +30,11 @@ int recieveMessageFromServer(list<string>& result)
 {
 	time_t startTime;
 	time(&startTime);
+    char* maxMessage = new char[MAX_MSG_SIZE];
 	
     while(1)
     {
-        char* maxMessage = new char[MAX_MSG_SIZE];
+        //char* maxMessage = new char[MAX_MSG_SIZE];
         struct sockaddr_in senderProcAddrUDP;
 
         memset((char*)&senderProcAddrUDP, 0, sizeof(senderProcAddrUDP));
@@ -92,15 +93,20 @@ int recieveMessageFromServer(list<string>& result)
 				}
 			}
         }
+        memset(maxMessage, 0, 1024);
+        //delete maxMessage;
+        //maxMessage=NULL;
 		
 		time_t currentTime;
 	    time(&currentTime);
-		if (difftime(currentTime,startTime)>5)
+		if (difftime(currentTime,startTime)>10)
 	    {
 	       cout<<"Timer expired. Please Retry " << endl;
 		   return FAILED;
 	    }
     }
+    delete maxMessage;
+    maxMessage=NULL;
 }
 
 void setSystemParam()
@@ -136,7 +142,7 @@ void setSystemParam()
 //0:out 1:get 2:delete
 void sendRequestToServer(string receiverIP,string key, string value, string clientIP,string operation)
 {
-    cout<<"sendRequestToServer "<<receiverIP<<" "<<key<<" "<<value<<" "<<clientIP<<" "<<operation<<endl;
+    //cout<<"sendRequestToServer "<<receiverIP<<" "<<key<<" "<<value<<" "<<clientIP<<" "<<operation<<endl;
 	string initialNode_fake="65536";
 	if (operation=="PUT")
 	{
@@ -333,10 +339,10 @@ int main(int argc,char **argv)
 			
 			std::ifstream myfile("./recreate_wc_day6_1.out");
 			string line;
-			//int i=0;
+			int i=0;
 			if (myfile.is_open())
 			{
-				while ( getline (myfile,line))
+				while ( getline (myfile,line)&&i<2000)
 				{
 					int pos=line.find("- -");
 					string key = line.substr(0,pos-1);
@@ -348,6 +354,7 @@ int main(int argc,char **argv)
 		            sendRequestToServer(serverIP,key,line,selfIP,operation);
 					list<string> resultList;
 		            int result = recieveMessageFromServer(resultList);
+                    //int result=1;
 		                    
 		            if(result == 1)
 		            {

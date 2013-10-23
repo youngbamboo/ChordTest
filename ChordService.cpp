@@ -835,8 +835,8 @@ int main(int argc, char* argv[])
 	                          cout << "Error " << errno << " while receiving message at clientsocket\n" << endl;
 	                     }
 
-	                     delete[] maxMessage;
-	                     
+	                     delete maxMessage;
+                         maxMessage=NULL;
 					}
 				}
 				
