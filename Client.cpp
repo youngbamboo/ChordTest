@@ -376,7 +376,6 @@ int main(int argc,char **argv)
 			
 			time_t currentTime;
 	   		time(&currentTime);
-			difftime(currentTime,startTime)
 	   
 			cout<<"Final result for recreate_wc_day6_1.out is:"<<endl;
 			cout<<"Successful: "<<success<<endl;
