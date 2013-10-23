@@ -466,12 +466,12 @@ int main(int argc, char* argv[])
 
 	myService->receiveReply(&mymap);
 
-	//cout<<"Before ~~~~~"<<endl;
+	cout<<"Before ~~~~~"<<endl;
 	//myService->printFingerTable();
 	
 	myService->buildFingerTable(&mymap);
 
-	//cout<<"After ~~~~~"<<endl;
+	cout<<"After ~~~~~"<<endl;
 	myService->printFingerTable();
 
 	mymap.clear();
@@ -584,13 +584,13 @@ int main(int argc, char* argv[])
 						std::map<int,string> tmpMap;
 						tmpMap.insert(std::pair<int,string>(aID,aIP));
 
-						//cout<<"Before ~~~~~"<<endl;
-						//myService->printFingerTable();
+						cout<<"Before ~~~~~"<<endl;
+						myService->printFingerTable();
 
 						myService->buildFingerTable(&tmpMap);
 						tmpMap.clear();
 
-						//cout<<"After ~~~~~"<<endl;
+						cout<<"After ~~~~~"<<endl;
 						myService->printFingerTable();
 						
 
