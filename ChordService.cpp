@@ -566,10 +566,10 @@ int main(int argc, char* argv[])
 					{
 						
 						list<int> tmpList=ChordService::fingerSuccessorList;
-						//cout<<"copy~~~~~~~~~~~~"<<endl;
-						//for (std::list<int>::iterator it=tmpList.begin(); it != tmpList.end(); ++it)
-    					//			cout << ' ' << *it<<" ";
-						//cout<<endl;
+						cout<<"copy~~~~~~~~~~~~"<<endl;
+						for (std::list<int>::iterator it=tmpList.begin(); it != tmpList.end(); ++it)
+    								cout << ' ' << *it<<" ";
+						cout<<endl;
 						
 						cout<<"Received broadcast message"<<endl;
 						struct sockaddr_in cliaddr;
