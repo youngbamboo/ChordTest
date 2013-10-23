@@ -340,6 +340,8 @@ int main(int argc,char **argv)
 
 			int success=0;
 			int failed=0;
+			time_t startTime;
+			time(&startTime);
 			
 			std::ifstream myfile("./recreate_wc_day6_1.out");
 			string line;
@@ -371,9 +373,15 @@ int main(int argc,char **argv)
 				}
 				myfile.close();
 			}
+			
+			time_t currentTime;
+	   		time(&currentTime);
+			difftime(currentTime,startTime)
+	   
 			cout<<"Final result for recreate_wc_day6_1.out is:"<<endl;
 			cout<<"Successful: "<<success<<endl;
 			cout<<"Failed: "<<failed<<endl;
+			cout<<"It uses "<<difftime(currentTime,startTime)<<" seconds"<<endl;
 		}
 		else if(command=="2")
 		{
