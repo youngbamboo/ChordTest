@@ -53,6 +53,8 @@ int recieveMessageFromServer(list<string>& result)
 			{
 				if (data[0]=='1')
 				{
+                    delete[] maxMessage;
+                    maxMessage=NULL;
 					return SUCCESS;
 				}
 			}
@@ -85,10 +87,14 @@ int recieveMessageFromServer(list<string>& result)
 						data.erase(0,found+1);
 					}
 					*/
+                    delete[] maxMessage;
+                    maxMessage=NULL;
 					return SUCCESS;
 				}
 				else
 				{
+                    delete[] maxMessage;
+                    maxMessage=NULL;
 					return atoi(data.c_str());
 				}
 			}
@@ -96,7 +102,6 @@ int recieveMessageFromServer(list<string>& result)
 		}
 		else
 		{
-	        
 	    }
         memset(maxMessage, 0, 1024);
 		
@@ -106,6 +111,8 @@ int recieveMessageFromServer(list<string>& result)
 		if (difftime(currentTime,startTime)>10)
 	    {
 	       cout<<"Timer expired. Please Retry " << endl;
+           delete[] maxMessage;
+           maxMessage=NULL;
 		   return FAILED;
 	    }
     }
@@ -355,7 +362,7 @@ int main(int argc,char **argv)
 					cout<<key<<endl;
 					line.erase(0,pos+4);
 					cout<<line<<endl;
-					//i++;
+					i++;
 					string operation  = "PUT";                                    	
 		            sendRequestToServer(serverIP,key,line,selfIP,operation);
 					list<string> resultList;
